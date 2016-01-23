@@ -1,0 +1,51 @@
+*.bak
+
+# DCData subfolders
+Maps/
+Raw/
+Prog/Temp/
+Prog/Images/
+
+# SAS files
+*.sas7bdat
+*.sas7bcat
+*.sas7bndx
+*.log
+*.lst
+
+# MS Office
+*.doc
+*.docx
+*.xls
+*.xlsx
+*.ppt
+*.pptx
+*.mdb
+*.mdbx
+*.pdf
+*.rtf
+
+# Raw files
+*.csv
+*.xml
+
+# Image files
+*.gif
+*.jpg
+*.jpeg
+*.bmp
+*.tiff
+
+# ArcMap
+*.dbf
+*.mxd
+*.shp
+*.prj
+*.sbn
+*.sbx
+*.shx
+*.lyr
+
+# Archives
+*.zip
+*.rar
