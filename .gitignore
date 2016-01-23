@@ -12,6 +12,7 @@ Prog/Images/
 *.sas7bndx
 *.log
 *.lst
+*.html
 
 # MS Office
 *.doc
