@@ -77,9 +77,12 @@ run;
 proc sort data=Mar_parse;
   by streetname zipcode number;
 
-proc print data=Mar_parse (obs=100);
+proc print data=Mar_parse (obs=40);
 run;
 
+proc freq data=Mar_parse;
+  tables streetname streettype dir;
+run;
 
 data 
   Mar.Geocode_dc_m
@@ -109,14 +112,15 @@ data
   
   if scan( upcase( streetname ), 1, ' ' ) in ( 'NORTH', 'SOUTH', 'EAST', 'WEST' ) then do;
     Predirabrv = substr( scan( upcase( streetname ), 1, ' ' ), 1, 1 );
-    Name = upcase( substr( streetname, length( scan( streetname, 1, ' ' ) ) + 2 ) );
+    Name = substr( streetname, length( scan( streetname, 1, ' ' ) ) + 2 );
   end;
   else do;
-    Name = upcase( streetname );
+    Name = streetname;
   end;
   
-  Namenc = propcase( Name );
-  
+  Namenc = propcase( left( Name ) );
+  Name = upcase( left( compress( Name, ' ' ) ) );
+    
   Sufdirabrv = upcase( dir );
   Suftypabrv = put( upcase( streettype ), $streettype_to_uspsabv. );
   
@@ -149,7 +153,7 @@ proc datasets lib=Mar;
     run;
 quit;
 
-%File_info( data=Mar.Geocode_dc_m, printobs=100, contents=y, stats= )
+%File_info( data=Mar.Geocode_dc_m, printobs=100, contents=y, stats=, freqvars=name )
 %File_info( data=Mar.Geocode_dc_s, printobs=200, contents=n )
 %File_info( data=Mar.Geocode_dc_p, printobs=0, contents=n, stats=n nmiss min max )
 

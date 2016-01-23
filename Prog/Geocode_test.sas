@@ -116,6 +116,14 @@ data A;
   address = '777 N CAPITOL STREET NE';
   output;
   
+  zip = 20002;
+  address = '1401 New York Avenue NE';
+  output;
+  
+  zip = 20001;
+  address = '3 NEW YORK AVENUE NW';
+  output;
+  
 run;
 
 proc geocode method=street /*nozip nocity*/
