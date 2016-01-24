@@ -61,7 +61,7 @@
 			words[g]='';
 		end;
 
-	    %if &debug=F %then %do;
+	    %if %mparam_is_yes( &debug ) %then %do;
 		    put "*******Before********************************************************";
 		    put _all_;
 		    put "***************************************************************";
@@ -90,7 +90,7 @@
 				  leave;
 				end;
 				words[wordCnt]=word;
-				%if &debug=F %then %do;
+				%if %mparam_is_yes( &debug ) %then %do;
 					put "================>" words[wordCnt]=;
 				%end;
 				
@@ -106,7 +106,7 @@
 		
 		%set_street_arrays;
 
-		%if &debug=F %then %do;
+		%if %mparam_is_yes( &debug ) %then %do;
 			put "starting to process address: " address;
 		%end;
 
@@ -200,7 +200,7 @@
 		then _dcg_adr_apt=_temp_apt_unit;
 
 
-	    %if &debug=F %then %do;
+	    %if %mparam_is_yes( &debug ) %then %do;
 		    put "*****************After**********************************************";
 		    put _all_;
 		    put "***************************************************************";

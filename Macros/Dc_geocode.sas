@@ -224,14 +224,14 @@
 
     ** Check for valid street names **;
 
-    if put( _dcg_adr_street_clean, &stvalidfmt.. ) = " " and "&quiet" ~= "Y" then do;
+    if put( _dcg_adr_street_clean, &stvalidfmt.. ) = " " and not( %mparam_is_yes( &quiet ) ) then do;
       %warn_put( macro=&mname, 
                  msg="Street not found: " _dcg_adr_street_clean "(" &staddr ")" )
     end;
 
     _dc_geocode_end:    
 
-    %if &debug=Y %then %do;
+    %if %mparam_is_yes( &debug ) %then %do;
 
     file print;
     

@@ -25,6 +25,8 @@
  %if %mparam_is_yes( &debug ) %then %do;
    PUT "STARTING ADDRESS_PARSE() MACRO";
  %end;
+ 
+ length &var_prefix.street &var_prefix.apt &var_prefix.streetname &var_prefix.streettype &var_prefix.quad $ 200;
 
  **PT 08/21/05:  Added to suppress INFO: messages  **;
  length wrd1 wrd2 wrd3 d1_wrd d2_wrd fract1 fract2 _dcg_adr_apt $ 200;
@@ -201,53 +203,68 @@
 
  ***************STANDARDIZE STREET NAME ABBREVIATIONS AND OTHER CHARACTERISTICS WORDS*;
 
- _ap_temp_ad =tranwrd(_ap_temp_ad ," STREET ", " ST ");
- _ap_temp_ad =tranwrd(_ap_temp_ad ," STREET-", " ST ");
- _ap_temp_ad =tranwrd(_ap_temp_ad ," STREETS ", " ST ");
- _ap_temp_ad =tranwrd(_ap_temp_ad ," STRET ", " ST ");
- _ap_temp_ad =tranwrd(_ap_temp_ad ," STRETT ", " ST ");
- _ap_temp_ad =tranwrd(_ap_temp_ad ," STRE ", " ST ");
- _ap_temp_ad =tranwrd(_ap_temp_ad ," STREE ", " ST ");
- _ap_temp_ad =tranwrd(_ap_temp_ad ," STRRE ", " ST ");
- _ap_temp_ad =tranwrd(_ap_temp_ad ," STREEET ", " ST ");
- _ap_temp_ad =tranwrd(_ap_temp_ad ," SSTREET ", " ST ");
- _ap_temp_ad =tranwrd(_ap_temp_ad ," STR ", " ST ");
- _ap_temp_ad =tranwrd(_ap_temp_ad ," ROAD ", " RD ");
- _ap_temp_ad =tranwrd(_ap_temp_ad ," ROAD-", " RD ");
- _ap_temp_ad =tranwrd(_ap_temp_ad ," ROADS ", " RD ");
- _ap_temp_ad =tranwrd(_ap_temp_ad ," DRIVE ", " DR ");
- _ap_temp_ad =tranwrd(_ap_temp_ad ," DRIV ", " DR ");
- _ap_temp_ad =tranwrd(_ap_temp_ad ," AVENUE ", " AV ");
- _ap_temp_ad =tranwrd(_ap_temp_ad ," AVENUE-", " AV ");
- _ap_temp_ad =tranwrd(_ap_temp_ad ," AVENUES ", " AV ");
- _ap_temp_ad =tranwrd(_ap_temp_ad ," AVEUE ", " AV ");
- _ap_temp_ad =tranwrd(_ap_temp_ad ," AVNEUE ", " AV ");
- _ap_temp_ad =tranwrd(_ap_temp_ad ," AENUE ", " AV ");
- _ap_temp_ad =tranwrd(_ap_temp_ad ," AVE ", " AV ");
- _ap_temp_ad =tranwrd(_ap_temp_ad ," SVE ", " AV ");
- _ap_temp_ad =tranwrd(_ap_temp_ad ," PARKWAY ", " PKWY ");
- _ap_temp_ad =tranwrd(_ap_temp_ad ," PKWAY ", " PKWY ");
- _ap_temp_ad =tranwrd(_ap_temp_ad ," PKW ", " PKWY ");
- _ap_temp_ad =tranwrd(_ap_temp_ad ," PKY ", " PKWY ");
- _ap_temp_ad =tranwrd(_ap_temp_ad ," PLACE ", " PL ");
- _ap_temp_ad =tranwrd(_ap_temp_ad ," PLC ", " PL ");
- _ap_temp_ad =tranwrd(_ap_temp_ad ," PLA ", " PL ");
- _ap_temp_ad =tranwrd(_ap_temp_ad ," TERRACE ", " TR ");
- _ap_temp_ad =tranwrd(_ap_temp_ad ," TERRANCE ", " TR ");
- _ap_temp_ad =tranwrd(_ap_temp_ad ," TERR ", " TR ");
- _ap_temp_ad =tranwrd(_ap_temp_ad ," TER ", " TR ");
- _ap_temp_ad =tranwrd(_ap_temp_ad ," HIGHWAY ", " HWY ");
- _ap_temp_ad =tranwrd(_ap_temp_ad ," HIWAY ", " HWY ");
- _ap_temp_ad =tranwrd(_ap_temp_ad ," COURT ", " CT ");
- _ap_temp_ad =tranwrd(_ap_temp_ad ," CIRCLE ", " CIR ");
- _ap_temp_ad =tranwrd(_ap_temp_ad ," CR ", " CIR ");
- _ap_temp_ad =tranwrd(_ap_temp_ad ," LANE ", " LA ");
- _ap_temp_ad =tranwrd(_ap_temp_ad ," LN ", " LA ");
- _ap_temp_ad =tranwrd(_ap_temp_ad ," BLV ", " BLVD ");
- _ap_temp_ad =tranwrd(_ap_temp_ad ," BVLD ", " BLVD ");
- _ap_temp_ad =tranwrd(_ap_temp_ad ," BOULEVARD ", " BLVD ");
- _ap_temp_ad =tranwrd(_ap_temp_ad ," PARK ", " PK ");
- _ap_temp_ad =tranwrd(_ap_temp_ad ," PRK ", " PK ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," ST ", " STREET ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," STR ", " STREET ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," STRE ", " STREET ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," STREE ", " STREET ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," STREET-", " STREET ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," STREETS ", " STREET ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," STRET ", " STREET ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," STRETT ", " STREET ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," STRRE ", " STREET ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," STREEET ", " STREET ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," SSTREET ", " STREET ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," RD ", " ROAD ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," ROAD-", " ROAD ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," ROADS ", " ROAD ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," DR ", " DRIVE ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," DRI ", " DRIVE ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," DRV ", " DRIVE ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," DRIV ", " DRIVE ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," AV ", " AVENUE ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," AVE ", " AVENUE ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," AVEN ", " AVENUE ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," AVENU ", " AVENUE ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," AVN ", " AVENUE ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," AVENUE-", " AVENUE ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," AVENUES ", " AVENUE ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," AVEUE ", " AVENUE ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," AVNEUE ", " AVENUE ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," AENUE ", " AVENUE ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," PKWY ", " PARKWAY ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," PKWAY ", " PARKWAY ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," PKW ", " PARKWAY ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," PKY ", " PARKWAY ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," PRKWAY ", " PARKWAY ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," PRKWY ", " PARKWAY ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," PL ", " PLACE ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," PLC ", " PLACE ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," PLA ", " PLACE ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," PLAC ", " PLACE ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," TR ", " TERRACE ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," TER ", " TERRACE ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," TERR ", " TERRACE ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," TERRA ", " TERRACE ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," TERRAC ", " TERRACE ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," TERACE ", " TERRACE ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," TERRANCE ", " TERRACE ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," HWY ", " HIGHWAY ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," HIGHW ", " HIGHWAY ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," HIGHWA ", " HIGHWAY ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," HIWAY ", " HIGHWAY ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," CT ", " COURT ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," CRT ", " COURT ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," CIR ", " CIRCLE ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," CIRC ", " CIRCLE ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," CIRCL ", " CIRCLE ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," CR ", " CIRCLE ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," LA ", " LANE ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," LN ", " LANE ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," BLVD ", " BOULEVARD ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," BVLD ", " BOULEVARD ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," BUOLEVARD ", " BOULEVARD ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," PK ", " PARK ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," PRK ", " PARK ");
 
  if substr(_ap_temp_ad,1,4) = "R R " then _ap_temp_ad =tranwrd(_ap_temp_ad ,"R R ", " RR ");
  else _ap_temp_ad =tranwrd(_ap_temp_ad ," R R ", " RR ");
@@ -256,7 +273,7 @@
  else _ap_temp_ad =tranwrd(_ap_temp_ad ," U S ", " US ");
 
  %***[PAT 03/04/06]***;
- _ap_temp_ad =tranwrd(_ap_temp_ad ," 0 ST "," O ST ");
+ _ap_temp_ad =tranwrd(_ap_temp_ad ," 0 STREET "," O STREET ");
 
  _ap_temp_ad =tranwrd(_ap_temp_ad ," SOUTHWEST ", " SW ");
  _ap_temp_ad =tranwrd(_ap_temp_ad ," NORTHWEST ", " NW ");
@@ -369,11 +386,11 @@
 
  _ap_temp_ad = tranwrd(_ap_temp_ad,"LOT#","LOT #");
 
- _ap_temp_ad = tranwrd(_ap_temp_ad," STAPT "," ST APT ");
- _ap_temp_ad = tranwrd(_ap_temp_ad," AVEAPT "," AV APT ");
- _ap_temp_ad = tranwrd(_ap_temp_ad," STREETAPT"," ST APT");
- _ap_temp_ad = tranwrd(_ap_temp_ad," AVENUEAPT"," AV APT");
- _ap_temp_ad = tranwrd(_ap_temp_ad," PARKWAYAPT"," PKWY APT");
+ _ap_temp_ad = tranwrd(_ap_temp_ad," STAPT "," STREET APT ");
+ _ap_temp_ad = tranwrd(_ap_temp_ad," AVEAPT "," AVENUE APT ");
+ _ap_temp_ad = tranwrd(_ap_temp_ad," STREETAPT"," STREET APT");
+ _ap_temp_ad = tranwrd(_ap_temp_ad," AVENUEAPT"," AVENUE APT");
+ _ap_temp_ad = tranwrd(_ap_temp_ad," PARKWAYAPT"," PARKWAY APT");
  _ap_temp_ad = tranwrd(_ap_temp_ad,"APARTAMENTOS",/**PT**"APT#"**/ "APT");
  _ap_temp_ad = tranwrd(_ap_temp_ad,"APARTAMENTO",/**"APT#"**/ "APT");
  _ap_temp_ad = tranwrd(_ap_temp_ad," APARTMENT"," APT");
@@ -1012,7 +1029,7 @@
       assume that first word should be an ordinal number (1st, 2nd, etc.)
     ************;
     if indexc(scan(pad,1,""),"ABCDEFGHIJKLMNOPQRSTUVWXYZ") = 0 and 
-       scan(pad,2,"") in ( "ST", "RD", "PL", "AV", "TR", "DR", "PKWY", "HWY", "CT", "CIR", "LA", "PK" ) then do;
+       put( upcase( scan(pad,2,"") ), $marvalidsttyp. ) ~= "" then do;
       select ( substr( reverse( scan(pad,1,"") ), 1, 1 ) );
         when ( "1" ) pad1 = scan(pad,1,"") || "ST";
         when ( "2" ) pad1 = scan(pad,1,"") || "ND";
@@ -1064,7 +1081,7 @@
  fract1=scan(pad, 1, "");
  fract2=scan(pad, 2, "");
 
- if substr(fract1,1,3) in ("1/2","1/4","3/4") and fract2 not in ("ST","AV","DR","RD") then
+ if substr(fract1,1,3) in ("1/2","1/4","3/4") and put( upcase( fract2 ), $marvalidsttyp. ) = "" then
   do;
      if length(fract1)<=4 then
       do;
@@ -1130,6 +1147,18 @@
  &var_prefix.street = substr( &var_prefix.street, 1, _ap_i );
 
  **** PT:  End of code added 08/21/05 ****************;
+ 
+ ** Separate street type from street name (new for MAR geocoding) **;
+ 
+ &var_prefix.streettype = scan( &var_prefix.street, -1, ' ' );
+ 
+ if put( upcase( &var_prefix.streettype ), $marvalidsttyp. ) ~= ""  then do;
+   &var_prefix.streetname = substr( &var_prefix.street, 1, length( &var_prefix.street ) - ( length( &var_prefix.streettype ) + 1 ) );
+ end;
+ else do;
+   &var_prefix.streettype = "";
+   &var_prefix.streetname = &var_prefix.street;
+ end;
 
 /***  OLD CODE ***
  _ap_i = length( street );
