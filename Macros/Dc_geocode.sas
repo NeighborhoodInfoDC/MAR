@@ -47,7 +47,7 @@
   zip_match=zip_match,        /* Matching parcel/block ZIP code (blank to omit)*/
   dcg_num_parcels=dcg_num_parcels,  /* Number of parcels matching address */
 
-  dcg_match_score=dcg_match_score,  /* Match score */
+  dcg_match_score=_score_,  /* Match score */
 
   match_score_min=50,            /** Minimum score for a match **/
 
@@ -56,9 +56,9 @@
 
   max_near_block_dist=500,    /* Maximum difference between street nos. for near block matches */
 
-  parcelfile=Realpr_r.Parcel_Geocode_Base,   /* Base parcel file for matching */
-  hashfmt=$pbhash.,           /* Hash table format for base parcel file */
-  stvalidfmt=$marstvalid,        /* Format for validating street names */
+  basefile=Mar.Geocode_dc_m,   /* Base file for address matching */
+  /*hashfmt=$pbhash.,*/           /* Hash table format for base parcel file */
+  stvalidfmt=$marvalidstnm,        /* Format for validating street names */
   staltfmt=$marstrtalt,          /* Format with alternate street name spellings */
   punct_list=%str(,.*''""<>;[]{}|_+=^$@!~`%:?),    /* List of punctuation to strip */
 
@@ -70,7 +70,7 @@
   );
 
   %let mversion = 1.0;
-  %let mdate = 01/24/16;
+  %let mdate = 01/25/16;
   %let mname = DC_geocode;
 
   %let listunmatched = %upcase( &listunmatched );
@@ -176,7 +176,11 @@
   
     set &data;
     
-    length _dcg_scrub_addr _dcg_adr_street_clean $ 500;
+    retain _dcg_city 'WASHINGTON' _dcg_st 'DC';
+    
+    length _dcg_scrub_addr _dcg_adr_streetname_clean _dcg_addr_geocode $ 500 _dcg_zip 8;
+    
+    _dcg_zip = .;
 
     if &staddr = "" then goto _dc_geocode_end;
     
@@ -213,20 +217,20 @@
     ** Clean street address (apply StreetAlt.xls corrections) **;
     ** Only apply if original street name is not valid        **;
 
-    if put( _dcg_adr_street, &stvalidfmt.. ) = " " then do;
-      _dcg_adr_street_clean = put( _dcg_adr_street, &staltfmt.. );
+    if put( _dcg_adr_streetname, &stvalidfmt.. ) = " " then do;
+      _dcg_adr_streetname_clean = put( _dcg_adr_streetname, &staltfmt.. );
     end;
     else do;
-      _dcg_adr_street_clean = _dcg_adr_street;
+      _dcg_adr_streetname_clean = _dcg_adr_streetname;
     end;
 
     file log;
 
     ** Check for valid street names **;
 
-    if put( _dcg_adr_street_clean, &stvalidfmt.. ) = " " and not( %mparam_is_yes( &quiet ) ) then do;
+    if put( _dcg_adr_streetname_clean, &stvalidfmt.. ) = " " and not( %mparam_is_yes( &quiet ) ) then do;
       %warn_put( macro=&mname, 
-                 msg="Street not found: " _dcg_adr_street_clean "(" &staddr ")" )
+                 msg="Street not found: " _dcg_adr_streetname_clean "(" &staddr ")" )
     end;
 
     _dc_geocode_end:    
@@ -242,6 +246,27 @@
 
     file log;
 
+    %end;
+    
+    if put( _dcg_adr_streetname_clean, &stvalidfmt.. ) = " " then do;
+    
+      _dcg_addr_geocode = _dcg_scrub_addr;
+    
+    end;
+    else do;
+
+      _dcg_addr_geocode = 
+        left( compbl( 
+                 trim( _dcg_adr_begnum ) || " " || 
+                 trim( _dcg_adr_streetname_clean ) || " " ||
+                 trim( _dcg_adr_streettype ) || " " ||
+                 trim( _dcg_adr_quad )
+               ) );
+    
+    end;
+    
+    %if &zip ~= %then %do;
+      _dcg_zip = &zip;
     %end;
 
 /***
@@ -274,8 +299,21 @@
 
   ** Match cleaned addresses with parcel base file **;
 
-  %note_mput( macro=&mname, msg=Starting parcel match. Parcel base file is %upcase(&parcelfile). )
+  %note_mput( macro=&mname, msg=Starting address match. Base file is %upcase(&basefile). )
+  
+   proc geocode method=street nozip nocity
+     data=_dcg_indat     
+     out=&out
+     addressvar=_dcg_addr_geocode
+     addresscityvar=_dcg_city
+     addressstatevar=_dcg_st
+     addresszipvar=_dcg_zip
+     lookupstreet=&basefile
+     attributevar=(address_id ssl);
+     run;
+   quit;
 
+  /*
   %Address_match( 
     parcelfile=&parcelfile,
     hashfmt=&hashfmt,
@@ -320,6 +358,7 @@
                ULOWNUMBER NLOWNUMBER NHIGHNUMBER 
              %end;
   )
+  */
 
   %if %mparam_is_yes( &listunmatched ) %then %do;
 

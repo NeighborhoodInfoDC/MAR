@@ -51,7 +51,7 @@ run;
   staddr = address,
   zip = zip,
   out = B,
-  geo_match = N,
+  geo_match = Y,
   debug = Y,
   mprint = Y
 )

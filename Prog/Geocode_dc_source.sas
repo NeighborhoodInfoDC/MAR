@@ -78,11 +78,31 @@ proc sort data=Mar_parse;
   by streetname zipcode number;
 
 proc print data=Mar_parse (obs=40);
+  where streetname = 'CAPITOL SQUARE';
 run;
 
 proc freq data=Mar_parse;
   tables streetname streettype dir;
 run;
+
+proc sort data=Mar_parse out=Mar_streetnames nodupkey;
+  by streetname;
+run;
+
+%Data_to_format(
+  FmtLib=Mar,
+  FmtName=$marvalidstnm,
+  Desc="MAR geocoding/valid street names",
+  Data=Mar_streetnames,
+  Value=streetname,
+  Label=streetname,
+  OtherLabel=' ',
+  DefaultLen=.,
+  MaxLen=.,
+  MinLen=.,
+  Print=N,
+  Contents=Y
+  )
 
 data 
   Mar.Geocode_dc_m
@@ -154,6 +174,11 @@ proc datasets lib=Mar;
 quit;
 
 %File_info( data=Mar.Geocode_dc_m, printobs=100, contents=y, stats=, freqvars=name )
+
+proc print data=Mar.Geocode_dc_m;
+  where name = '';
+run;
+
 %File_info( data=Mar.Geocode_dc_s, printobs=200, contents=n )
 %File_info( data=Mar.Geocode_dc_p, printobs=0, contents=n, stats=n nmiss min max )
 

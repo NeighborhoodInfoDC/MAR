@@ -23,14 +23,17 @@
 
     ** Check for valid street names **;
 
-    if put( _dcg_adr_street_clean, &stvalidfmt.. ) = " " then do;
+    if put( _dcg_adr_streetname_clean, &stvalidfmt.. ) = " " then do;
       &staddr._std = "";
     end;
     else do;
 
-      &staddr._std = trim( _dcg_adr_begnum ) || " " || 
-                     trim( _dcg_adr_street_clean ) || " " ||
-                     trim( _dcg_adr_quad );
+      &staddr._std = left( compbl( 
+                       trim( _dcg_adr_begnum ) || " " || 
+                       trim( _dcg_adr_streetname_clean ) || " " ||
+                       trim( _dcg_adr_streettype ) || " " ||
+                       trim( _dcg_adr_quad )
+                     ) );
 
       if _dcg_adr_apt_unit ~= "" then do;
 

@@ -16,7 +16,7 @@
  NB:  Do NOT make changes to this program without asking Peter Tatian first.
 
  Modifications:
-  01/24/16 PAT Adapted from RealProp macro %Address_parse().
+  01/24/16 PAT Adapted from RealProp StreetAlt().
 **************************************************************************/
 
 /**%include "L:\SAS\Inc\StdLocal.sas";**/
@@ -25,7 +25,7 @@
 ** Define libraries **;
 %DCData_lib( MAR )
 
-/*filename xin dde "excel|&_dcdata_r_path\MAR\Geocode\[StreetAlt.xls]StreetAlt!r6c1:r5000c2" lrecl=256 notab;*/
+/*filename xin dde "excel|&_dcdata_r_path\MAR\Prog\[StreetAlt.xls]StreetAlt!r6c1:r5000c2" lrecl=256 notab;*/
 filename xin "&_dcdata_r_path\MAR\Prog\StreetAlt.csv" lrecl=256;
 
 
@@ -39,6 +39,8 @@ data StreetAlt;
 
   streetname = left( compbl( upcase( streetname ) ) );
   altname = left( compbl( upcase( altname ) ) );
+  
+  if altname = '' or streetname = '' then delete;
 
 run;
 
@@ -56,16 +58,22 @@ data _null_;
   if not last.altname then do;
     %err_put( msg="Conflicting entries for incorrect spelling of " altname " in StreetAlt.xls." )
     %err_put( msg="Alternate street name spelling list NOT updated." )
-    %err_put( msg="Please edit the StreetAlt.xls file and rerun this program." )
+    %err_put( msg="Please edit StreetAlt.xls and rerun this program." )
     abort return;
   end;
   
-  if put( streetname, $stvalid. ) = " " then do;
+  if put( streetname, $marvalidstnm. ) = " " then do;
     %err_put( msg="Invalid entry for correct spelling of " streetname " in StreetAlt.xls." )
     %err_put( msg="Correct street name spelling must match listing in ValidStreets.txt." )
     %err_put( msg="Alternate street name spellings NOT updated." )
-    %err_put( msg="Please edit the StreetAlt.xls file and rerun this program." )
+    %err_put( msg="Please edit StreetAlt.xls and rerun this program." )
     abort return;
+  end;
+
+  if put( altname, $marvalidstnm. ) ~= " " then do;
+    %warn_put( msg="A valid street name cannot be used as an incorrect spelling: " altname " to " streetname )
+    %warn_put( msg="This entry will be deleted." )
+    delete;
   end;
 
 run;
@@ -80,6 +88,7 @@ run;
   Label=streetname,
   DefaultLen=40,
   Desc="MAR geocoding/alt. street name spellings",
+  print=N,
   Contents=Y
 )
 
