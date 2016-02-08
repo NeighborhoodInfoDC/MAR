@@ -53,7 +53,7 @@ data Mar.Address_points_2016_01;
   informat POLDIST $80. ;
   informat ROC $32. ;
   informat PSA $32. ;
-  informat SMD $32. ;
+  informat SMD $12. ;
   informat CENSUS_TRACT $32. ;
   informat VOTE_PRCNCT $32. ;
   informat WARD $8. ;
@@ -141,6 +141,8 @@ data Mar.Address_points_2016_01;
       GeoBg2010 $ 12
       GeoBlk2010 $ 15
       Assessnbhd $ 3
+      Zip $ 5
+      nZip 8
     ;
     
     Address_type = left( upcase( type_ ) );
@@ -222,6 +224,9 @@ data Mar.Address_points_2016_01;
     end;
     
     Assessnbhd = put( upcase( compress( assessment_nbhd, ' .-/' ) ), $martext_to_assessnbhd. );
+    
+    Zip = left( zipcode );
+    nZip = input( Zip, 5. );
 
     informat _all_ ;
     
@@ -241,15 +246,20 @@ data Mar.Address_points_2016_01;
       GeoBlk2010 $blk10a.
       VoterPre2012 $vote12a.
       Assessnbhd $marassessnbhd.
+      Zip $zipa.
     ;
     
     rename 
       xStatus=Status
       xRes_type=Res_type
       xEntrancetype=Entrancetype
+      nZip=Zipcode
     ;
     
-    drop type_ status res_type entrancetype /*cluster_ psa anc_2002 anc_2012*/;
+    drop 
+      OBJECTID_12 type_ status res_type entrancetype ANC ANC_2002 ANC_2012 
+      ASSESSMENT_NBHD cluster_ psa census_tract census_blockgroup census_block 
+      POLDIST VOTE_PRCNCT ward ward_2002 ward_2012 zipcode;
 
     label
       ACTIVE_RES_OCCUPANCY_COUNT = "Number of housing units at the primary address"
@@ -266,7 +276,7 @@ data Mar.Address_points_2016_01;
       CFSA_NAME = "Address CFSA area name"
       CITY = "Address location city"
       CLUSTER_ = "Address location neighborhood cluster name"
-      ENTRANCETYPE = "Address entrance type"
+      xENTRANCETYPE = "Address entrance type"
       FOCUS_IMPROVEMENT_AREA = "Focus improvement area name"
       FULLADDRESS = "House number, street name, street type, and quadrant"
       HOTSPOT = "Address location hot spot"
@@ -287,25 +297,38 @@ data Mar.Address_points_2016_01;
       SMD = "Address location Single Member District"
       SMD_2002 = "Single member district, 2002"
       SQUARE = "Address location property square"
-      SSL = "Address location Square, Suffix, and Lot"
+      SSL = "Property identification number (square/suffix/lot)"
       STATE = "Address location state name"
       xSTATUS = "Address status"
       STNAME = "Address location street name"
       STREET_TYPE = "Address location street type"
       SUFFIX = "Address location property suffix"
-      TYPE_ = "Address Type"
+      Address_type = "Address type"
       VOTE_PRCNCT = "Address location voting precinct"
       WARD = "Address location Ward name"
       X = "X Coordinate of Address Point"
       Y = "Y Coordinate of Address Point"
       ZIPCODE = "Address location Zip code"
+      Anc2002 = "Advisory Neighborhood Commission (2002)"
+      Anc2012 = "Advisory Neighborhood Commission (2002)"
+      Assessnbhd = "Assessment neighborhood"
+      Geo2010 = "Full census tract ID (2010): ssccctttttt"
+      GeoBg2010 = "Full census block group ID (2010): sscccttttttb"
+      GeoBlk2010 = "Full census block ID (2010): sscccttttttbbbb"
+      Psa2012 = "Police Service Area (2012)"
+      SMD_2012 = "Single member district, 2012"
+      Ward2002 = "Ward (2002)"
+      Ward2012 = "Ward (2012)"
+      VoterPre2012 = "Voting Precinct (2012)"
+      Zip = "ZIP code (5-digit)"
+      nZip = "ZIP code (5-digit)"
       ;
 
 run;
 
 %File_info( data=Mar.Address_points_2016_01, 
   freqvars=Address_type status res_type entrancetype state city quadrant addrnumsuffix street_type stname 
-           Assessnbhd CFSA_NAME NEWCOMMSELECT06  NEWCOMMCANDIDATE hotspot focus_: )
+           Assessnbhd cfsa_name newcommselect06 newcommcandidate hotspot focus_: roc )
             
 %Compare_file_struct( file_list=Address_points Address_points_2016_01, lib=MAR )
 
