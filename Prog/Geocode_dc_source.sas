@@ -24,17 +24,23 @@ proc format;
     "ALLEY" = "Aly"
     "AVENUE" = "Ave"
     "BOULEVARD" = "Blvd"
+    "BRIDGE" = "Brg"
     "CIRCLE" = "Cir"
     "COURT" = "Ct"
     "CRESCENT" = "Cres"
     "DRIVE" = "Dr"
+    "EXPRESSWAY" = "Expy"
     "GREEN" = "Grn"
+    "INTERSTATE" = "Intr"  /** ??? **/
     "KEYS" = "Kys"
     "LANE" = "Ln"
     "LOOP" = "Loop"
     "MEWS" = "Mews"
     "PARKWAY" = "Pkwy"
+    "PIER" = "Pier"
     "PLACE" = "Pl"
+    "PLAZA" = "Plz"
+    "PROMENADE" = "Prom"  /** ??? **/
     "ROAD" = "Rd"
     "SQUARE" = "Sq"
     "STREET" = "St"
@@ -45,32 +51,20 @@ run;
 
 data Mar_parse;
 
-  set Mar.address_points 
-    (keep=address_id fulladdres zipcode ssl
+  set Mar.Address_points_2016_01 
+    (keep=address_id fulladdress addrnum addrnumsuffix quadrant street_type zipcode ssl
      where=(fulladdres~='' /*AND ( FULLADDRES CONTAINS 'WISCONSIN' OR FULLADDRES CONTAINS 'CAPITOL' )*/));
   
-  length xnumber $ 32 number 8 streetname streettype dir $ 40 buff $ 200;
+  length number 8 streetname streettype dir $ 40;
   
-  buff = left( compbl( fulladdres ) );
+  number = addrnum;
+  ** WHAT IF ADDRESS SUFFIX? ***;
   
-  xnumber = scan( buff, 1, ' ' );
-  number = input( xnumber, 32. );
+  dir = quadrant;
   
-  buff = substr( buff, length( xnumber ) + 2 );
+  streettype = street_type;
   
-  if scan( buff, 1, ' ' ) in ( '1/2', 'REAR' ) then buff = substr( buff, length( scan( buff, 1, ' ' ) ) + 2 );
-  
-  if scan( buff, 1, ' ' ) in ( 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'R' ) then do;
-    if scan( buff, 2, ' ' ) not in ( 'STREET', 'ROAD', 'COURT', 'PLACE', 'TERRACE' ) then buff = substr( buff, 3 );
-  end;
-  
-  dir = scan( buff, -1, ' ' );
-  
-  streettype = scan( buff, -2, ' ' );
-  
-  streetname = substr( buff, 1, length( buff ) - ( length( dir ) + length( streettype ) + 2 ) );
-  
-  drop buff xnumber;
+  streetname = stname;
   
 run;
 
