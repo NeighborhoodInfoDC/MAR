@@ -22,7 +22,7 @@ filename fimport "C:\DCData\Libraries\MAR\Raw\Address_Points.csv" lrecl=2000;
 
 data Mar.Address_points_2016_01;
 
-  infile fimport delimiter = ',' missover dsd firstobs=2 OBS=1000000;
+  infile fimport delimiter = ',' missover dsd firstobs=2;
 
   informat X best32. ;
   informat Y best32. ;
@@ -145,6 +145,12 @@ data Mar.Address_points_2016_01;
       nZip 8
     ;
     
+    array a{*} Stname Street_type Quadrant City State Smd: Newcomm: Focus_improvement_area;
+    
+    do i = 1 to dim( a );
+      a{i} = left( upcase( compbl( a{i} ) ) );
+    end;
+    
     Address_type = left( upcase( type_ ) );
     
     select ( left( upcase( Status ) ) );
@@ -257,7 +263,7 @@ data Mar.Address_points_2016_01;
     ;
     
     drop 
-      OBJECTID_12 type_ status res_type entrancetype ANC ANC_2002 ANC_2012 
+      i OBJECTID_12 type_ status res_type entrancetype ANC ANC_2002 ANC_2012 
       ASSESSMENT_NBHD cluster_ psa census_tract census_blockgroup census_block 
       POLDIST VOTE_PRCNCT ward ward_2002 ward_2012 zipcode;
 
@@ -331,12 +337,4 @@ run;
            Assessnbhd cfsa_name newcommselect06 newcommcandidate hotspot focus_: roc )
             
 %Compare_file_struct( file_list=Address_points Address_points_2016_01, lib=MAR )
-
-
-/*
-proc print data=Mar.Address_points_2016_01;
-  ***where stname in ( '12TH ST', 'E ST' );
-  where fulladdress = '';
-  var address_id type_ status fulladdress addrnum addrnumsuffix stname street_type quadrant;
-run;
 
