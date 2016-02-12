@@ -34,7 +34,7 @@ proc format;
     "DRIVE" = "Dr"
     "EXPRESSWAY" = "Expy"
     "GREEN" = "Grn"
-    "INTERSTATE" = "Intr"  /** ??? **/
+    "INTERSTATE" = "Interstate"
     "KEYS" = "Kys"
     "LANE" = "Ln"
     "LOOP" = "Loop"
@@ -43,7 +43,7 @@ proc format;
     "PIER" = "Pier"
     "PLACE" = "Pl"
     "PLAZA" = "Plz"
-    "PROMENADE" = "Prom"  /** ??? **/
+    "PROMENADE" = "Promenade"
     "ROAD" = "Rd"
     "SQUARE" = "Sq"
     "STREET" = "St"
@@ -54,9 +54,9 @@ run;
 
 proc sort 
   data=Mar.Address_points_2016_01 
-    (keep=address_id fulladdress addrnum addrnumsuffix stname street_type quadrant zipcode x y
+    (keep=address_id address_type fulladdress addrnum addrnumsuffix stname street_type quadrant zipcode x y
           &geo_vars
-     where=(fulladdress~=''))
+     where=(address_type = 'A' and fulladdress ~= ''))
   out=Mar_parse;
   by stname zipcode street_type quadrant addrnum addrnumsuffix;
 
