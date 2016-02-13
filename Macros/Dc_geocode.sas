@@ -59,7 +59,7 @@
   basefile=Mar.Geocode_dc_m,   /* Base file for address matching */
   /*hashfmt=$pbhash.,*/           /* Hash table format for base parcel file */
   stvalidfmt=$marvalidstnm,        /* Format for validating street names */
-  staltfmt=$marstrtalt,          /* Format with alternate street name spellings */
+  staltfmt=$maraltstname,          /* Format with alternate street name spellings */
   punct_list=%str(,.*''""<>;[]{}|_+=^$@!~`%:?),    /* List of punctuation to strip */
 
   listunmatched=Y,              /* List nonmatching addresses (Y/N, def. Y) */

@@ -7,7 +7,7 @@
  Version:  SAS 9.2
  Environment:  Local Windows session (desktop)
 
- Description:  Create data set with alternate street spellings
+ Description:  Create $maraltstname format with alternate street spellings
                (i.e., corrections) for parcel geocoding.
                
  NB:  The file L:\Libraries\MAR\Prog\Geocode\StreetAlt.xls
@@ -82,15 +82,17 @@ run;
 
 %Data_to_format(
   FmtLib=MAR,
-  FmtName=$marstrtalt,
+  FmtName=$maraltstname,
   Data=StreetAlt,
   Value=altname,
   Label=streetname,
   DefaultLen=40,
   Desc="MAR geocoding/alt. street name spellings",
-  print=N,
+  print=Y,
   Contents=Y
 )
 
 run;
+
+
 
