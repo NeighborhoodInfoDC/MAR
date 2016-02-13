@@ -19,6 +19,8 @@
 ** Define libraries **;
 %DCData_lib( MAR )
 
+%let mar_source = Address_points_2016_01;
+
 %** Geography variables to include in geocoding file **;
 %let geo_vars = ssl;
 
@@ -53,7 +55,7 @@ proc format;
 run;
 
 proc sort 
-  data=Mar.Address_points_2016_01 
+  data=Mar.&mar_source 
     (keep=address_id address_type fulladdress addrnum addrnumsuffix stname street_type quadrant zipcode x y
           &geo_vars
      where=(address_type = 'A' and fulladdress ~= ''))
@@ -80,16 +82,34 @@ run;
   Contents=Y
   )
 
-** Create geocoding data sets **;
+
+** Export list of valid street names **;
+
+ods listing close;
+ods html body="&_dcdata_r_path\Mar\Doc\ValidStreets.html" style=Minimal;
+
+proc print data=Mar_streetnames noobs label;
+  var stname;
+  label stname = "Valid street names (&mar_source)";
+run;
+
+ods html close;
+ods listing;
+
+
+** Create geocoding data sets for Proc Geocode (v9.3) **;
 
 data 
-  /*Mar.*/Geocode_dc_m
+  Mar.Geocode_dc_m
     (keep=Name Namenc Placefp Statefp Zipcode First Last
-     rename=(Zipcode=Zip))
-  /*Mar.*/Geocode_dc_s 
-    (keep=Address_id Predirabrv Sufdirabrv Suftypabrv Side Fromadd Toadd N Start &geo_vars)
-  /*Mar.*/Geocode_dc_p
-    (keep=X Y);
+     rename=(Zipcode=Zip)
+     label="Primary street lookup data for Proc Geocode (DC MAR)")
+  Mar.Geocode_dc_s 
+    (keep=Address_id Predirabrv Sufdirabrv Suftypabrv Side Fromadd Toadd N Start &geo_vars
+     label="Secondary street lookup data for Proc Geocode (DC MAR)")
+  Mar.Geocode_dc_p
+    (keep=X Y
+     label="Tertiary street lookup data for Proc Geocode (DC MAR)");
 
   length
     Name Namenc $ 100
@@ -100,63 +120,60 @@ data
     Fromadd Toadd N Start 8;
     
   retain Placefp 50000 Statefp 11 Side ' ';
-  retain First 1 Last 1 Start 1;
+  retain First 1 Last 0 Start 0 N 1;
 
   set Mar_parse;
-  **** MAY NOT BE CORRECT SORT ORDER. SHOULD STREET_TYPE BE AFTER ZIP? ****;
   by stname zipcode street_type quadrant addrnum;
   
   ** FOR NOW: Only keep first address for places with addrnumsuffix ~= '' **;
-  if not first.addrnum then delete;
-  
-  if scan( upcase( stname ), 1, ' ' ) in ( 'NORTH', 'SOUTH', 'EAST', 'WEST' ) and
-     scan( upcase( stname ), 2, ' ' ) ~= '' then do;
-    Predirabrv = substr( scan( upcase( stname ), 1, ' ' ), 1, 1 );
-    Name = substr( stname, length( scan( stname, 1, ' ' ) ) + 2 );
-  end;
-  else do;
-    Name = stname;
-  end;
-  
-  Namenc = propcase( left( Name ) );
-  Name = upcase( left( compress( Name, ' ' ) ) );
+
+  if first.addrnum then do;
     
-  Sufdirabrv = upcase( quadrant );
-  Suftypabrv = put( upcase( street_type ), $streettype_to_uspsabv. );
+    if scan( upcase( stname ), 1, ' ' ) in ( 'NORTH', 'SOUTH', 'EAST', 'WEST' ) and
+       scan( upcase( stname ), 2, ' ' ) ~= '' then do;
+      Predirabrv = substr( scan( upcase( stname ), 1, ' ' ), 1, 1 );
+      Name = substr( stname, length( scan( stname, 1, ' ' ) ) + 2 );
+    end;
+    else do;
+      Name = stname;
+    end;
+    
+    Namenc = propcase( left( Name ) );
+    Name = upcase( left( compress( Name, ' ' ) ) );
+      
+    Sufdirabrv = upcase( quadrant );
+    Suftypabrv = put( upcase( street_type ), $streettype_to_uspsabv. );
+    
+    Fromadd = addrnum;
+    Toadd = addrnum;
+    
+    Start + 1;
+
+    output Mar.Geocode_dc_p;
+    
+    output Mar.Geocode_dc_s;
+        
+    Last + 1;    
   
-  Fromadd = addrnum;
-  Toadd = addrnum;
-  
-  N = 1;
-  
-  output /*Mar.*/Geocode_dc_p;
-  
-  output /*Mar.*/Geocode_dc_s;
-  
-  Start + 1;
+  end;
   
   if last.zipcode then do;
-      output /*Mar.*/Geocode_dc_m;
-   First = Last + 1;
+    output Mar.Geocode_dc_m;
+    First = Last + 1;
   end;
 
-  Last + 1;    
-  
 run;
 
-proc datasets lib=/*Mar*/Work;
+proc datasets lib=Mar;
     modify Geocode_dc_m;
       index create NameZip        = (name zip);             /* street+zip search */
       index create NameStatePlace = (name statefp placefp); /* street+city+state search */
     run;
 quit;
 
-%File_info( data=/*Mar.*/Geocode_dc_m, printobs=100, contents=y, stats=, freqvars= )
+%File_info( data=Mar.Geocode_dc_m, printobs=40, contents=y, stats=, freqvars= )
 
-proc print data=/*Mar.*/Geocode_dc_m;
-  where name = '';
-run;
+%File_info( data=Mar.Geocode_dc_s, printobs=200, contents=y )
+%File_info( data=Mar.Geocode_dc_p, printobs=40, contents=y, stats=n nmiss min max )
 
-%File_info( data=/*Mar.*/Geocode_dc_s, printobs=50, contents=y )
-%File_info( data=/*Mar.*/Geocode_dc_p, printobs=50, contents=y, stats=n nmiss min max )
 
