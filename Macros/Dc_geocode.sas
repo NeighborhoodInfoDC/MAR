@@ -49,7 +49,7 @@
 
   dcg_match_score=_score_,  /* Match score */
 
-  match_score_min=50,            /** Minimum score for a match **/
+  match_score_min=35,            /** Minimum score for a match **/
 
   block_match=Y,              /* Match to blocks if address has no exact parcel match (Y/N) */
   unit_match=y,                /* Perform unit matching with parcels (Y/N) */
@@ -301,64 +301,23 @@
 
   %note_mput( macro=&mname, msg=Starting address match. Base file is %upcase(&basefile). )
   
-   proc geocode method=street nozip nocity
-     data=_dcg_indat     
-     out=&out
-     addressvar=_dcg_addr_geocode
-     addresscityvar=_dcg_city
-     addressstatevar=_dcg_st
-     addresszipvar=_dcg_zip
-     lookupstreet=&basefile
-     attributevar=(address_id ssl);
-     run;
-   quit;
-
-  /*
-  %Address_match( 
-    parcelfile=&parcelfile,
-    hashfmt=&hashfmt,
-    addrfile=_dcg_indat,
-    out=&out,
-    ds_label=&ds_label, 
-    addr_street=_dcg_adr_street_clean,
-    addr_street_lbl=&staddr_lbl,
-    addr_number=_dcg_adr_begnum,
-    addr_dir=_dcg_adr_quad,
-    addr_zip=&zip,
-    addr_apt_unit=_dcg_adr_apt_unit,
-    parcel_street=ustreetname,
-    parcel_ulownumber=ulownumber,
-    parcel_nlownumber=nlownumber,
-    parcel_nhighnumber=nhighnumber,
-    parcel_dir=qdrntname,
-    block_match=&block_match,
-    unit_match=&unit_match ,
-    geolist=&keep_geo,
-    staddr_match=&staddr_match,
-    ssl=&ssl, 
-    x_coord=&x_coord,
-    y_coord=&y_coord,
-    geo2000=&geo2000,
-    geoblk2000=&geoblk2000,
-    cluster_tr2000=&cluster_tr2000,
-    ward2002=&ward2002,
-    anc2002=&anc2002,
-    cluster2000=&cluster2000,
-    psa2004=&psa2004,
-    zip_match=&zip_match,
-    match_score_min=&match_score_min,
-    max_near_block_dist=&max_near_block_dist,
-    dcg_num_parcels=&dcg_num_parcels,
-    dcg_match_score=&dcg_match_score,
-    debug=&debug,
-    drop=
-             %if not( %mparam_is_yes( &debug ) ) %then %do;
-               _dcg_: _temp_:
-               USTREETNAME QDRNTNAME
-               ULOWNUMBER NLOWNUMBER NHIGHNUMBER 
-             %end;
-  )
-  */
+  %push_option( msglevel,quiet=y )
+  
+  options msglevel=n;
+  
+  proc geocode method=street nozip nocity
+    data=_dcg_indat     
+    out=&out
+    addressvar=_dcg_addr_geocode
+    addresscityvar=_dcg_city
+    addressstatevar=_dcg_st
+    addresszipvar=_dcg_zip
+    lookupstreet=&basefile
+    attributevar=(address_id ssl);
+    run;
+  quit;
+  
+  %pop_option( msglevel, quiet=y )
 
   %if %mparam_is_yes( &listunmatched ) %then %do;
 

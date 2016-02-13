@@ -66,6 +66,9 @@ proc freq data=Mar_parse;
   tables street_type quadrant;
 run;
 
+
+** Create $marvalidstnm format for %Dc_geocode() macro **;
+
 proc sort data=Mar_parse out=Mar_streetnames nodupkey;
   by stname;
 run;
