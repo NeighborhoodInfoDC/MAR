@@ -18,7 +18,7 @@
 				 numbers that are nested between street and quadrant.
 ****/
 
-%macro address_split_units(inlib=work,inds=,outlib=work,outds=, /*addr_var=,*/numObs=max, debug=N);
+%macro address_split_units(inlib=work,inds=,outlib=work,outds=, numObs=max, debug=N);
 
 %let MAX_WORDS = 20;
 
@@ -27,23 +27,7 @@
 %let letter_list='-','.','/','1','2','3','4','5','6','7','8','9','0','A','B','C','D','E','F',
                  'G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z';
 
-	data &outlib..&outds/***
-				 (keep=
-
-					_dcg_adr_apt
-					_dcg_adr_begnum
-					_dcg_adr_endnum
-					_dcg_adr_quad  
-					_dcg_adr_street
-					_dcg_adr_street_clean
-					_dcg_scrub_addr      
-					address              
-					address_std          
-					end_apt              
-					zip                  
-					_dcg_adr_apt_unit
-	)
-	****/;
+	data &outlib..&outds;
 	set &inlib..&inds ;
 	    length word  $ 255  _dcg_adr_apt_unit $5 ;
 
@@ -101,8 +85,6 @@
 			end;
 		end;
 		numwords=wordCnt;
-		**temp_street_name=words[1];
-		
 		
 		%set_street_arrays;
 

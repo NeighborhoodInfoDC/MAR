@@ -69,38 +69,3 @@
   
 %mend Addr_parse_unit;
 
-
- /*
- **** Added BB 4/4/05 ******************************;
- 
- *This complex algorithm was initially developed to uniquely resolve variations of apartment or unit number;
- *references that followed words such as APT or UNIT. It came with certain shortcomings. First, it failed;
- *to exhaust the list of possibilities. Moreover, since historically this piece of code was suspicious of;
- *references that could be confused for street directions, it did not resolve cases where letters E, W, S;
- *or N followed APT or UNIT, e.g. APT E-1, or UNIT S.; 
- 
-
- unit_index = index(_ap_temp_ad,"&unitlbl. ");
- 
- unit_pl1 = substr(_ap_temp_ad,unit_index+&unitlbl1pl.,1);
- unit_pl2 = substr(_ap_temp_ad,unit_index+&unitlbl2pl.,1);
- 
- if unit_index > 0 then
-  do;
-	 *Check if unitlbl is followed by a letter and then a space, comma, dash or a number, e.g. APT D1, UNIT C-4;
-     if indexc(unit_pl1,"ABCDFGHIJKLMOPQRTUVXYZ")=1 and indexc(unit_pl2," ,-123456789")=1 then           
-          _ap_temp_ad = tranwrd(_ap_temp_ad,"&unitlbl. "," &unitlbl.#");
-     *Check if unitlbl is followed by a letter and nothing after that, e.g. APT B, UNIT C;
-     else if indexc(unit_pl1,"ABCDFGHIJKLMOPQRTUVXYZ")=1 and length(substr(_ap_temp_ad,unit_index+&unitlbl1pl.))=1 then
-          _ap_temp_ad = tranwrd(_ap_temp_ad,"&unitlbl. "," &unitlbl.#");
-     *Check if unitlbl is followed by a number and then a letter, e.g. APT 5A, UNIT 1F;
-     else if indexc(unit_pl1,"123456789")=1 and indexc(unit_pl2,"ABCDFGHIJKLMOPQRTUVXYZ")=1 then
-          _ap_temp_ad = tranwrd(_ap_temp_ad,"&unitlbl. "," &unitlbl.#");
-     *Check if unitlbl is not followed immediately by a letter, e.g. APT 4, UNIT 304-C;
-     else if indexc(unit_pl1,"ABCDEFGHIJKLMNOPQRSTUVWXYZ")=0 then
-          _ap_temp_ad = tranwrd(_ap_temp_ad,"&unitlbl. "," &unitlbl.#");
-          
-     **f_apt =1;
-  end;
- *************************************************BB;
- */

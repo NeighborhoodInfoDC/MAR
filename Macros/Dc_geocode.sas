@@ -210,7 +210,7 @@
 
     ** Parse address **;
 
-    %Address_parse( address=_dcg_scrub_addr, var_prefix=_dcg_adr_ )    
+    %Address_parse( address=_dcg_scrub_addr, var_prefix=_dcg_adr_, debug=&debug )    
 
     if _dcg_adr_street = "" then goto _dc_geocode_end;
 
@@ -268,15 +268,6 @@
     %if &zip ~= %then %do;
       _dcg_zip = &zip;
     %end;
-
-/***
-    %if %length( &staddr_std ) > 0 %then %do;
-      rename &staddr._std=&staddr_std;
-    %end;
-    %else %do;
-      drop &staddr._std;
-    %end;
-***/
 
   run;
 

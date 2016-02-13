@@ -100,25 +100,6 @@
 
  _ap_temp_ad = trim(left(compbl(_ap_temp_ad)));
 
-/****************************** *PT*;
- ***************GET RID OF COMMAS, COLONS AND SEMICOLONS*;
-
- _ap_temp_ad = tranwrd(_ap_temp_ad," ,",",");
- _ap_temp_ad = tranwrd(_ap_temp_ad,",",", ");
-
- _ap_temp_ad = translate(_ap_temp_ad,"",",");
- _ap_temp_ad = translate(_ap_temp_ad,"",";");
- _ap_temp_ad = translate(_ap_temp_ad,"",":");
-
- _ap_temp_ad = trim(left(compbl(_ap_temp_ad)));
-******************************/
-
- ***************GET RID OF DOTS UNLESS THEY MEAN A DECIMAL POINT*;
-
-/****************************** *PT*;
- _ap_temp_ad = tranwrd(_ap_temp_ad,". "," ");
-******************************/
-
  **** Changed BB 4/4/05 ****************************;
  *Beata: should not comment the next 4 stmts out, even if the one immediately above is*;
 
@@ -133,73 +114,6 @@
  _ap_temp_ad = tranwrd(_ap_temp_ad," APT#"," APT ");
  _ap_temp_ad = tranwrd(_ap_temp_ad," APT #"," APT ");
  *******************;
-
-/****************************** *PT*;
- length strbef1-strbef3 straft1-straft3 $35.;
-
- dot1 = index(_ap_temp_ad,".5");
-
- if dot1 = 0 then
-  do;
-  	 if index(_ap_temp_ad,".1")=0 and index(_ap_temp_ad,".2")=0 and index(_ap_temp_ad,".3")=0
-		and index(_ap_temp_ad,".4")=0 and index(_ap_temp_ad,".6")=0 and index(_ap_temp_ad,".7")=0
-		and index(_ap_temp_ad,".8")=0 and index(_ap_temp_ad,".9")=0 then
-	 	_ap_temp_ad = translate(_ap_temp_ad," ",".");
-  end;
- else if dot1 > 0 then
-  do;
- 	 if dot1=1 then strbef1 = ".5";
-	 else if dot1>1 then
-	  do;
-	  	 strbef1 = substr(_ap_temp_ad,1,dot1-1);
-		 if indexc(substr(reverse(trim(strbef1)),1,1),"1234567890-")=0 then
-						strbef1 = trim(tranwrd(strbef1,"."," ")) !! " 5";
-		 else strbef1 = trim(tranwrd(strbef1,"."," ")) !! ".5";
-	  end;
- 	 straft1 = substr(_ap_temp_ad,dot1+2);
-	 dot2 = index(straft1,".5");
-	 if dot2>0 then
-	  do;
-	 	 if dot2=1 then strbef2 = ".5";
-		 else if dot2>1 then
-		  do;
-		  	 strbef2 = substr(straft1,1,dot2-1);
-			 if indexc(substr(reverse(trim(strbef2)),1,1),"1234567890-")=0 then
-							strbef2 = trim(tranwrd(strbef2,"."," ")) !! " 5";
-			 else strbef2 = trim(tranwrd(strbef2,"."," ")) !! ".5";
-		  end;
-		 straft2 = substr(straft1,dot2+2);
- 		 dot3 = index(straft2,".5");
-		 if dot3>0 then
-		  do;
-			 if dot3=1 then strbef3 = ".5";
-			 else if dot3>1 then
-			  do;
-				 strbef3 = substr(straft2,1,dot2-1);
-				 if indexc(substr(reverse(trim(strbef3)),1,1),"1234567890-")=0 then
-							strbef3 = trim(tranwrd(strbef3,"."," ")) !! " 5";
-				 else strbef3 = trim(tranwrd(strbef3,"."," ")) !! ".5";
-			  end;
-			 straft3 = tranwrd(substr(straft2,dot2+2),"."," ");
-			 _ap_temp_ad = compbl(left(trim(trim(strbef1) !! trim(strbef2) !! trim(strbef3) !! straft3)));
-		  end;
-		 else
-		  do;
-		 	 straft2 = tranwrd(substr(straft1,dot2+2),"."," ");
-			 _ap_temp_ad = compbl(left(trim(trim(strbef1) !! trim(strbef2) !! straft2)));
-		  end;
-	  end;
-	 else
-	  do;
-	 	 straft1 = tranwrd(substr(_ap_temp_ad,dot1+2),"."," ");
-	 	 _ap_temp_ad = compbl(left(trim(trim(strbef1) !! straft1)));
-	  end;
-  end;
-
- drop dot1 dot2 dot3 strbef1-strbef3 straft1-straft3;
-
- _ap_temp_ad = trim(left(compbl(_ap_temp_ad)));
-******************************/
 
  ***************STANDARDIZE STREET NAME ABBREVIATIONS AND OTHER CHARACTERISTICS WORDS*;
 
@@ -290,26 +204,6 @@
  _ap_temp_ad =tranwrd(_ap_temp_ad ," FOURTH ", " 4TH ");
  _ap_temp_ad =tranwrd(_ap_temp_ad ," FIFTH ", " 5TH ");
 
-/************************** *PT*;
- ***************STANDARDIZE DIRECTIONAL ABBREVIATIONS*;
-
- n_index=index(_ap_temp_ad,"NORTH");
- s_index=index(_ap_temp_ad,"SOUTH");
- e_index=index(_ap_temp_ad,"EAST");
- w_index=index(_ap_temp_ad,"WEST");
-
- %Addr_parse_direct(n,5,NORTH,N);
- %Addr_parse_direct(s,5,SOUTH,S);
- %Addr_parse_direct(e,4,EAST,E);
- %Addr_parse_direct(w,4,WEST,W);
-
- _ap_temp_ad = tranwrd(_ap_temp_ad, " SO ", " S ");
-
- drop n_index s_index e_index w_index;
-
- _ap_temp_ad = trim(left(compbl(_ap_temp_ad)));
-**************************/
-
  ***************GET RID OF DASHES IF PRECEDED BY A LETTER AND FOLLOWED BY A LETTER OR A NUMBER*;
 
  _ap_temp_ad = tranwrd(_ap_temp_ad,"--","-");
@@ -391,8 +285,8 @@
  _ap_temp_ad = tranwrd(_ap_temp_ad," STREETAPT"," STREET APT");
  _ap_temp_ad = tranwrd(_ap_temp_ad," AVENUEAPT"," AVENUE APT");
  _ap_temp_ad = tranwrd(_ap_temp_ad," PARKWAYAPT"," PARKWAY APT");
- _ap_temp_ad = tranwrd(_ap_temp_ad,"APARTAMENTOS",/**PT**"APT#"**/ "APT");
- _ap_temp_ad = tranwrd(_ap_temp_ad,"APARTAMENTO",/**"APT#"**/ "APT");
+ _ap_temp_ad = tranwrd(_ap_temp_ad,"APARTAMENTOS","APT");
+ _ap_temp_ad = tranwrd(_ap_temp_ad,"APARTAMENTO","APT");
  _ap_temp_ad = tranwrd(_ap_temp_ad," APARTMENT"," APT");
  _ap_temp_ad = tranwrd(_ap_temp_ad," APMT"," APT");
 
@@ -624,21 +518,6 @@
       do; **and neither dash- nor slash/ exist in the first word;
          if abc_wrd1=0 then
           do; ***there are also no letters in the first word;
-			 /*
-			 if wrd2 in ("MILES","MILE","MI") and wrd3 not in ("AV","CR","CT","LN","PL","RD","ST","WAY")
-             	and scan(_ap_temp_ad,4,"") not in ("AV","CR","CT","LN","PL","RD","ST","WAY") then
-              do;
-                 num = "";
-                 pad = _ap_temp_ad;
-                 pflag = "N 123.1";
-              end;
-             if wrd2 in ("&","AND") then
-              do; ***this case resolved by replacing & or AND with '-' before parsing;
-                 num = "";
-                 pad = _ap_temp_ad;
-                 pflag = "N 123.2";
-              end;
-             */
              if abc_wrd2=0 and input(wrd1,12.)>1000000 then
               do;
                  num = substr(wrd2,1,indexc(wrd2,"&-/ "));
@@ -734,17 +613,6 @@
           end;
          else if i_dash1>0 and indexc(wrd1,"/")=0 then
           do; ***only - exists;
-             /*
-             if wrd2 in ("&","AND") then
-			  do;
-			  	 num = "";
-			     pad = _ap_temp_ad;
-			     pflag = "N -&AND";
-			  end;
-             else if wrd2 ^= "&" and wrd2 ^= "AND" then
-              do;
-             */
-
 			 if indexc(substr(wrd1,1,i_dash1-1),"ABCDEFGHIJKLMNOPQRSTUVWXYZ")^=0 then
 			  do; ***any combination of -,ltrs in 1st p.of 1st wrd, e.g. 214C-2 LAWRENCE DR,2B-13-1 EST MARIEN;
 				 if abc_wrd1 > 1 and abc_wrd1 < i_dash1 then
@@ -882,14 +750,6 @@
 								 pad = substr(_ap_temp_ad,i_wrd2);
 								 pflag = "N 123-123-ABC.2";
 							  end; *substr(wrd1,i_dash1) same as trim(d1_wrd)||""||left(d2_wrd);
-							 /*
-							 else
-							  do; ***e.g. 2302-3-B BOSTON MARKET;
-								 apt = substr(wrd1,i_dash1);
-								 pad = substr(_ap_temp_ad,i_wrd2);
-								 pflag = "N 123-123-ABC.3";
-							  end;
-							 */
 						  end;
 					  end;
 					 else
@@ -942,9 +802,6 @@
 					  end;
 				  end;
 			  end;
-              /*
-              end;
-              */
           end;
       end;
   end;
@@ -1057,17 +914,6 @@
 
  pad = trim(left(compbl(pad)));
 
-/***** SECTION DELETED BY PAT 03/04/06 *******************
- if num ^= "" and length(scan(pad,1,"")) = 1
- 	and indexc(scan(pad,1,""),"123456789")=0
- 	and scan(pad,1,"") not in ("","N","S","W","E","O","I")
- 	and scan(pad,2,"") not in ("ST","AV","RD","LN","DR","PL","PLZ","S") then
-  do;
-     pad = substr(pad,indexc(pad,""));
-     **f_padltr1 = 1;
-  end;
-***********************************************************/
-
  **if indexc(scan(pad,1,""),"-")>0 then f_hyph1 = 1;
 
  %if %mparam_is_yes( &debug ) %then %do;
@@ -1160,18 +1006,6 @@
    &var_prefix.streetname = &var_prefix.street;
  end;
 
-/***  OLD CODE ***
- _ap_i = length( street );
- if substr( street, _ap_i - 2, 3 ) in ( " NE", " NW", " SE", " SW" ) then do;
-   &var_prefix.quad = substr( street, _ap_i - 1, 2 );
-   &var_prefix.street = substr( street, 1, _ap_i - 3 );
- end;
- else do;
-   &var_prefix.quad = "";
-   &var_prefix.street = street;
- end;
-***/
-
  **** Changed BB 4/18/05 ****************************;
  *Beata: there are two sources of apt or unit info - end_apt and apt. NOTE: Have to test it further but here end_apt takes precedence over apt*;
  
@@ -1216,8 +1050,6 @@
       l1_wrd1 l2_wrd1 l3_wrd1 l1_wrd2
       i_dash1 i_dash2 d1_wrd abc_d1w d2_wrd abc_d2w 
       _ap_: pflag f_and2;
-
-    /****PT file print; ****/
 
   _address_parse_end:
 
