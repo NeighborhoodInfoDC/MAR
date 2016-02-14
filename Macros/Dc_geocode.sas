@@ -60,7 +60,7 @@
   /*hashfmt=$pbhash.,*/           /* Hash table format for base parcel file */
   stvalidfmt=$marvalidstnm,        /* Format for validating street names */
   staltfmt=$maraltstname,          /* Format with alternate street name spellings */
-  punct_list=%str(,.*''""<>;[]{}|_+=^$@!~`%:?),    /* List of punctuation to strip */
+  punct_list=%str(,.*''""<>;[]{}|_+=^$@!~`%:?),    /* List of punctuation to strip (do not include dash '-') */
 
   listunmatched=Y,              /* List nonmatching addresses (Y/N, def. Y) */
   quiet=N,                     /* Suppress warning messages (Y/N, def. N) */
@@ -178,7 +178,7 @@
     
     retain _dcg_city 'WASHINGTON' _dcg_st 'DC';
     
-    length _dcg_scrub_addr _dcg_adr_streetname_clean _dcg_addr_geocode $ 500 _dcg_zip 8;
+    length _dcg_scrub_addr _dcg_adr_streetname_clean _dcg_adr_geocode $ 500 _dcg_zip 8;
     
     _dcg_zip = .;
 
@@ -250,12 +250,12 @@
     
     if put( _dcg_adr_streetname_clean, &stvalidfmt.. ) = " " then do;
     
-      _dcg_addr_geocode = _dcg_scrub_addr;
+      _dcg_adr_geocode = _dcg_scrub_addr;
     
     end;
     else do;
 
-      _dcg_addr_geocode = 
+      _dcg_adr_geocode = 
         left( compbl( 
                  trim( _dcg_adr_begnum ) || " " || 
                  trim( _dcg_adr_streetname_clean ) || " " ||
@@ -299,7 +299,7 @@
   proc geocode method=street nozip nocity
     data=_dcg_indat     
     out=&out
-    addressvar=_dcg_addr_geocode
+    addressvar=_dcg_adr_geocode
     addresscityvar=_dcg_city
     addressstatevar=_dcg_st
     addresszipvar=_dcg_zip
