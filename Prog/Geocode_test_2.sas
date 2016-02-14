@@ -21,12 +21,13 @@
 
 data A;
 
+  retain city 'Washington' state 'DC';
+
   length address $ 80;
 
-  city = 'Washington';
-  state = 'DC';
+  /******************************
+  ** Address ID: 262667 **;
   zip = 20007;
-
   address = '2730 Wisconsin Ave NW';
   output;
   
@@ -108,22 +109,93 @@ data A;
   address = '2730 Wisconson Ave NW';
   output;
   
+  ** Address ID: 57422 **;
   zip = 20002;
   address = '1715 N CAPITOL STREET NE';
     output;
   
+  address = '1715 NO CAPITOL STREET NE';
+    output;
+  
+  address = '1715 NOR CAPITOL STREET NE';
+    output;
+  
+  address = '1715 NORTH CAPITOL STREET NE';
+    output;
+  
+  ** Address ID: 79340 **;
   zip = 20002;
   address = '777 N CAPITOL STREET NE';
   output;
   
+  ** Address ID: 286132 **;
   zip = 20002;
   address = '1401 New York Avenue NE';
   output;
   
+  ** Address ID: 237016 **;
   zip = 20001;
   address = '3 NEW YORK AVENUE NW';
   output;
   
+  ** Address ID: 74776 **;
+  zip = 20002;
+  address = '107 10TH STREET NE';
+  output;
+  ****************************************/
+  
+  ** Address ID: 308645 [but should match to 74776] **;
+  zip = 20002;
+  address = '107 1/2 10TH STR NE';
+  output;
+  address = '1071/2 10TH STRT NE';
+  output;
+  
+  ** Address ID: 80721 **;
+  address = '822 12TH STREET NE';
+  output;
+  
+  ** Address ID: 310609 [but should match to 80721] **;
+  address = '822REAR 12TH STREET NE';
+  output;
+  address = '822 REAR 12TH STREET NE';
+  output;
+  
+  ** Address ID: 225736 **;
+  zip = 20005;
+  address = '1529 14TH STREET NW';
+  output;
+  
+  ** Address ID: 304947 **;
+  address = '1529 A 14TH STREET NW';
+  output;
+  
+  address = '1529A 14TH STREET NW';
+  output;
+  
+  /*******************
+  ** Address ID: 61186 **;
+  zip = 20002;
+  address = '1529 A STREET NE';  
+  output;
+  
+  ** A: Address ID: 298085 **;
+  ** B: Address ID: 278477 **;
+  zip = 20032;
+  address = '4220 9TH STREET SE';
+  output;
+  address = '4220A 9TH STREET SE';
+  output;
+  address = '4220B 9TH STREET SE';
+  output;
+  *********************************/
+  
+  zip = 20319;
+  address = '102 A STREET SW';
+  output;
+  address = '102A STREET SW';
+  output;
+    
 run;
 
 %DC_geocode(

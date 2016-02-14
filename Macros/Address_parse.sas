@@ -26,6 +26,7 @@
    PUT "STARTING ADDRESS_PARSE() MACRO";
  %end;
  
+ length &var_prefix.begnum &var_prefix.endnum 8 &var_prefix.numsuffix $ 16;
  length &var_prefix.street &var_prefix.apt &var_prefix.streetname &var_prefix.streettype &var_prefix.quad $ 200;
 
  **PT 08/21/05:  Added to suppress INFO: messages  **;
@@ -116,7 +117,7 @@
  *******************;
 
  ***************STANDARDIZE STREET NAME ABBREVIATIONS AND OTHER CHARACTERISTICS WORDS*;
-
+/*
  _ap_temp_ad =tranwrd(_ap_temp_ad ," ST ", " STREET ");
  _ap_temp_ad =tranwrd(_ap_temp_ad ," STR ", " STREET ");
  _ap_temp_ad =tranwrd(_ap_temp_ad ," STRE ", " STREET ");
@@ -179,6 +180,7 @@
  _ap_temp_ad =tranwrd(_ap_temp_ad ," BUOLEVARD ", " BOULEVARD ");
  _ap_temp_ad =tranwrd(_ap_temp_ad ," PK ", " PARK ");
  _ap_temp_ad =tranwrd(_ap_temp_ad ," PRK ", " PARK ");
+*/
 
  if substr(_ap_temp_ad,1,4) = "R R " then _ap_temp_ad =tranwrd(_ap_temp_ad ,"R R ", " RR ");
  else _ap_temp_ad =tranwrd(_ap_temp_ad ," R R ", " RR ");
@@ -504,21 +506,32 @@
  abc_d1w = indexc(d1_wrd,"ABCDEFGHIJKLMNOPQRSTUVWXYZ");
  d2_wrd = scan(wrd1,3,"-"); *char string following the 2nd dash in the first word;
  abc_d2w = indexc(d2_wrd,"ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+ 
+ PUT WRD1= WRD2= WRD3= ABC_WRD1= ABC_WRD2= ;
 
 
  ***************START PARSING PROCESS***************;
 
  %***[PAT] Separate street number (NUM) from street name (PAD) ***;
 
- length pad pad1 $200. apt $12. num $12. num2 $12. num3 $12. pflag $20.;
-
+ length pad pad1 $200. apt num num2 num3 numsuf $32. pflag $20.;
+ 
  if l1_wrd1 in ("0","1","2","3","4","5","6","7","8","9") then
   do; **first word starts with a number;
      if indexc(wrd1,"/-")=0 then
       do; **and neither dash- nor slash/ exist in the first word;
          if abc_wrd1=0 then
           do; ***there are also no letters in the first word;
-             if abc_wrd2=0 and input(wrd1,12.)>1000000 then
+             if wrd2 in ( "1/2", "REAR", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "R" ) and 
+                ( put( put( compress( wrd3, '-' ), $maraltsttyp. ), $marvalidsttyp. ) = '' and
+                  wrd3 not in ( 'NE', 'NW', 'SE', 'SW' ) ) then
+              do; ***wrd2 is address number suffix;
+                num = wrd1;
+                numsuf = wrd2;
+                pad = substr(_ap_temp_ad,i_wrd3);
+                /****DEBUG****/ PUT NUM= NUMSUF= PAD= ;
+              end;
+             else if abc_wrd2=0 and input(wrd1,12.)>1000000 then
               do;
                  num = substr(wrd2,1,indexc(wrd2,"&-/ "));
                  pad = substr(_ap_temp_ad,i_wrd3);
@@ -540,11 +553,20 @@
                  pad = _ap_temp_ad;
                  pflag = "N ABC.1";
               end;
-             else if substr(_ap_temp_ad,abc_wrd1,2) in ("NE","NW","SE","SW","SO") then
+             else if substr(_ap_temp_ad,abc_wrd1,2) in ("NE","NW","SE","SW") then
               do; ***these are abbreviations for street directions;
                  num = substr(_ap_temp_ad,1,abc_wrd1-1);
                  pad = substr(_ap_temp_ad,abc_wrd1);
                  pflag = "N ABC.2";
+              end;
+             else if substr(wrd1,abc_wrd1) in 
+               ( "REAR", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "R" ) and
+               put( put( compress( wrd2, '-' ), $maraltsttyp. ), $marvalidsttyp. ) = '' then
+              do; **the text is an address number suffix;
+                 num = substr(wrd1,1,abc_wrd1-1);
+                 numsuf = substr(wrd1,abc_wrd1);
+                 pad = substr(_ap_temp_ad,i_wrd2);
+                 /****DEBUG****/ PUT NUM= NUMSUF= PAD= ;
               end;
              else if length(substr(wrd1,abc_wrd1))>=3
                       and indexc(substr(wrd1,abc_wrd1),"1234567890")=0 then
@@ -573,7 +595,15 @@
           end;
          else if i_dash1=0 and indexc(wrd1,"/")>0 then
           do; ***only / exists, cases where - also exists are dealt with above;
-			 if index(wrd1,"0/1")>0 or index(wrd1,"1/2")>0 or index(wrd1,"1/4")>0
+                   if substrn(wrd1,length(wrd1)-2) = "1/2" then
+                    do; ***1/2 is combined with address number;
+                      num = substrn( wrd1, 1, length(wrd1)-3 );
+                      numsuf = substrn(wrd1,length(wrd1)-2);
+             	    pad = substr(_ap_temp_ad,i_wrd2);
+             	    /****DEBUG****/ PUT NUM= NUMSUF= PAD= ;
+                    end;
+
+			 else if index(wrd1,"0/1")>0 or index(wrd1,"1/2")>0 or index(wrd1,"1/4")>0
 			 	or index(wrd1,"1/8")>0 or index(wrd1,"3/4")>0 then
 			  do;
 				 if indexc(substr(wrd1,1,indexc(wrd1,"/")-2),"ABCDEFGHIJKLMNOPQRSTUVWXYZ")>0 then
@@ -996,7 +1026,7 @@
  
  ** Separate street type from street name (new for MAR geocoding) **;
  
- &var_prefix.streettype = scan( &var_prefix.street, -1, ' ' );
+ &var_prefix.streettype = put( compress( scan( &var_prefix.street, -1, ' ' ), '-' ), $maraltsttyp. );
  
  if put( upcase( &var_prefix.streettype ), $marvalidsttyp. ) ~= ""  then do;
    &var_prefix.streetname = substr( &var_prefix.street, 1, length( &var_prefix.street ) - ( length( &var_prefix.streettype ) + 1 ) );
@@ -1043,6 +1073,7 @@
  &var_prefix.begnum  = input(num, 8.0);
  if input(num3,8.0)=. then &var_prefix.endnum = input(num2,8.0);
  else if input(num3,8.0)^=. then &var_prefix.endnum = input(num3,8.0);
+ &var_prefix.numsuffix = numsuf;
 
  ***Drop other variables***;
  drop num num2 num3 apt pad pad1 street
@@ -1054,7 +1085,7 @@
   _address_parse_end:
 
  %if %mparam_is_yes( &debug ) %then %do;
-   PUT "EXITING ADDRESS_PARSE() MACRO";
+   PUT "EXITING ADDRESS_PARSE() MACRO" /;
  %end;
 
 %mend Address_parse;
