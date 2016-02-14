@@ -57,7 +57,6 @@
   max_near_block_dist=500,    /* Maximum difference between street nos. for near block matches */
 
   basefile=Mar.Geocode_dc_m,   /* Base file for address matching */
-  /*hashfmt=$pbhash.,*/           /* Hash table format for base parcel file */
   stvalidfmt=$marvalidstnm,        /* Format for validating street names */
   staltfmt=$maraltstname,          /* Format with alternate street name spellings */
   punct_list=%str(,.*''""<>;[]{}|_+=^$@!~`%:?),    /* List of punctuation to strip (do not include dash '-') */
@@ -70,15 +69,8 @@
   );
 
   %let mversion = 1.0;
-  %let mdate = 01/25/16;
+  %let mdate = 02/13/16;
   %let mname = DC_geocode;
-
-  %let listunmatched = %upcase( &listunmatched );
-  %let debug = %upcase( &debug );
-  %let geo_match = %upcase( &geo_match );
-  %let block_match = %upcase( &block_match );
-  %let quiet = %upcase( &quiet );
-  %let mprint = %upcase( &mprint );
 
   %push_option( mprint )
 
@@ -330,7 +322,7 @@
   %end;       /** %if %mparam_is_yes( &geo_match ) **/
   %else %do;
 
-  %note_mput( macro=&mname, msg=Parcel matching will be skipped (%upcase(geo_match)=&geo_match). )
+  %note_mput( macro=&mname, msg=Address matching will be skipped (%upcase(geo_match)=&geo_match). )
 
   data &out
           %if %length( &ds_label ) > 0 %then %do;

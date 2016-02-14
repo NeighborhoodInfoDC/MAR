@@ -25,7 +25,6 @@ data A;
 
   length address $ 80;
 
-  /******************************
   ** Address ID: 262667 **;
   zip = 20007;
   address = '2730 Wisconsin Ave NW';
@@ -142,7 +141,6 @@ data A;
   zip = 20002;
   address = '107 10TH STREET NE';
   output;
-  ****************************************/
   
   ** Address ID: 308645 [but should match to 74776] **;
   zip = 20002;
@@ -173,7 +171,6 @@ data A;
   address = '1529A 14TH STREET NW';
   output;
   
-  /*******************
   ** Address ID: 61186 **;
   zip = 20002;
   address = '1529 A STREET NE';  
@@ -188,12 +185,12 @@ data A;
   output;
   address = '4220B 9TH STREET SE';
   output;
-  *********************************/
   
+  ** Address ID: 311802 **;
   zip = 20319;
-  address = '102 A STREET SW';
+  address = '102 a street sw';
   output;
-  address = '102A STREET SW';
+  address = '102a street sw';
   output;
     
 run;
@@ -204,7 +201,7 @@ run;
   zip = zip,
   out = A_geo,
   geo_match = Y,
-  debug = Y,
+  debug = N,
   mprint = Y
 )
 
