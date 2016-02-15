@@ -30,6 +30,7 @@
 
       &staddr._std = left( compbl( 
                        trim( _dcg_adr_begnum ) || " " || 
+                       trim( _dcg_adr_numsuffix ) || " " ||
                        trim( _dcg_adr_streetname_clean ) || " " ||
                        trim( _dcg_adr_streettype ) || " " ||
                        trim( _dcg_adr_quad )
@@ -45,7 +46,7 @@
           i = i + 1;
         end;
 
-        &staddr._std = trim( &staddr._std ) || ' # ' || left( _dcg_adr_apt_unit_nopad );
+        &staddr._std = trim( &staddr._std ) || ' APT ' || left( _dcg_adr_apt_unit_nopad );
 
       end;
 

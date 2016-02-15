@@ -20,9 +20,9 @@
 
 %macro address_split_units(inlib=work,inds=,outlib=work,outds=, numObs=max, debug=N);
 
-%let MAX_WORDS = 20;
+%local MAX_WORDS letter_list;
 
-%let debug = %upcase( &debug );
+%let MAX_WORDS = 20;
 
 %let letter_list='-','.','/','1','2','3','4','5','6','7','8','9','0','A','B','C','D','E','F',
                  'G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z';
@@ -190,7 +190,7 @@
 	    %end;
 
 
-	    %if &debug=Y %then %do;
+	    %if %mparam_is_yes( &debug ) %then %do;
 
 		    file print;
 
@@ -200,6 +200,7 @@
 		    put _n_= / &staddr= / _dcg_scrub_addr= / ( _dcg_adr_: ) (= /);
 	
 		    file log;
+		    
 	    %end;
 
 		DROP endPad end_apt g i j k letter _dcg_n_addr_var num numwords p 

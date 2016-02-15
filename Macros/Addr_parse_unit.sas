@@ -13,7 +13,9 @@
   01/24/16 PAT Adapted from RealProp macro %Addr_parse_unit().
 **************************************************************************/
 
-%macro Addr_parse_unit(unitlbl);
+%macro Addr_parse_unit(unitlbl,debug=N);
+
+ %local unitlbllen unitlbl1pl unitlbl2pl;
 
  *These macro variables denote lengths and character positions and make the macro more dynamic.;
  
@@ -66,6 +68,10 @@
        **f_apt =2;
     end;
  *************************************************BB;
+ 
+ %if %mparam_is_yes( &debug ) %then %do;
+   put "Addr_parse_unit: " _ap_temp_ad=;
+ %end;
   
 %mend Addr_parse_unit;
 

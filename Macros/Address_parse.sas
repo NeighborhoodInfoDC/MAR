@@ -21,7 +21,7 @@
   );
 
  %if %mparam_is_yes( &debug ) %then %do;
-   PUT "STARTING ADDRESS_PARSE() MACRO";
+   PUT "STARTING ADDRESS_PARSE() MACRO / " &address;
  %end;
  
  length &var_prefix.begnum &var_prefix.endnum 8 &var_prefix.numsuffix $ 16;
@@ -294,9 +294,9 @@
 
  _ap_temp_ad = tranwrd(_ap_temp_ad," STE "," SUITE ");
 
- %Addr_parse_unit( APT )
- %Addr_parse_unit( UNIT )
- %Addr_parse_unit( SUITE )
+ %Addr_parse_unit( APT, debug=&debug )
+ %Addr_parse_unit( UNIT, debug=&debug )
+ %Addr_parse_unit( SUITE, debug=&debug )
 
  _ap_temp_ad = tranwrd(_ap_temp_ad,"1ST FLOOR"," 1STFL");
  _ap_temp_ad = tranwrd(_ap_temp_ad,"2ND FLOOR"," 2NDFL");
@@ -849,7 +849,7 @@
  num = trim(left(compbl(num)));
 
  %if %mparam_is_yes( &debug ) %then %do;
-   PUT "B: " _AP_TEMP_AD= NUM= PAD=;
+   PUT "B: " _AP_TEMP_AD= NUM= PAD= APT=;
  %end;
 
  ***************REMOVE SPEC CHARS FROM THE BEGINNING OF THE STREET NAME PORTION OF ADDR STRING*;
@@ -947,7 +947,7 @@
  **if indexc(scan(pad,1,""),"-")>0 then f_hyph1 = 1;
 
  %if %mparam_is_yes( &debug ) %then %do;
-   PUT "C: " _AP_TEMP_AD= NUM= PAD=;
+   PUT "C: " _AP_TEMP_AD= NUM= PAD= APT=;
  %end;
 
  ***************REMOVE FRACTIONS FROM THE BEGINNING OF THE STREET NAME PORTION OF ADDR STRING*;
@@ -982,7 +982,7 @@
  drop fract1 fract2 ;
 
  %if %mparam_is_yes( &debug ) %then %do;
-   PUT "D: " _AP_TEMP_AD= PAD=;
+   PUT "D: " _AP_TEMP_AD= PAD= STREET=;
  %end;
 
  ***************END PARSING PROCESS***************;

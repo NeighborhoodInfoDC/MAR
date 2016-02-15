@@ -30,6 +30,34 @@ data A;
   address = '2730 Wisconsin Ave NW';
   output;
   
+  address = '2730 Wisconsin Ave Northwest';
+  output;
+
+  address = '2730 Wisconsin Ave NW Apt 38';
+  output;
+
+  address = '2730 Wisconsin Ave Northwest apt 38';
+  output;
+
+  address = '2730 Wisconsin Ave NW Apt B';
+  output;
+
+  address = '2730 Wisconsin Ave NW Apt#38';
+  output;
+
+  address = '2730 Wisconsin Ave NW unit 38';
+  output;
+
+  address = '2730 Wisconsin Ave NW #38';
+  output;
+
+  address = '2730 Wisconsin Ave NW 38';
+  output;
+
+  address = '2730 Wisconsin Ave NW 3rd floor';
+  output;
+  
+  /**********************
   address = '2730 Wisconsin Ave';
   output;
 
@@ -192,6 +220,13 @@ data A;
   output;
   address = '102a street sw';
   output;
+  
+  *************************/
+  
+  ** CONDO UNIT / Address ID: 226568 / SSL: 0158 0079 **;
+  zip = 20036;
+  address = '1325 18TH ST NW APT 1012';
+  output;
     
 run;
 
@@ -201,7 +236,7 @@ run;
   zip = zip,
   out = A_geo,
   geo_match = Y,
-  debug = N,
+  debug = Y,
   mprint = Y
 )
 
@@ -210,7 +245,7 @@ options orientation=landscape;
 ods html body="C:\DCData\Libraries\MAR\Prog\Geocode_test_2.html" style=Analysis;
 
 proc print data=A_geo;
-  var address zip _MATCHED_ _score_ M_ADDR M_ZIP X Y Address_id ssl;
+  var address zip address_std _MATCHED_ _score_ M_ADDR M_ZIP X Y Address_id ssl;
   format x y 12.8;
 run;
 
