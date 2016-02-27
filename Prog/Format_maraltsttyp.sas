@@ -19,7 +19,7 @@
 %DCData_lib( MAR )
 
 proc format library=MAR;
-  value $maraltsttyp
+  value $maraltsttyp (default=40)
     "ALLEE" = "ALLEY"
     "ALLEY" = "ALLEY"
     "ALLY" = "ALLEY"

@@ -19,7 +19,7 @@
 %DCData_lib( MAR )
 
 proc format library=MAR;
-  value $marvalidquadrant
+  value $marvalidquadrant (default=40)
     "NE" = "NE"
     "NW" = "NW"
     "SE" = "SE"

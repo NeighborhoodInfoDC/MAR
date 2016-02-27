@@ -19,7 +19,7 @@
 %DCData_lib( MAR )
 
 proc format library=MAR;
-  value $marvalidsttyp
+  value $marvalidsttyp (default=40)
     "ALLEY" = "ALLEY"
     "AVENUE" = "AVENUE"
     "BOULEVARD" = "BOULEVARD"

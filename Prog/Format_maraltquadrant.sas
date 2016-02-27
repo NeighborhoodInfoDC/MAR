@@ -19,7 +19,7 @@
 %DCData_lib( MAR )
 
 proc format library=MAR;
-  value $maraltquadrant
+  value $maraltquadrant (default=40)
     "NE" = "NE"
     "NORTHEAST" = "NE"
     "NORTHEAS" = "NE"
