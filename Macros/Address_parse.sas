@@ -31,6 +31,7 @@
  length wrd1 wrd2 wrd3 d1_wrd d2_wrd /*fract1 fract2*/ _dcg_adr_apt $ 200;
 
  length _ap_temp_ad _ap_temp_ad_b $ 500;
+ length pad pad1 $200. apt num num2 num3 numsuf $32. pflag $20.;
 
  _ap_temp_ad = trim(left(upcase(compbl(&address.)))) || "";
 
@@ -55,8 +56,8 @@
  _ap_temp_ad =translate(_ap_temp_ad ,"",")");
 
  _ap_temp_ad =translate(_ap_temp_ad ,"/","\");
- _ap_temp_ad =tranwrd(_ap_temp_ad,"# ","#");
- _ap_temp_ad =tranwrd(_ap_temp_ad,"#"," #");
+ /*_ap_temp_ad =tranwrd(_ap_temp_ad,"# ","#");*/
+ _ap_temp_ad =tranwrd(_ap_temp_ad,"#"," # ");
 
  ***************REMOVE QUOTES*;
 
@@ -294,6 +295,7 @@
  ***************REMOVE APT NUMB. FROM THE BEGINNING, BUT MOVE THOSE APT OR UNIT NUMB. FROM THE END OF ADDRESS TO SEPARATE FIELD*;
  *************************************************BB;
 
+/***************
  _ap_temp_ad = tranwrd(_ap_temp_ad,"LOT#","LOT #");
 
  _ap_temp_ad = tranwrd(_ap_temp_ad," STAPT "," STREET APT ");
@@ -313,6 +315,7 @@
  %Addr_parse_unit( APT, debug=&debug )
  %Addr_parse_unit( UNIT, debug=&debug )
  %Addr_parse_unit( SUITE, debug=&debug )
+*************/ 
 
  _ap_temp_ad = tranwrd(_ap_temp_ad,"1ST FLOOR"," 1STFL");
  _ap_temp_ad = tranwrd(_ap_temp_ad,"2ND FLOOR"," 2NDFL");
@@ -338,9 +341,12 @@
  %Addr_parse_floor(2nd);
  %Addr_parse_floor(3rd);
  %Addr_parse_floor(4th);
+ 
+ PUT '[345] ' _ap_temp_ad=;
 
  drop i_1stfl i_2ndfl i_3rdfl i_4thfl;
 
+/*************************************************************
  **** Added BB 4/4/05 ******************************;
  *Beata: added length statement for rev, as well as units and apts appearing at the end of address*;
  
@@ -439,7 +445,10 @@
  *************************************************BB;
 
  _ap_temp_ad = trim(left(compbl(_ap_temp_ad)));
+ 
+ ***********************************************************************/
 
+ PUT '[448] ' _AP_TEMP_AD=;
 
  ***************ELIMINATE SPECIAL CHARACTERS FROM THE BEGINNIG OF ADDR STRING*;
 
@@ -526,7 +535,6 @@
 
  %***[PAT] Separate street number (NUM) from street name (PAD) ***;
 
- length pad pad1 $200. apt num num2 num3 numsuf $32. pflag $20.;
  
  if l1_wrd1 in ("0","1","2","3","4","5","6","7","8","9") then
   do; **first word starts with a number;
@@ -1004,7 +1012,9 @@
  ***Create Addr Elements: Beg and End Str Numbers, Street Name and Apt Number***;
  
  ** Remove unit number **;
- 
+
+  %Addr_parse_unit( debug=&debug )
+
  pad1 = '';
  &var_prefix.apt = '';
 
@@ -1015,7 +1025,7 @@
  
    PUT _AP_I= WRD1= PAD1=;
  
-   if wrd1 in ( 'APT', 'SUITE', 'UNIT' ) then do;
+   if put( wrd1, $marvalidunit. ) ~= '' then do;
      &var_prefix.apt = trim( wrd1 ) || ' ' || scan( pad, _ap_i + 1, ' ' );
      _ap_i = _ap_i + 1;
    end;
@@ -1027,7 +1037,7 @@
    wrd1 = scan( pad, _ap_i, ' ' );
    
  end;
- 
+  
  PUT pad= pad1= &var_prefix.apt= _ap_i=;
  
  pad = left( compbl( pad1 ) );
@@ -1046,6 +1056,7 @@
    &var_prefix.quad = "";
  end;
 
+/**********************************
  **** PT: Remove APT# from street name:
  ****     Ex: 2330 GOOD HOPE RD APT 110 SE  parses to street name GOOD HOPE RD APT#
  ****     Added 08/21/05;
@@ -1064,6 +1075,7 @@
  end;
  
  &var_prefix.street = substr( &var_prefix.street, 1, _ap_i );
+**************************************************************************/
 
  **** PT:  End of code added 08/21/05 ****************;
  

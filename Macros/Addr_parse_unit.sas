@@ -13,67 +13,105 @@
   01/24/16 PAT Adapted from RealProp macro %Addr_parse_unit().
 **************************************************************************/
 
-%macro Addr_parse_unit(unitlbl,debug=N);
+%macro Addr_parse_unit(/*unitlbl,*/debug=N);
 
- %local unitlbllen unitlbl1pl unitlbl2pl;
-
- *These macro variables denote lengths and character positions and make the macro more dynamic.;
- 
- %let unitlbllen = %length(%left(%trim(&unitlbl.))); *length is equal to 3 for APT and 4 for UNIT;
- %let unitlbl1pl = %eval(&unitlbllen. + 1); *first character following unitlbl followed by a space, e.g. APT ?_ or UNIT ?_ ;
- %let unitlbl2pl = %eval(&unitlbllen. + 2); *second character following unitlbl followed by a space, e.g. APT _? or UNIT _?;
-
-
- _ap_temp_ad = "" || trim(left(compbl(_ap_temp_ad))) || "";
-
-
- _ap_temp_ad = tranwrd(_ap_temp_ad," &unitlbl. NO"," &unitlbl. ");
-
- *As long as : (colon) is removed before address_parse macro is applied, this line may remain commented-out.;
- *****_ap_temp_ad = tranwrd(_ap_temp_ad," &unitlbl.:"," &unitlbl. ");
-
- **** Added PT 3/2/05 ******************************;
- _ap_temp_ad =tranwrd(_ap_temp_ad," &unitlbl. #"," &unitlbl. ");
- ***************************************************;
- 
- /**PT**_ap_temp_ad = tranwrd(_ap_temp_ad,"##","#");**/
-
- **** Added BB 4/4/05 ******************************;
- *Added the following back in, as it is necessary if the logic of the stmts below is to work properly.;
- 
- _ap_temp_ad = tranwrd(_ap_temp_ad," &unitlbl.# "," &unitlbl. ");
- *************************************************BB;
-
- /**PT**_ap_temp_ad = tranwrd(_ap_temp_ad,"##","#");**/
-
- **** Added BB 4/19/05 ******************************;
- *Simple solution that replaces the complex algorithm shown below (after the mend statement).;
- 
- /**PT**_ap_temp_ad = tranwrd(_ap_temp_ad," &unitlbl. "," &unitlbl.#");**/
- *************************************************BB;
-
- /**PT**_ap_temp_ad = tranwrd(_ap_temp_ad,"##","#");**/
- 
- _ap_temp_ad = trim(left(compbl(_ap_temp_ad)));
+  %if %mparam_is_yes( &debug ) %then %do;
+    put "Addr_parse_unit: START: " pad=;
+  %end;
   
- **** Added BB 4/19/05 ******************************;
- *If used right at the start of the address, APT was used to refer to apartment number that was actually a street number.;
- 
- *NOTE: This may not be a very good solution, because this may not be true for UNIT. Should further inspect such cases;
- *where the word UNIT is at the beginning of address.;
- 
- /**PT**
- if _ap_temp_ad =: "&unitlbl.#" or _ap_temp_ad =: "&unitlbl.-" then
-    do;
-       if indexc(substr(_ap_temp_ad,&unitlbl1pl.,1),"1234567890")>0 then _ap_temp_ad = substr(_ap_temp_ad,&unitlbl1pl.);
-       **f_apt =2;
+  pad1 = '';
+
+  _ap_i = 1;
+  wrd1 = scan( pad, _ap_i, ' ' );
+  
+  do while ( wrd1 ~= '' );
+  
+    ** Check for letters followed by numbers and split into separate words;
+    ** EX: APT12;
+    
+    if indexc( wrd1, '0123456789#' ) > 1 then do;
+      wrd2 = compress( substr( wrd1, indexc( wrd1, '0123456789#' ) ), '#' );
+      wrd1 = substr( wrd1, 1, indexc( wrd1, '0123456789#' ) - 1 );
+      wrd3 = scan( pad, _ap_i + 1, ' ' );
+      wrd2_i = _ap_i;
+      wrd3_i = _ap_i + 1;
     end;
- *************************************************BB;
- ****/
- 
- %if %mparam_is_yes( &debug ) %then %do;
-   put "Addr_parse_unit(&unitlbl): " _ap_temp_ad=;
- %end;
+    else do;
+      wrd2 = scan( pad, _ap_i + 1, ' ' );
+      wrd3 = scan( pad, _ap_i + 2, ' ' );
+      wrd2_i = _ap_i + 1;
+      wrd3_i = _ap_i + 2;
+    end;
+    
+    PUT _AP_I= WRD1= WRD2= WRD3= PAD1=;
+    
+   if put( put( wrd1, $maraltunit. ), $marvalidunit. ) ~= '' then do;
+    
+      ** WRD1 is a unit identifier;
+      PUT 'A';
+      
+      if wrd2 in ( 'NO', 'NUM', 'NUMBER', 'NMBR', 'NMBER', '#' ) then do;
+        pad1 = trim( pad1 ) || ' ' || 
+               trim( put( put( wrd1, $maraltunit. ), $marvalidunit. ) ) || ' ' ||
+               wrd3;
+        _ap_i = wrd3_i;
+      end;
+      else do;
+        pad1 = trim( pad1 ) || ' ' || 
+               trim( put( put( wrd1, $maraltunit. ), $marvalidunit. ) ) || ' ' ||
+               wrd2;
+        _ap_i = wrd2_i;
+      end;
+             
+    end;
+    else if put( wrd1, $marvalidquadrant. ) ~= '' and put( put( wrd2, $maraltunit. ), $marvalidunit. ) = '' then do;
+  
+    ** WRD1 is a quadrant but WRD2 is not a unit identifier: assume what follows is unit number;
+    PUT 'B';
+      
+      if wrd2 in ( 'NO', 'NUM', 'NUMBER', 'NMBR', 'NMBER', '#' ) then do;
+        pad1 = trim( pad1 ) || ' ' || trim( wrd1 ) || ' APT ' || wrd3;
+        _ap_i = wrd3_i;
+      end;
+      else do;
+        pad1 = trim( pad1 ) || ' ' || trim( wrd1 ) || ' APT ' || wrd2;
+        _ap_i = wrd2_i;
+      end;
+      
+    end;
+    else if put( wrd1, $marvalidsttyp. ) ~= '' and put( wrd2, $marvalidquadrant. ) = '' and put( put( wrd3, $maraltunit. ), $marvalidunit. ) = '' then do;
+  
+    ** WRD1 is a street type but WRD2 is not a quadrant and WRD3 is not a unit identifier: 
+    ** assume what follows WRD1 is unit number;
+    PUT 'C';
+      
+      if wrd2 in ( 'NO', 'NUM', 'NUMBER', 'NMBR', 'NMBER', '#' ) then do;
+        pad1 = trim( pad1 ) || ' ' || trim( wrd1 ) || ' APT ' || wrd3;
+        _ap_i = wrd3_i;
+      end;
+      else do;
+        pad1 = trim( pad1 ) || ' ' || trim( wrd1 ) || ' APT ' || wrd2;
+        _ap_i = wrd2_i;
+      end;
+      
+    end;
+    else do;
+    
+      PUT 'D';
+      pad1 = trim( pad1 ) || ' ' || wrd1;
+      
+    end;
+    
+    _ap_i = _ap_i + 1;
+    wrd1 = scan( pad, _ap_i, ' ' );
+
+  end;
+  
+  pad = left( compbl( pad1 ) );
+
+  %if %mparam_is_yes( &debug ) %then %do;
+    put "Addr_parse_unit: END: " pad=;
+  %end;
   
 %mend Addr_parse_unit;
 

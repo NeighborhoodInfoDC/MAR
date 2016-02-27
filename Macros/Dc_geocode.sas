@@ -206,7 +206,7 @@
 
     if _dcg_adr_street = "" then goto _dc_geocode_end;
 
-    ** Clean street address (apply StreetAlt.xls corrections) **;
+    ** Clean street names (apply StreetAlt.xls corrections) **;
     ** Only apply if original street name is not valid        **;
 
     if put( _dcg_adr_streetname, &stvalidfmt.. ) = " " then do;
