@@ -224,21 +224,10 @@
       %warn_put( macro=&mname, 
                  msg="Street not found: " _n_= _dcg_adr_streetname_clean "(" &staddr ")" )
     end;
-
+    
     _dc_geocode_end:    
 
-    %if %mparam_is_yes( &debug ) %then %do;
-
-    file print;
-    
-    if _n_ = 1 then put // "******************  CLEANING & PARSING RESULTS  ******************" //;
-    
-    put '--------------------------------------------------------------';
-    put _n_= / &staddr= / _dcg_scrub_addr= / ( _dcg_adr_: ) (= /);
-
-    file log;
-
-    %end;
+    ** Create address for passing to Proc Geocode **;
     
     if put( _dcg_adr_streetname_clean, &stvalidfmt.. ) = " " then do;
     
@@ -247,7 +236,7 @@
     end;
     else do;
 
-      ** NOTE: Currently not processing address number suffix: not supported by Proc Geocode **;
+      ** NOTE: Currently not processing address number suffix bcs not supported by Proc Geocode **;
       _dcg_adr_geocode = 
         left( compbl( 
                  trim( _dcg_adr_begnum ) || " " || 
@@ -262,8 +251,22 @@
       _dcg_zip = &zip;
     %end;
 
+    %if %mparam_is_yes( &debug ) %then %do;
+
+      file print;
+      
+      if _n_ = 1 then put // "******************  CLEANING & PARSING RESULTS  ******************" //;
+      
+      put '--------------------------------------------------------------';
+      put _n_= / &staddr= / _dcg_scrub_addr= / ( _dcg_adr_: ) (= /);
+
+      file log;
+
+    %end;
+    
   run;
 
+/**********************
    *******************************************************************************
    ***** this is a new macro that gets the APT or UNITNUMBER from an address *****
    ***** added by DSD 2/28/2007                                            *******
@@ -271,6 +274,7 @@
   
    %** Parse out unit number from street address **;
    %address_split_units(inlib=work,inds=_dcg_indat,outlib=work,outds=_dcg_indat, debug=&debug)
+********************************/
 
    %if &staddr_std ~= %then %do;
 

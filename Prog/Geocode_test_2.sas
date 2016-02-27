@@ -29,16 +29,26 @@ data A;
   zip = 20007;
   address = '2730 Wisconsin Ave NW';
   output;
-  
-  address = '2730 Wisconsin Ave Northwest';
-  output;
 
   address = '2730 Wisconsin Ave NW Apt 38';
+  output;
+
+  address = '2730 Wisconsin Ave NW Apt38';
+  output;
+
+  address = '2730 Wisconsin Ave Apt 38 NW';
+  output;
+
+  address = '2730 Wisconsin Ave Northwest';
   output;
 
   address = '2730 Wisconsin Ave Northwest apt 38';
   output;
 
+  address = '2730 Wisconsin Ave NW #38';
+  output;
+
+/*
   address = '2730 Wisconsin Ave NW Apt B';
   output;
 
@@ -222,12 +232,12 @@ data A;
   output;
   
   *************************/
-  
+/*  
   ** CONDO UNIT / Address ID: 226568 / SSL: 0158 0079 **;
   zip = 20036;
   address = '1325 18TH ST NW APT 1012';
   output;
-    
+*/    
 run;
 
 %DC_geocode(

@@ -28,9 +28,9 @@
  length &var_prefix.street &var_prefix.apt &var_prefix.streetname &var_prefix.streettype &var_prefix.quad $ 200;
 
  **PT 08/21/05:  Added to suppress INFO: messages  **;
- length wrd1 wrd2 wrd3 d1_wrd d2_wrd fract1 fract2 _dcg_adr_apt $ 200;
+ length wrd1 wrd2 wrd3 d1_wrd d2_wrd /*fract1 fract2*/ _dcg_adr_apt $ 200;
 
- length _ap_temp_ad $ 500;
+ length _ap_temp_ad _ap_temp_ad_b $ 500;
 
  _ap_temp_ad = trim(left(upcase(compbl(&address.)))) || "";
 
@@ -189,6 +189,21 @@
  %***[PAT 03/04/06]***;
  _ap_temp_ad =tranwrd(_ap_temp_ad ," 0 STREET "," O STREET ");
 
+ **DEBUG** PUT _ap_temp_ad=;
+ i = 1;
+ wrd1 = scan( _ap_temp_ad, i, ' ' );
+ do while ( wrd1 ~= '' );
+   if put( put( wrd1, $maraltquadrant40. ), $marvalidquadrant. ) ~= '' then
+     _ap_temp_ad_b = trim( _ap_temp_ad_b ) || ' ' || put( wrd1, $maraltquadrant. );
+   else
+     _ap_temp_ad_b = trim( _ap_temp_ad_b ) || ' ' || wrd1;
+   i = i + 1;
+   wrd1 = scan( _ap_temp_ad, i, ' ' );
+ end;
+ _ap_temp_ad = _ap_temp_ad_b;
+ PUT _ap_temp_ad=;
+ 
+ /*
  _ap_temp_ad =tranwrd(_ap_temp_ad ," SOUTHWEST ", " SW ");
  _ap_temp_ad =tranwrd(_ap_temp_ad ," NORTHWEST ", " NW ");
  _ap_temp_ad =tranwrd(_ap_temp_ad ," SOUTHEAST ", " SE ");
@@ -197,6 +212,7 @@
  _ap_temp_ad =tranwrd(_ap_temp_ad ," NORTHW ", " NW ");
  _ap_temp_ad =tranwrd(_ap_temp_ad ," SOUTHE ", " SE ");
  _ap_temp_ad =tranwrd(_ap_temp_ad ," NORTHE ", " NE ");
+ */
 
  _ap_temp_ad =tranwrd(_ap_temp_ad ," FIRST ", " 1ST ");
  _ap_temp_ad =tranwrd(_ap_temp_ad ," SECOND ", " 2ND ");
@@ -865,9 +881,6 @@
 
  %if %mparam_is_yes( &debug ) %then %do;
    PUT "B2: " PAD=;
- %end;
-
- %if %mparam_is_yes( &debug ) %then %do;
    LENGTH _XDEBUG $ 1000;
    _XDEBUG = scan(pad,1,"");
    PUT 'scan(pad,1,"")=' _XDEBUG;
@@ -954,6 +967,7 @@
 
  pad = trim(left(compbl(pad)));
 
+/******* SHOULD NOT NEED THIS ANYMORE ********
  fract1=scan(pad, 1, "");
  fract2=scan(pad, 2, "");
 
@@ -980,26 +994,55 @@
  end;
 
  drop fract1 fract2 ;
+*****************************/
 
  %if %mparam_is_yes( &debug ) %then %do;
-   PUT "D: " _AP_TEMP_AD= PAD= STREET=;
+   PUT "D: " _AP_TEMP_AD= NUM= PAD= APT=;
  %end;
 
- ***************END PARSING PROCESS***************;
 
  ***Create Addr Elements: Beg and End Str Numbers, Street Name and Apt Number***;
+ 
+ ** Remove unit number **;
+ 
+ pad1 = '';
+ &var_prefix.apt = '';
 
+ _ap_i = 1;
+ wrd1 = scan( pad, _ap_i, ' ' );
+ 
+ do while ( wrd1 ~= '' );
+ 
+   PUT _AP_I= WRD1= PAD1=;
+ 
+   if wrd1 in ( 'APT', 'SUITE', 'UNIT' ) then do;
+     &var_prefix.apt = trim( wrd1 ) || ' ' || scan( pad, _ap_i + 1, ' ' );
+     _ap_i = _ap_i + 1;
+   end;
+   else do;
+     pad1 = trim( pad1 ) || ' ' || wrd1;
+   end;
+   
+   _ap_i = _ap_i + 1;
+   wrd1 = scan( pad, _ap_i, ' ' );
+   
+ end;
+ 
+ PUT pad= pad1= &var_prefix.apt= _ap_i=;
+ 
+ pad = left( compbl( pad1 ) );
+ 
  **** PT: Separate quadrant from street name ****;
 
- _ap_i = max( indexw( street, "NW" ), indexw( street, "NE" ), 
-              indexw( street, "SW" ), indexw( street, "SE" ) );
+ _ap_i = max( indexw( pad, "NW" ), indexw( pad, "NE" ), 
+              indexw( pad, "SW" ), indexw( pad, "SE" ) );
 
  if _ap_i > 0 then do;
-   &var_prefix.street = substr( street, 1, _ap_i - 2 );
-   &var_prefix.quad = substr( street, _ap_i, 2 );
+   &var_prefix.street = substr( pad, 1, _ap_i - 2 );
+   &var_prefix.quad = substr( pad, _ap_i, 2 );
  end;
  else do;
-   &var_prefix.street = street;
+   &var_prefix.street = pad;
    &var_prefix.quad = "";
  end;
 
@@ -1024,7 +1067,7 @@
 
  **** PT:  End of code added 08/21/05 ****************;
  
- ** Separate street type from street name (new for MAR geocoding) **;
+ ** Separate street type from street name (new for Proc Geocode geocoding) **;
  
  &var_prefix.streettype = put( compress( scan( &var_prefix.street, -1, ' ' ), '-' ), $maraltsttyp. );
  
@@ -1037,6 +1080,7 @@
    &var_prefix.streetname = &var_prefix.street;
  end;
 
+/*********
  **** Changed BB 4/18/05 ****************************;
  *Beata: there are two sources of apt or unit info - end_apt and apt. NOTE: Have to test it further but here end_apt takes precedence over apt*;
  
@@ -1070,6 +1114,7 @@
  &var_prefix.apt = trim( left( compbl( &var_prefix.apt) ) );
  
  *************************************************BB;
+ *********************************************************/
  
  &var_prefix.begnum  = input(num, 8.0);
  if input(num3,8.0)=. then &var_prefix.endnum = input(num2,8.0);
@@ -1077,7 +1122,7 @@
  &var_prefix.numsuffix = numsuf;
 
  ***Drop other variables***;
- drop num num2 num3 apt pad pad1 street
+ drop num num2 num3 apt pad pad1 /*street*/
       wrd1 abc_wrd1 wrd2 abc_wrd2 i_wrd2 wrd3 i_wrd3
       l1_wrd1 l2_wrd1 l3_wrd1 l1_wrd2
       i_dash1 i_dash2 d1_wrd abc_d1w d2_wrd abc_d2w 
