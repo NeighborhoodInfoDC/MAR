@@ -11,9 +11,10 @@
 
  Modifications: 
   01/24/16 PAT Adapted from RealProp macro %Addr_parse_unit().
+  02/28/16 PAT Rewritten to use a new approach.
 **************************************************************************/
 
-%macro Addr_parse_unit(/*unitlbl,*/debug=N);
+%macro Addr_parse_unit(debug=N);
 
   %if %mparam_is_yes( &debug ) %then %do;
     put "Addr_parse_unit: START: " pad=;
@@ -34,44 +35,44 @@
       wrd2 = compress( substr( wrd1, indexc( wrd1, '0123456789#' ) ), '#' );
       wrd1 = substr( wrd1, 1, indexc( wrd1, '0123456789#' ) - 1 );
       wrd3 = scan( pad, _ap_i + 1, ' ' );
-      wrd2_i = _ap_i;
-      wrd3_i = _ap_i + 1;
+      i_wrd2 = _ap_i;
+      i_wrd3 = _ap_i + 1;
     end;
     else do;
       wrd2 = scan( pad, _ap_i + 1, ' ' );
-      wrd2_i = _ap_i + 1;
+      i_wrd2 = _ap_i + 1;
       if indexc( wrd2, '0123456789#' ) > 1 then do;
         wrd3 = compress( substr( wrd2, indexc( wrd2, '0123456789#' ) ), '#' );
         wrd2 = substr( wrd2, 1, indexc( wrd2, '0123456789#' ) - 1 );
-        wrd3_i = _ap_i + 1;
+        i_wrd3 = _ap_i + 1;
       end;
       else do;
         wrd3 = scan( pad, _ap_i + 2, ' ' );
-        wrd3_i = _ap_i + 2;
+        i_wrd3 = _ap_i + 2;
       end;
     end;
     
-    PUT _AP_I= WRD1= WRD2= WRD3= PAD1= &var_prefix.apt=;
+    %if %mparam_is_yes( &debug ) %then %do;
+      put _ap_i= wrd1= wrd2= wrd3= pad1= &var_prefix.apt=;
+    %end;
     
    if put( put( wrd1, $maraltunit. ), $marvalidunit. ) ~= '' then do;
     
       ** WRD1 is a unit identifier;
-      PUT '::A::';
       
       if wrd2 in ( 'NO', 'NUM', 'NUMBER', 'NMBR', 'NMBER', '#' ) then do;
         &var_prefix.apt = trim( put( put( wrd1, $maraltunit. ), $marvalidunit. ) ) || ' ' || wrd3;
-        _ap_i = wrd3_i;
+        _ap_i = i_wrd3;
       end;
       else do;
         &var_prefix.apt = trim( put( put( wrd1, $maraltunit. ), $marvalidunit. ) ) || ' ' || wrd2;
-        _ap_i = wrd2_i;
+        _ap_i = i_wrd2;
       end;
              
     end;
     else if put( put( wrd2, $maraltunit. ), $marvalidunit. ) ~= '' or put( put( wrd3, $maraltunit. ), $marvalidunit. ) ~= '' then do;
     
       ** Unit identifier found in WRD2 or WRD3: Defer processing until later iteration;
-      PUT '::A2::';
       
       pad1 = trim( pad1 ) || ' ' || wrd1;
 
@@ -79,17 +80,16 @@
     else if &var_prefix.apt = '' and put( wrd1, $marvalidquadrant. ) ~= '' and wrd2 ~= '' and put( put( wrd2, $maraltunit. ), $marvalidunit. ) = '' then do;
   
     ** WRD1 is a quadrant but WRD2 is not a unit identifier: assume what follows is unit number;
-    PUT '::B::';
       
       if wrd2 in ( 'NO', 'NUM', 'NUMBER', 'NMBR', 'NMBER', '#' ) then do;
         &var_prefix.apt = 'APT ' || wrd3;
         pad1 = trim( pad1 ) || ' ' || wrd1;
-        _ap_i = wrd3_i;
+        _ap_i = i_wrd3;
       end;
       else do;
         &var_prefix.apt = 'APT ' || wrd2;
         pad1 = trim( pad1 ) || ' ' || wrd1;
-        _ap_i = wrd2_i;
+        _ap_i = i_wrd2;
       end;
       
     end;
@@ -100,23 +100,21 @@
   
     ** WRD1 is a street type but WRD2 is not a quadrant and WRD3 is not a unit identifier: 
     ** assume what follows WRD1 is unit number;
-    PUT '::C::';
       
       if wrd2 in ( 'NO', 'NUM', 'NUMBER', 'NMBR', 'NMBER', '#' ) then do;
         &var_prefix.apt = 'APT ' || wrd3;
         pad1 = trim( pad1 ) || ' ' || wrd1;
-        _ap_i = wrd3_i;
+        _ap_i = i_wrd3;
       end;
       else do;
         &var_prefix.apt = 'APT ' || wrd2;
         pad1 = trim( pad1 ) || ' ' || wrd1;
-        _ap_i = wrd2_i;
+        _ap_i = i_wrd2;
       end;
       
     end;
     else do;
     
-      PUT '::D::';
       pad1 = trim( pad1 ) || ' ' || wrd1;
       
     end;

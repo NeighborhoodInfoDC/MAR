@@ -69,7 +69,7 @@
   );
 
   %let mversion = 1.0;
-  %let mdate = 02/13/16;
+  %let mdate = 02/28/16;
   %let mname = DC_geocode;
 
   %push_option( mprint )
@@ -222,7 +222,7 @@
 
     if put( _dcg_adr_streetname_clean, &stvalidfmt.. ) = " " and not( %mparam_is_yes( &quiet ) ) then do;
       %warn_put( macro=&mname, 
-                 msg="Street not found: " _dcg_adr_streetname_clean "(" &staddr "/ " _n_= ")" )
+                 msg="Street not found: " _dcg_adr_streetname_clean "( &staddr=" &staddr "/ " _n_= ")" )
     end;
     
     _dc_geocode_end:    
@@ -265,16 +265,6 @@
     %end;
     
   run;
-
-/**********************
-   *******************************************************************************
-   ***** this is a new macro that gets the APT or UNITNUMBER from an address *****
-   ***** added by DSD 2/28/2007                                            *******
-   *******************************************************************************;
-  
-   %** Parse out unit number from street address **;
-   %address_split_units(inlib=work,inds=_dcg_indat,outlib=work,outds=_dcg_indat, debug=&debug)
-********************************/
 
    %if &staddr_std ~= %then %do;
 

@@ -37,22 +37,6 @@
                        trim( _dcg_adr_apt )
                      ) );
 
-/**********
-      if _dcg_adr_apt_unit ~= "" then do;
-
-        i = 1;
-        _dcg_adr_apt_unit_nopad = _dcg_adr_apt_unit;
-
-        do while ( substr( _dcg_adr_apt_unit_nopad, i, 1 ) = '0' );
-          substr( _dcg_adr_apt_unit_nopad, i, 1 ) = ' ';
-          i = i + 1;
-        end;
-
-        &staddr._std = trim( &staddr._std ) || ' APT ' || left( _dcg_adr_apt_unit_nopad );
-
-      end;
-*****************/
-
       &staddr._std = left( compbl( &staddr._std ) );
                      
     end;

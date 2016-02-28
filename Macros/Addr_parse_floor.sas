@@ -18,12 +18,10 @@
 	 if i_&num.fl = 1 then
 	  do;
 		 _ap_temp_ad = substr(_ap_temp_ad, indexc(_ap_temp_ad," ")+1);
-		 **f_flr = 1;
 	  end;
 	 else if i_&num.fl > 1 then
 	  do;
 		 _ap_temp_ad = trim(left( substr(_ap_temp_ad, 1, i_&num.fl-1) )); **first part of address (w/o fl);
-		 **f_flr = 2;
 	  end;
 	  
 %mend Addr_parse_floor;
