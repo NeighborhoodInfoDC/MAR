@@ -222,7 +222,7 @@
 
     if put( _dcg_adr_streetname_clean, &stvalidfmt.. ) = " " and not( %mparam_is_yes( &quiet ) ) then do;
       %warn_put( macro=&mname, 
-                 msg="Street not found: " _n_= _dcg_adr_streetname_clean "(" &staddr ")" )
+                 msg="Street not found: " _dcg_adr_streetname_clean "(" &staddr "/ " _n_= ")" )
     end;
     
     _dc_geocode_end:    

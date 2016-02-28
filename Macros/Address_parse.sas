@@ -1015,6 +1015,7 @@
 
   %Addr_parse_unit( debug=&debug )
 
+/*
  pad1 = '';
  &var_prefix.apt = '';
 
@@ -1041,7 +1042,8 @@
  PUT pad= pad1= &var_prefix.apt= _ap_i=;
  
  pad = left( compbl( pad1 ) );
- 
+*/
+
  **** PT: Separate quadrant from street name ****;
 
  _ap_i = max( indexw( pad, "NW" ), indexw( pad, "NE" ), 
