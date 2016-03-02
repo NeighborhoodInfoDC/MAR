@@ -108,7 +108,7 @@ data
      rename=(Zipcode=Zip)
      label="Primary street lookup data for Proc Geocode (DC MAR)")
   Mar.Geocode_94_dc_s 
-    (keep=Address_id Predirabrv Sufdirabrv Suftypabrv Side Fromadd Toadd N Start &geo_vars
+    (keep=Address_id Predirabrv Pretypabrv Sufdirabrv Suftypabrv Side Fromadd Toadd N Start &geo_vars
      label="Secondary street lookup data for Proc Geocode (DC MAR)")
   Mar.Geocode_94_dc_p
     (keep=X Y
