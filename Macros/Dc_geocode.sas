@@ -29,23 +29,9 @@
 
   geo_match=y,                /* Perform geo. matching with parcels (Y/N) */
 
-  keep_geo=staddr_match ssl x_coord y_coord geo2000 geoblk2000
-           cluster_tr2000 ward2002 anc2002 cluster2000 psa2004
-           zip_match dcg_num_parcels,  /* List of geo vars to keep in geocoded file */
-
-  staddr_match=&staddr._match,  /* Matching parcel/block street address (blank to omit) */
-  ssl=ssl,                    /* SSL ID output var name (blank to omit) */
-  x_coord=x_coord,            /* X coordinate output var name (blank to omit) */
-  y_coord=y_coord,            /* Y coordinate output var name (blank to omit) */
-  geo2000=geo2000,            /* Census tract ID (blank to omit) */
-  geoblk2000=geoblk2000,      /* Census block ID (blank to omit) */
-  cluster_tr2000=cluster_tr2000,  /* 2000 neighborhood cluster, tract-based (blank to omit) */
-  ward2002=ward2002,          /* 2002 ward (blank to omit) */
-  anc2002=anc2002,            /* 2002 ANC (blank to omit) */
-  cluster2000=cluster2000,    /* 2000 neighborhood cluster (blank to omit) */
-  psa2004=psa2004,            /* 2004 Police Service Area (blank to omit) */
-  zip_match=zip_match,        /* Matching parcel/block ZIP code (blank to omit)*/
-  dcg_num_parcels=dcg_num_parcels,  /* Number of parcels matching address */
+  keep_geo=address_id Anc2002 Anc2012 Cluster_tr2000 Geo2000   
+           Geo2010 GeoBg2010 GeoBlk2010 Psa2004 Psa2012 
+           ssl VoterPre2012 Ward2002 Ward2012,  /* List of geo vars to keep in geocoded file */
 
   dcg_match_score=_score_,  /* Match score */
 
@@ -67,6 +53,8 @@
   mprint=N                     /* Print resolved macro code in LOG (Y/N, def. N) */
   
   );
+
+  %local mversion mdate mname geo_valid u_keep_geo i gkw;
 
   %let mversion = 2.0;
   %let mdate = 03/2/16;
@@ -110,9 +98,9 @@
 
   %** Check for valid keywords in keep_geo= **;
 
-  %let geo_valid = /staddr_match/ssl/x_coord/y_coord/geo2000/geoblk2000/
-                   /cluster_tr2000/ward2002/anc2002/cluster2000/psa2004/
-                   /zip_match/dcg_num_parcels/;
+  %let geo_valid = /address_id/Anc2002/Anc2012/Cluster_tr2000/
+                   /Geo2000/Geo2010/GeoBg2010/GeoBlk2010/Psa2004/Psa2012/
+                   /ssl/VoterPre2012/Ward2002/Ward2012/;
 
   %let geo_valid = %upcase( &geo_valid );
   %let u_keep_geo = %upcase( &keep_geo );
@@ -280,7 +268,7 @@
   
   options msglevel=n;
   
-  %if &ver = 9.2 or &ver = 9.3 %then %do;
+  %if &sysver = 9.2 or &sysver = 9.3 %then %do;
   
     %if &basefile = %then %let basefile = Mar.Geocode_dc_m;
   
@@ -294,7 +282,7 @@
       addressstatevar=_dcg_st
       addresszipvar=_dcg_zip
       lookupstreet=&basefile
-      attributevar=(address_id ssl);
+      attributevar=(&keep_geo);
       run;
     quit;
     
@@ -313,7 +301,7 @@
       addressstatevar=_dcg_st
       addresszipvar=_dcg_zip
       lookupstreet=&basefile
-      attributevar=(address_id ssl);
+      attributevar=(&keep_geo);
       run;
     quit;
   

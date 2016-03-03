@@ -18,6 +18,7 @@
 ** Define libraries **;
 %DCData_lib( MAR )
 
+%let ver = 6.2;
 
 data A;
 
@@ -274,16 +275,21 @@ run;
   mprint = Y
 )
 
+proc contents data=A_geo;
+run;
+
 options orientation=landscape;
 
 ods html body="C:\DCData\Libraries\MAR\Prog\Geocode_test.html" style=Analysis;
+ods listing close;
 
 proc print data=A_geo;
-  var address zip address_std _MATCHED_ _score_ M_ADDR M_ZIP X Y Address_id ssl;
+  *var address zip address_std _MATCHED_ _score_ M_ADDR M_ZIP X Y Address_id ssl;
   format x y 12.8;
 run;
 
 ods html close;
+ods listing;
 
 
 run;

@@ -189,6 +189,8 @@ data Mar.Address_points_2016_01;
       %Err_put( msg="Invalid census block: " _n_= address_id= census_block= )
     end;
     
+    %Block10_to_tr00()
+    
     Ward2002 = scan( ward_2002, 2, ' ' );
     
     if put( Ward2002, $ward02v. ) = "" then do;
@@ -213,6 +215,8 @@ data Mar.Address_points_2016_01;
     end;
     
     %Block10_to_cluster_tr00()
+    
+    %Block10_to_psa04()
     
     Psa2012 = scan( psa, 4, ' ' );
     
