@@ -21,7 +21,10 @@
 %let mar_source = Address_points_2016_01;
 
 %** Geography variables to include in geocoding file **;
-%let geo_vars = ssl;
+%let geo_vars = 
+  Ward2002 Ward2012 VoterPre2012 Psa2012 Psa2004 LATITUDE
+  LONGITUDE Geo2000 Geo2010 GeoBg2010 GeoBlk2010 Cluster2000
+  Cluster_tr2000 Assessnbhd Anc2002 Anc2012 ssl;
 
 proc format;
   value $streettype_to_uspsabv
@@ -99,19 +102,19 @@ ods html close;
 ods listing;
 
 
-** Create geocoding data sets for Proc Geocode (v9.3) **;
+** Create geocoding data sets for Proc Geocode (v9.4) **;
 
 data 
   Mar.Geocode_94_dc_m
     (keep=Name Name2 City City2 Mapidnameabrv Zipcode Zcta First Last
      rename=(Zipcode=Zip)
-     label="Primary street lookup data for Proc Geocode (DC MAR)")
+     label="Primary street lookup data for Proc Geocode 9.4 (DC MAR)")
   Mar.Geocode_94_dc_s 
     (keep=Address_id Predirabrv Pretypabrv Sufdirabrv Suftypabrv Side Fromadd Toadd N Start &geo_vars
-     label="Secondary street lookup data for Proc Geocode (DC MAR)")
+     label="Secondary street lookup data for Proc Geocode 9.4 (DC MAR)")
   Mar.Geocode_94_dc_p
     (keep=X Y
-     label="Tertiary street lookup data for Proc Geocode (DC MAR)");
+     label="Tertiary street lookup data for Proc Geocode 9.4 (DC MAR)");
 
   length
     Name Name2 $ 100
