@@ -56,7 +56,7 @@
 
   max_near_block_dist=500,    /* Maximum difference between street nos. for near block matches */
 
-  basefile=Mar.Geocode_dc_m,   /* Base file for address matching */
+  basefile=,                  /* Base file for address matching (if not specified, default files are used) */
   stvalidfmt=$marvalidstnm,        /* Format for validating street names */
   staltfmt=$maraltstname,          /* Format with alternate street name spellings */
   punct_list=%str(,.*''""<>;[]{}|_+=^$@!~`%:?),    /* List of punctuation to strip (do not include dash '-') */
@@ -68,8 +68,8 @@
   
   );
 
-  %let mversion = 1.0;
-  %let mdate = 02/28/16;
+  %let mversion = 2.0;
+  %let mdate = 03/2/16;
   %let mname = DC_geocode;
 
   %push_option( mprint )
@@ -132,17 +132,6 @@
 
   %end;
 
-  %** Check that ZIP_MATCH is included if ZIP= is specified **;
-
-  %if &zip ~= %then %do;
-    %if &zip_match= or %index( &u_keep_geo, ZIP_MATCH ) = 0 %then %do;
-      %err_mput( macro=&mname, msg=If ZIP code to be used to match addresses (ZIP=) then ZIP_MATCH must be included in output data set. )
-      %err_mput( macro=&mname, msg=i.e. ZIP_MATCH= must be omitted entirely or be nonblank, and )
-      %err_mput( macro=&mname, msg=KEEP_GEO= must be omitted entirely or include ZIP_MATCH. )
-      %goto exit;
-    %end;
-  %end;
-
   %** Complete any previous run blocks before checking for data set **;         
 
   run;      
@@ -159,6 +148,16 @@
     %err_mput( macro=&mname, msg=The input data set %upcase(&data) does not exist or could not be opened. )
     %goto exit;
   %end;
+  
+  ** Create format for temporary recoding of street names that match direction abbreviations **;
+  
+  proc format;
+    value $_dcg_strecode (default=40)
+      'E' = '~E~'
+      'N' = '~N~'
+      'S' = '~S~'
+      'W' = '~W~';
+  run;
 
   ** Read, clean, and parse address data **;
 
@@ -240,7 +239,7 @@
       _dcg_adr_geocode = 
         left( compbl( 
                  trim( _dcg_adr_begnum ) || " " || 
-                 trim( _dcg_adr_streetname_clean ) || " " ||
+                 trim( put( _dcg_adr_streetname_clean, $_dcg_strecode. ) ) || " " ||
                  trim( _dcg_adr_streettype ) || " " ||
                  trim( _dcg_adr_quad )
                ) );
@@ -277,23 +276,63 @@
 
   ** Match cleaned addresses with parcel base file **;
 
-  %note_mput( macro=&mname, msg=Starting address match. Base file is %upcase(&basefile). )
-  
   %push_option( msglevel,quiet=y )
   
   options msglevel=n;
   
-  proc geocode method=street nozip nocity
-    data=_dcg_indat     
-    out=&out
-    addressvar=_dcg_adr_geocode
-    addresscityvar=_dcg_city
-    addressstatevar=_dcg_st
-    addresszipvar=_dcg_zip
-    lookupstreet=&basefile
-    attributevar=(address_id ssl);
-    run;
-  quit;
+  %if &ver = 9.2 or &ver = 9.3 %then %do;
+  
+    %if &basefile = %then %let basefile = Mar.Geocode_dc_m;
+  
+    %note_mput( macro=&mname, msg=Starting address match. Base file is %upcase(&basefile). )
+  
+    proc geocode method=street nozip nocity
+      data=_dcg_indat     
+      out=_dcg_outdat
+      addressvar=_dcg_adr_geocode
+      addresscityvar=_dcg_city
+      addressstatevar=_dcg_st
+      addresszipvar=_dcg_zip
+      lookupstreet=&basefile
+      attributevar=(address_id ssl);
+      run;
+    quit;
+    
+  %end;
+  %else %if %sysevalf(&sysver >= 9.4) %then %do;
+  
+    %if &basefile = %then %let basefile = Mar.Geocode_94_dc_m;
+
+    %note_mput( macro=&mname, msg=Starting address match. Base file is %upcase(&basefile). )
+  
+    proc geocode method=street nozip nocity
+      data=_dcg_indat     
+      out=_dcg_outdat
+      addressvar=_dcg_adr_geocode
+      addresscityvar=_dcg_city
+      addressstatevar=_dcg_st
+      addresszipvar=_dcg_zip
+      lookupstreet=&basefile
+      attributevar=(address_id ssl);
+      run;
+    quit;
+  
+  %end;
+  %else %do;
+  
+    %err_mput( macro=Dc_geocode, msg=Geocoding only available for SAS versions 9.2 or later. )
+    %pop_option( msglevel, quiet=y )
+    %goto exit;
+    
+  %end;
+  
+  data &out;
+  
+    set _dcg_outdat;
+    
+    M_ADDR = compress( M_ADDR, '~' );
+    
+  run;
   
   %pop_option( msglevel, quiet=y )
 

@@ -242,6 +242,26 @@ data A;
   address = '1325 18TH ST NW APT 1012';
   output;
 
+  ** Address ID: 	43456 **;
+  zip = 20019;
+  address = '2911 N STREET SE';
+  output;
+
+  ** Address ID: 	69447 **;
+  zip = 20002;
+  address = '1252 E STREET NE';
+  output;
+
+  ** Address ID: 	227984 **;
+  zip = 20001;
+  address = '27 W STREET NW';
+  output;
+
+  ** Address ID: 239696 **;
+  zip = 20001;
+  address = '900 S Street NW';
+  output;
+  
 run;
 
 %DC_geocode(

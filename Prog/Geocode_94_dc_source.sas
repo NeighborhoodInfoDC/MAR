@@ -8,7 +8,7 @@
  Environment:  Local Windows session (desktop)
  
  Description:  Create Proc Geocode source data sets from MAR address
- points.
+ points. File format compatible with SAS ver 9.4 and later. 
 
  Modifications:
 **************************************************************************/
@@ -137,14 +137,17 @@ data
        scan( upcase( stname ), 2, ' ' ) ~= '' then do;
       Predirabrv = substr( scan( upcase( stname ), 1, ' ' ), 1, 1 );
       Name = substr( stname, length( scan( stname, 1, ' ' ) ) + 2 );
+      Name2 = upcase( left( compress( Name, ' ' ) ) );
+    end;
+    else if stname in ( 'S', 'N', 'E', 'W' ) then do;
+      Name2 = '~' || trim( stname ) || '~';
+      Name = Name2;
     end;
     else do;
-      Name = stname;
+      Name = propcase( left( stname ) );
+      Name2 = upcase( left( compress( stname, ' ' ) ) );
     end;
     
-    Name = propcase( left( Name ) );
-    Name2 = upcase( left( compress( Name, ' ' ) ) );
-      
     Sufdirabrv = upcase( quadrant );
     Suftypabrv = put( upcase( street_type ), $streettype_to_uspsabv. );
     

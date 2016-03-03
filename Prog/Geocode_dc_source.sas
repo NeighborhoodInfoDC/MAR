@@ -8,7 +8,7 @@
  Environment:  Local Windows session (desktop)
  
  Description:  Create Proc Geocode source data sets from MAR address
- points.
+ points. File format compatible with SAS ver 9.2 and 9.3.
 
  Modifications:
 **************************************************************************/
@@ -136,14 +136,18 @@ data
        scan( upcase( stname ), 2, ' ' ) ~= '' then do;
       Predirabrv = substr( scan( upcase( stname ), 1, ' ' ), 1, 1 );
       Name = substr( stname, length( scan( stname, 1, ' ' ) ) + 2 );
+      Namenc = propcase( left( Name ) );
+      Name = upcase( left( compress( Name, ' ' ) ) );
+    end;
+    else if stname in ( 'S', 'N', 'E', 'W' ) then do;
+      Name = '~' || trim( stname ) || '~';
+      Namenc = Name;
     end;
     else do;
-      Name = stname;
+      Name = upcase( left( compress( stname, ' ' ) ) );
+      Namenc = propcase( left( stname ) );
     end;
     
-    Namenc = propcase( left( Name ) );
-    Name = upcase( left( compress( Name, ' ' ) ) );
-      
     Sufdirabrv = upcase( quadrant );
     Suftypabrv = put( upcase( street_type ), $streettype_to_uspsabv. );
     
@@ -174,7 +178,7 @@ proc datasets lib=Mar;
     run;
 quit;
 
-%File_info( data=Mar.Geocode_dc_m, printobs=40, contents=y, stats=, freqvars= )
+%File_info( data=Mar.Geocode_dc_m, printobs=40, contents=y, stats=, freqvars=name )
 
 %File_info( data=Mar.Geocode_dc_s, printobs=200, contents=y )
 %File_info( data=Mar.Geocode_dc_p, printobs=40, contents=y, stats=n nmiss min max )
