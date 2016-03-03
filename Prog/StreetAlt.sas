@@ -19,8 +19,7 @@
   01/24/16 PAT Adapted from RealProp StreetAlt().
 **************************************************************************/
 
-/**%include "L:\SAS\Inc\StdLocal.sas";**/
-%include "C:\DCData\SAS\Inc\StdLocal.sas";
+%include "L:\SAS\Inc\StdLocal.sas";
 
 ** Define libraries **;
 %DCData_lib( MAR )

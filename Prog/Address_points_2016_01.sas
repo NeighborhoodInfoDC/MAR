@@ -12,13 +12,12 @@
  Modifications:
 **************************************************************************/
 
-/**%include "L:\SAS\Inc\StdLocal.sas";**/
-%include "C:\DCData\SAS\Inc\StdLocal.sas";
+%include "L:\SAS\Inc\StdLocal.sas";
 
 ** Define libraries **;
 %DCData_lib( MAR )
 
-filename fimport "C:\DCData\Libraries\MAR\Raw\Address_Points.csv" lrecl=2000;
+filename fimport "L:\Libraries\MAR\Raw\2016-01-26\Address_Points.csv" lrecl=2000;
 
 data Mar.Address_points_2016_01;
 
@@ -268,7 +267,7 @@ data Mar.Address_points_2016_01;
     
     drop 
       i OBJECTID_12 type_ status res_type entrancetype ANC ANC_2002 ANC_2012 
-      ASSESSMENT_NBHD cluster_ psa census_tract census_blockgroup census_block 
+      cluster_ psa census_tract census_blockgroup census_block 
       POLDIST VOTE_PRCNCT ward ward_2002 ward_2012 zipcode;
 
     label
@@ -278,7 +277,7 @@ data Mar.Address_points_2016_01;
       ADDRNUM = "Address location house number"
       ADDRNUMSUFFIX = "Address location house number suffix"
       ANC = "Address location Advisory Neighborhood Commission"
-      ASSESSMENT_NBHD = "Address Assessment Neighborhood Name"
+      ASSESSMENT_NBHD = "Address Assessment Neighborhood Name (text label)"
       ASSESSMENT_SUBNBHD = "Address Assessment SubNeighborhood Name"
       CENSUS_BLOCK = "Census Block Value Address is in"
       CENSUS_BLOCKGROUP = "Census Block Group value"
