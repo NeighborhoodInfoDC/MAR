@@ -24,9 +24,7 @@
 ** Define libraries **;
 %DCData_lib( MAR )
 
-/*filename xin dde "excel|&_dcdata_r_path\MAR\Prog\[StreetAlt.xls]StreetAlt!r6c1:r5000c2" lrecl=256 notab;*/
 filename xin "&_dcdata_r_path\MAR\Prog\StreetAlt.csv" lrecl=256;
-
 
 data StreetAlt;
 
@@ -80,7 +78,7 @@ run;
 ** Create $MARSTRTALT format for correcting street names **;
 
 %Data_to_format(
-  FmtLib=MAR,
+  FmtLib=MAR_r,
   FmtName=$maraltstname,
   Data=StreetAlt,
   Value=altname,
@@ -92,6 +90,4 @@ run;
 )
 
 run;
-
-
 

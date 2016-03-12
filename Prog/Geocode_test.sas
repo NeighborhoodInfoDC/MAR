@@ -17,8 +17,6 @@
 ** Define libraries **;
 %DCData_lib( MAR )
 
-%let ver = 6.2;
-
 data A;
 
   retain city 'Washington' state 'DC';
@@ -261,8 +259,12 @@ data A;
   zip = 20001;
   address = '900 S Street NW';
   output;
+
+  label address = 'Street address';  
   
 run;
+
+options spool;
 
 %DC_geocode(
   data = A,
@@ -270,16 +272,19 @@ run;
   zip = zip,
   out = A_geo,
   geo_match = Y,
-  debug = Y,
+  debug = N,
   mprint = Y
 )
+
+proc contents data=A;
+run;
 
 proc contents data=A_geo;
 run;
 
 options orientation=landscape;
 
-ods html body="C:\DCData\Libraries\MAR\Prog\Geocode_test.html" style=Analysis;
+ods html body="&_dcdata_l_path\MAR\Prog\Geocode_test.html" style=Analysis;
 ods listing close;
 
 proc print data=A_geo;
