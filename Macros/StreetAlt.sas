@@ -26,7 +26,7 @@
 
     length streetname altname $ 50;
     
-    infile xin missover dsd firstobs=6;
+    infile xin missover dsd firstobs=2;
 
     input altname streetname;
 
