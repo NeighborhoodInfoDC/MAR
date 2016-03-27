@@ -273,7 +273,7 @@ options spool;
   out = A_geo,
   geo_match = Y,
   debug = N,
-  mprint = Y
+  streetalt_file=D:\DCData\Libraries\MAR\Prog\StreetAlt2.txt
 )
 
 proc contents data=A;

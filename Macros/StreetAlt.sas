@@ -16,9 +16,19 @@
 
 %macro StreetAlt( infile=, print=n );
 
+  %local stopped;
+
   %push_option( mprint, quiet=Y )
 
   options nomprint;
+  
+  %if not %sysfunc( fileexist( &infile ) ) %then %do;
+    %err_mput( macro=StreetAlt, msg=Alternate street name file &infile does not exist. )
+    %err_mput( macro=StreetAlt, msg=Default street correction file will be used instead. )
+    %goto exit;
+  %end;
+
+  %note_mput( macro=StreetAlt, msg=Processing alternate street name file &infile.. )
 
   filename xin "&infile" lrecl=1000;
 
@@ -41,12 +51,12 @@
 
   ** Check for conflicting entries of alternate street spellings and
   ** invalid correct street names;
+  
+  %let stopped = 0;
 
   proc sort data=StreetAlt nodupkey;
     by altname streetname;
   run;  
-
-  %note_mput( macro=StreetAlt, msg=Processing alternate street name file &infile.. )
 
   data _null_;
 
@@ -54,46 +64,50 @@
     by altname;
 
     if not last.altname then do;
-      %err_put( macro=StreetAlt, msg="Conflicting entries for incorrect spelling of " altname )
+      %err_put( macro=StreetAlt, msg="Conflicting entries for correct spelling of street name " altname )
       %err_put( macro=StreetAlt, msg="Alternate street name spelling list NOT created." )
-      %err_put( macro=StreetAlt, msg="Please edit alternate street name file and resubmit program." )
-      abort return;
+      %err_put( macro=StreetAlt, msg="Please edit &infile and resubmit program." )
+      %err_put( macro=StreetAlt, msg="Default street correction file will be used instead." )
+      call symput( 'stopped', '1' );
+      stop;
     end;
     
     if put( streetname, $marvalidstnm. ) = " " then do;
-      %err_put( macro=StreetAlt, msg="Invalid entry for correct spelling of " streetname )
-      %err_put( macro=StreetAlt, msg="Correct street name spelling must match listing in ValidStreets.txt." )
+      %err_put( macro=StreetAlt, msg="Invalid entry for correct spelling of street name " altname " as " streetname )
+      %err_put( macro=StreetAlt, msg="Correct street spelling must match names in L:\Libraries\MAR\Doc\ValidStreets.html" )
       %err_put( macro=StreetAlt, msg="Alternate street name spelling list NOT created." )
-      %err_put( macro=StreetAlt, msg="Please edit alternate street name file and resubmit program." )
-      abort return;
+      %err_put( macro=StreetAlt, msg="Please edit &infile and resubmit program." )
+      %err_put( macro=StreetAlt, msg="Default street correction file will be used instead." )
+      call symput( 'stopped', '1' );
+      stop;
     end;
 
     if put( altname, $marvalidstnm. ) ~= " " then do;
       %warn_put( macro=StreetAlt, msg="A valid street name cannot be used as an incorrect spelling: " altname " to " streetname )
-      %warn_put( macro=StreetAlt, msg="This entry will be deleted." )
+      %warn_put( macro=StreetAlt, msg="This entry in &infile will be ignored." )
       delete;
     end;
 
   run;
   
-  %if &syserr = 0 %then %do;
+  %if &stopped = 1 %then %goto exit;
 
-    ** Create $MARSTRTALT format for correcting street names **;
+  ** Create $MARSTRTALT format for correcting street names **;
 
-    %Data_to_format(
-      FmtLib=work,
-      FmtName=$maraltstname,
-      Data=StreetAlt,
-      Value=altname,
-      Label=streetname,
-      DefaultLen=40,
-      print=&print,
-      Contents=N
-    )
+  %Data_to_format(
+    FmtLib=work,
+    FmtName=$maraltstname,
+    Data=StreetAlt,
+    Value=altname,
+    Label=streetname,
+    DefaultLen=40,
+    print=&print,
+    Contents=N
+  )
 
-    run;
-    
-  %end;
+  run;
+  
+  %exit:
   
   %pop_option( mprint, quiet=Y )
 

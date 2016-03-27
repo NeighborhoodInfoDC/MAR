@@ -44,7 +44,8 @@
 
   basefile=,                  /* Base file for address matching (if not specified, default files are used) */
   stvalidfmt=$marvalidstnm,        /* Format for validating street names */
-  staltfmt=$maraltstname,          /* Format with alternate street name spellings */
+  streetalt_file=, /* File containing street name spelling corrections (if omitted, default file is used) */
+  /*staltfmt=$maraltstname,          /* Format with alternate street name spellings */
   punct_list=%str(,.*''""<>;[]{}|_+=^$@!~`%:?),    /* List of punctuation to strip (do not include dash '-') */
 
   listunmatched=Y,              /* List nonmatching addresses (Y/N, def. Y) */
@@ -147,6 +148,15 @@
       'S' = '~S~'
       'W' = '~W~';
   run;
+  
+
+  %if &streetalt_file ~= %then %do;
+  
+    ** Create format for cleaning street name mispellings **;
+    
+    %StreetAlt( infile=&streetalt_file )
+    
+  %end;
 
   
   ** Read, clean, and parse address data **;
@@ -199,7 +209,7 @@
     ** Only apply if original street name is not valid        **;
 
     if put( _dcg_adr_streetname, &stvalidfmt.. ) = " " then do;
-      _dcg_adr_streetname_clean = put( _dcg_adr_streetname, &staltfmt.. );
+      _dcg_adr_streetname_clean = put( _dcg_adr_streetname, $maraltstname. );
     end;
     else do;
       _dcg_adr_streetname_clean = _dcg_adr_streetname;
