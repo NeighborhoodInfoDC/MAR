@@ -14,7 +14,7 @@
 **************************************************************************/
 
 
-%macro StreetAlt( infile=, print=n );
+%macro StreetAlt( infile=, print=n, lib=work );
 
   %local stopped;
 
@@ -65,8 +65,8 @@
 
     if not last.altname then do;
       %err_put( macro=StreetAlt, msg="Conflicting entries for correct spelling of street name " altname )
-      %err_put( macro=StreetAlt, msg="Alternate street name spelling list NOT created." )
       %err_put( macro=StreetAlt, msg="Please edit &infile and resubmit program." )
+      %err_put( macro=StreetAlt, msg="Alternate street name spelling list NOT created." )
       %err_put( macro=StreetAlt, msg="Default street correction file will be used instead." )
       call symput( 'stopped', '1' );
       stop;
@@ -75,8 +75,8 @@
     if put( streetname, $marvalidstnm. ) = " " then do;
       %err_put( macro=StreetAlt, msg="Invalid entry for correct spelling of street name " altname " as " streetname )
       %err_put( macro=StreetAlt, msg="Correct street spelling must match names in L:\Libraries\MAR\Doc\ValidStreets.html" )
-      %err_put( macro=StreetAlt, msg="Alternate street name spelling list NOT created." )
       %err_put( macro=StreetAlt, msg="Please edit &infile and resubmit program." )
+      %err_put( macro=StreetAlt, msg="Alternate street name spelling list NOT created." )
       %err_put( macro=StreetAlt, msg="Default street correction file will be used instead." )
       call symput( 'stopped', '1' );
       stop;
@@ -95,7 +95,7 @@
   ** Create $MARSTRTALT format for correcting street names **;
 
   %Data_to_format(
-    FmtLib=work,
+    FmtLib=&lib,
     FmtName=$maraltstname,
     Data=StreetAlt,
     Value=altname,
