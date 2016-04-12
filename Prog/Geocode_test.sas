@@ -266,7 +266,7 @@ run;
 
 options spool;
 
-%DC_geocode(
+%DC_mar_geocode(
   data = A,
   staddr = address,
   zip = zip,
@@ -284,7 +284,9 @@ run;
 
 options orientation=landscape;
 
-ods html body="&_dcdata_l_path\MAR\Prog\Geocode_test.html" style=Analysis;
+%let outhtml = %mif_select( %sysevalf(&sysver >= 9.3), Geocode_test_94.html, Geocode_test_92.html );
+
+ods html body="&outhtml" style=Analysis;
 ods listing close;
 
 proc print data=A_geo;

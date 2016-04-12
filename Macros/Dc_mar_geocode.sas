@@ -1,5 +1,5 @@
 /**************************************************************************
- Program:  DC_geocode.sas
+ Program:  DC_mar_geocode.sas
  Library:  MAR
  Project:  NeigborhoodInfo DC
  Author:   P. Tatian (with code from B. Bajaj)
@@ -13,9 +13,9 @@
   01/24/16 PAT Adapted from RealProp macro %DC_geocode().
 ******************************************************************************/
 
-/** Macro DC_geocode - Start Definition **/
+/** Macro DC_mar_geocode - Start Definition **/
 
-%macro DC_geocode( 
+%macro DC_mar_geocode( 
 
   data= ,                     /* Input data set */
   id= ,                       /* ID var(s) (opt.) */
@@ -57,9 +57,9 @@
 
   %local mversion mdate mname geo_valid u_keep_geo i gkw;
 
-  %let mversion = 2.0;
-  %let mdate = 03/7/16;
-  %let mname = DC_geocode;
+  %let mversion = 1.0;
+  %let mdate = 04/11/16;
+  %let mname = DC_mar_geocode;
 
   %push_option( mprint )
 
@@ -173,7 +173,7 @@
     
     _dcg_zip = .;
 
-    if &staddr = "" then goto _dc_geocode_end;
+    if &staddr = "" then goto _DC_mar_geocode_end;
     
     _dcg_scrub_addr = upcase( left( &staddr ) );
     
@@ -203,7 +203,7 @@
 
     %Address_parse( address=_dcg_scrub_addr, var_prefix=_dcg_adr_, debug=&debug )    
 
-    if _dcg_adr_street = "" then goto _dc_geocode_end;
+    if _dcg_adr_street = "" then goto _DC_mar_geocode_end;
 
     ** Clean street names (apply StreetAlt.xls corrections) **;
     ** Only apply if original street name is not valid        **;
@@ -224,7 +224,7 @@
                  msg="Street not found: " _dcg_adr_streetname_clean "( &staddr=" &staddr "/ " _n_= ")" )
     end;
     
-    _dc_geocode_end:    
+    _DC_mar_geocode_end:    
 
     ** Create address for passing to Proc Geocode **;
     
@@ -282,7 +282,7 @@
                        
       end;
 
-      label &staddr._std = "&staddr_lbl (standardized by %nrstr(%DC_Geocode))";
+      label &staddr._std = "&staddr_lbl (standardized by %nrstr(%DC_mar_geocode))";
       
     %end;
   
@@ -372,7 +372,7 @@
     %end;
     %else %do;
     
-      %err_mput( macro=Dc_geocode, msg=Geocoding only available for SAS versions 9.2 or later. )
+      %err_mput( macro=DC_mar_geocode, msg=Geocoding only available for SAS versions 9.2 or later. )
       %pop_option( msglevel, quiet=y )
       %goto exit;
       
@@ -440,7 +440,7 @@
 
   %note_mput( macro=&mname, msg=Exiting macro. )
 
-%mend DC_geocode;
+%mend DC_mar_geocode;
 
 /** End Macro Definition **/
 

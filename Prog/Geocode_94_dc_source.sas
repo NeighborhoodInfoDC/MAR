@@ -9,6 +9,8 @@
  
  Description:  Create Proc Geocode source data sets from MAR address
  points. File format compatible with SAS ver 9.4 and later. 
+ 
+ Also updates $marvalidstnm format and ValidStreets.html file.
 
  Modifications:
 **************************************************************************/
@@ -172,6 +174,31 @@ data
     First = Last + 1;
   end;
 
+  label
+    City = "City name"
+    City2 = "City name (all uppercase)"
+    First = "First observation for street in Geocode_94_dc_s"
+    Last  = "Last observation for street in Geocode_94_dc_s"
+    Mapidnameabrv = "State abbreviation"
+    Name = "Street name"
+    Name2 = "Street name (all uppercase)"
+    Zcta = "ZIP code tabulation area"
+    Zipcode = "ZIP code (5-digit)"
+    Fromadd = "Start of address number range"
+    N = "Number of address points in Geocode_94_dc_p"
+    Predirabrv = "Street direction prefix abbreviation"
+    Side = "Side of street"
+    Start = "Starting observation for address in Geocode_94_dc_p"
+    Sufdirabrv = "Street direction suffix abbreviation"
+    Pretypabrv = "Street type prefix abbreviation"
+    Suftypabrv = "Street type suffix abbreviation"
+    Toadd = "End of address number range"
+    LATITUDE = "Latitude of address (GCS North American Datum, 1983)"
+    LONGITUDE = "Longitude of address (GCS North American Datum, 1983)"
+    X = "X coordinate of address point (GCS North American Datum, 1983)"
+    Y = "Y coordinate of address point (GCS North American Datum, 1983)"
+  ;    
+
 run;
 
 proc datasets lib=Mar;
@@ -183,8 +210,33 @@ proc datasets lib=Mar;
 quit;
 
 %File_info( data=Mar.Geocode_94_dc_m, printobs=40, contents=y, stats=, freqvars= )
-
 %File_info( data=Mar.Geocode_94_dc_s, printobs=200, contents=y )
 %File_info( data=Mar.Geocode_94_dc_p, printobs=40, contents=y, stats=n nmiss min max )
+
+** Update metadata **;
+
+%Dc_update_meta_file(
+  ds_lib=MAR,
+  ds_name=Geocode_94_dc_m,
+  creator_process=Geocode_94_dc_source.sas,
+  restrictions=None,
+  revisions=%str(Updated with &mar_source..)
+)
+
+%Dc_update_meta_file(
+  ds_lib=MAR,
+  ds_name=Geocode_94_dc_s,
+  creator_process=Geocode_94_dc_source.sas,
+  restrictions=None,
+  revisions=%str(Updated with &mar_source..)
+)
+
+%Dc_update_meta_file(
+  ds_lib=MAR,
+  ds_name=Geocode_94_dc_p,
+  creator_process=Geocode_94_dc_source.sas,
+  restrictions=None,
+  revisions=%str(Updated with &mar_source..)
+)
 
 
