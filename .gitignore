@@ -1,18 +1,22 @@
-*.bak
+# Library specific
 
-# DCData subfolders
+
+# DCData subfolders 
+Data/
 Maps/
 Raw/
+Doc/
 Prog/Temp/
-Prog/Images/
 
 # SAS files
 *.sas7bdat
 *.sas7bcat
-*.sas7bndx
 *.log
 *.lst
+
+# Web
 *.html
+*.htm
 
 # MS Office
 *.doc
@@ -27,7 +31,7 @@ Prog/Images/
 *.rtf
 
 # Raw files
-*.csv
+## *.csv
 *.xml
 
 # Image files
@@ -36,6 +40,7 @@ Prog/Images/
 *.jpeg
 *.bmp
 *.tiff
+*.png
 
 # ArcMap
 *.dbf
@@ -50,3 +55,9 @@ Prog/Images/
 # Archives
 *.zip
 *.rar
+
+# Temporary
+*.bak
+
+# Other
+Thumbs.db

@@ -1,5 +1,5 @@
 /**************************************************************************
- Program:  Geocode_dc_source.sas
+ Program:  Geocode_94_dc_source.sas
  Library:  MAR
  Project:  NeighborhoodInfo DC
  Author:   P. Tatian
@@ -8,8 +8,8 @@
  Environment:  Local Windows session (desktop)
  
  Description:  Create Proc Geocode source data sets from MAR address
- points. File format compatible with SAS ver 9.2 and 9.3.
-
+ points. File format compatible with SAS ver 9.4 and later. 
+ 
  Also updates $marvalidstnm format and ValidStreets.html file.
 
  Modifications:
@@ -104,29 +104,30 @@ ods html close;
 ods listing;
 
 
-** Create geocoding data sets for Proc Geocode (v9.3) **;
+** Create geocoding data sets for Proc Geocode (v9.4) **;
 
 data 
-  Mar.Geocode_dc_m
-    (keep=Name Namenc Placefp Statefp Zipcode First Last
+  Mar.Geocode_94_dc_m
+    (keep=Name Name2 City City2 Mapidnameabrv Zipcode Zcta First Last
      rename=(Zipcode=Zip)
-     label="Primary street lookup data for Proc Geocode (DC MAR)")
-  Mar.Geocode_dc_s 
-    (keep=Address_id Predirabrv Sufdirabrv Suftypabrv Side Fromadd Toadd N Start &geo_vars
-     label="Secondary street lookup data for Proc Geocode (DC MAR)")
-  Mar.Geocode_dc_p
+     label="Primary street lookup data for Proc Geocode 9.4 (DC MAR)")
+  Mar.Geocode_94_dc_s 
+    (keep=Address_id Predirabrv Pretypabrv Sufdirabrv Suftypabrv Side Fromadd Toadd N Start &geo_vars
+     label="Secondary street lookup data for Proc Geocode 9.4 (DC MAR)")
+  Mar.Geocode_94_dc_p
     (keep=X Y
-     label="Tertiary street lookup data for Proc Geocode (DC MAR)");
+     label="Tertiary street lookup data for Proc Geocode 9.4 (DC MAR)");
 
   length
-    Name Namenc $ 100
-    Placefp Statefp First Last 8
-    Predirabrv Sufdirabrv $ 15 
-    Suftypabrv $ 50 
+    Name Name2 $ 100
+    Mapidnameabrv $ 2
+    First Last Zcta 8
+    Predirabrv Sufdirabrv Pretypabrv Suftypabrv $ 15 
+    City City2 $ 50 
     Side $ 1
     Fromadd Toadd N Start 8;
     
-  retain Placefp 50000 Statefp 11 Side ' ';
+  retain Mapidnameabrv 'DC' Side ' ' City 'Washington' City2 'WASHINGTON' Pretypabrv ' ';
   retain First 1 Last 0 Start 0 N 1;
 
   set Mar_parse;
@@ -140,16 +141,15 @@ data
        scan( upcase( stname ), 2, ' ' ) ~= '' then do;
       Predirabrv = substr( scan( upcase( stname ), 1, ' ' ), 1, 1 );
       Name = substr( stname, length( scan( stname, 1, ' ' ) ) + 2 );
-      Namenc = propcase( left( Name ) );
-      Name = upcase( left( compress( Name, ' ' ) ) );
+      Name2 = upcase( left( compress( Name, ' ' ) ) );
     end;
     else if stname in ( 'S', 'N', 'E', 'W' ) then do;
-      Name = '~' || trim( stname ) || '~';
-      Namenc = Name;
+      Name2 = '~' || trim( stname ) || '~';
+      Name = Name2;
     end;
     else do;
-      Name = upcase( left( compress( stname, ' ' ) ) );
-      Namenc = propcase( left( stname ) );
+      Name = propcase( left( stname ) );
+      Name2 = upcase( left( compress( stname, ' ' ) ) );
     end;
     
     Sufdirabrv = upcase( quadrant );
@@ -160,76 +160,83 @@ data
     
     Start + 1;
 
-    output Mar.Geocode_dc_p;
+    output Mar.Geocode_94_dc_p;
     
-    output Mar.Geocode_dc_s;
+    output Mar.Geocode_94_dc_s;
         
     Last + 1;    
   
   end;
   
   if last.zipcode then do;
-    output Mar.Geocode_dc_m;
+    Zcta = Zipcode;
+    output Mar.Geocode_94_dc_m;
     First = Last + 1;
   end;
-  
+
   label
-    Name = "Street name (all uppercase)"
-    Namenc = "Street name"
-    Placefp = "Place FIPS code"
-    Statefp = "State FIPS code"
-    First = "First observation for street in Geocode_dc_s"
-    Last  = "Last observation for street in Geocode_dc_s"
+    City = "City name"
+    City2 = "City name (all uppercase)"
+    First = "First observation for street in Geocode_94_dc_s"
+    Last  = "Last observation for street in Geocode_94_dc_s"
+    Mapidnameabrv = "State abbreviation"
+    Name = "Street name"
+    Name2 = "Street name (all uppercase)"
+    Zcta = "ZIP code tabulation area"
+    Zipcode = "ZIP code (5-digit)"
     Fromadd = "Start of address number range"
-    N = "Number of address points in Geocode_dc_p"
+    N = "Number of address points in Geocode_94_dc_p"
     Predirabrv = "Street direction prefix abbreviation"
     Side = "Side of street"
-    Start = "Starting observation for address in Geocode_dc_p"
+    Start = "Starting observation for address in Geocode_94_dc_p"
     Sufdirabrv = "Street direction suffix abbreviation"
+    Pretypabrv = "Street type prefix abbreviation"
     Suftypabrv = "Street type suffix abbreviation"
     Toadd = "End of address number range"
     LATITUDE = "Latitude of address (GCS North American Datum, 1983)"
     LONGITUDE = "Longitude of address (GCS North American Datum, 1983)"
     X = "X coordinate of address point (GCS North American Datum, 1983)"
     Y = "Y coordinate of address point (GCS North American Datum, 1983)"
-   ;
+  ;    
 
 run;
 
 proc datasets lib=Mar;
-    modify Geocode_dc_m;
-      index create NameZip        = (name zip);             /* street+zip search */
-      index create NameStatePlace = (name statefp placefp); /* street+city+state search */
+    modify Geocode_94_dc_m;
+      index create Name2_Zip        = (name2 zip);             /* street+zip search */
+      index create Name2_Zcta        = (name zcta);             /* street+zcta search */
+      index create Name2_MapIDNameAbrv_City2 = (name2 Mapidnameabrv City2); /* street+city+state search */
     run;
 quit;
 
-%File_info( data=Mar.Geocode_dc_m, printobs=40, contents=y, stats=, freqvars=name )
-%File_info( data=Mar.Geocode_dc_s, printobs=200, contents=y )
-%File_info( data=Mar.Geocode_dc_p, printobs=40, contents=y, stats=n nmiss min max )
+%File_info( data=Mar.Geocode_94_dc_m, printobs=40, contents=y, stats=, freqvars= )
+%File_info( data=Mar.Geocode_94_dc_s, printobs=200, contents=y )
+%File_info( data=Mar.Geocode_94_dc_p, printobs=40, contents=y, stats=n nmiss min max )
 
 ** Update metadata **;
 
 %Dc_update_meta_file(
   ds_lib=MAR,
-  ds_name=Geocode_dc_m,
-  creator_process=Geocode_dc_source.sas,
+  ds_name=Geocode_94_dc_m,
+  creator_process=Geocode_94_dc_source.sas,
   restrictions=None,
   revisions=%str(Updated with &mar_source..)
 )
 
 %Dc_update_meta_file(
   ds_lib=MAR,
-  ds_name=Geocode_dc_s,
-  creator_process=Geocode_dc_source.sas,
+  ds_name=Geocode_94_dc_s,
+  creator_process=Geocode_94_dc_source.sas,
   restrictions=None,
   revisions=%str(Updated with &mar_source..)
 )
 
 %Dc_update_meta_file(
   ds_lib=MAR,
-  ds_name=Geocode_dc_p,
-  creator_process=Geocode_dc_source.sas,
+  ds_name=Geocode_94_dc_p,
+  creator_process=Geocode_94_dc_source.sas,
   restrictions=None,
   revisions=%str(Updated with &mar_source..)
 )
+
 
