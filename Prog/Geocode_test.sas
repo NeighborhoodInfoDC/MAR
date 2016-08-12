@@ -259,6 +259,11 @@ data A;
   zip = 20001;
   address = '900 S Street NW';
   output;
+  
+  ** Address ID: 307409 **;
+  zip = .;
+  address = '5010 Kimi Gray Court, SE';
+  output;
 
   label address = 'Street address';  
   
