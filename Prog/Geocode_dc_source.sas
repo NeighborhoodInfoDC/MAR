@@ -21,6 +21,8 @@
 %DCData_lib( MAR )
 
 %let mar_source = Address_points_2016_01;
+%let revisions = Updated with &mar_source..;
+%let revisions = Correct problem with missing streets.;
 
 %** Geography variables to include in geocoding file **;
 %let geo_vars = 
@@ -132,29 +134,29 @@ data
   set Mar_parse;
   by stname zipcode street_type quadrant addrnum;
   
+  if scan( upcase( stname ), 1, ' ' ) in ( 'NORTH', 'SOUTH', 'EAST', 'WEST' ) and
+     scan( upcase( stname ), 2, ' ' ) ~= '' then do;
+    Predirabrv = substr( scan( upcase( stname ), 1, ' ' ), 1, 1 );
+    Name = substr( stname, length( scan( stname, 1, ' ' ) ) + 2 );
+    Namenc = propcase( left( Name ) );
+    Name = upcase( left( compress( Name, ' ' ) ) );
+  end;
+  else if stname in ( 'S', 'N', 'E', 'W' ) then do;
+    Name = '~' || trim( stname ) || '~';
+    Namenc = Name;
+  end;
+  else do;
+    Name = upcase( left( compress( stname, ' ' ) ) );
+    Namenc = propcase( left( stname ) );
+  end;
+  
+  Sufdirabrv = upcase( quadrant );
+  Suftypabrv = put( upcase( street_type ), $streettype_to_uspsabv. );
+  
   ** FOR NOW: Only keep first address for places with addrnumsuffix ~= '' **;
 
   if first.addrnum then do;
-    
-    if scan( upcase( stname ), 1, ' ' ) in ( 'NORTH', 'SOUTH', 'EAST', 'WEST' ) and
-       scan( upcase( stname ), 2, ' ' ) ~= '' then do;
-      Predirabrv = substr( scan( upcase( stname ), 1, ' ' ), 1, 1 );
-      Name = substr( stname, length( scan( stname, 1, ' ' ) ) + 2 );
-      Namenc = propcase( left( Name ) );
-      Name = upcase( left( compress( Name, ' ' ) ) );
-    end;
-    else if stname in ( 'S', 'N', 'E', 'W' ) then do;
-      Name = '~' || trim( stname ) || '~';
-      Namenc = Name;
-    end;
-    else do;
-      Name = upcase( left( compress( stname, ' ' ) ) );
-      Namenc = propcase( left( stname ) );
-    end;
-    
-    Sufdirabrv = upcase( quadrant );
-    Suftypabrv = put( upcase( street_type ), $streettype_to_uspsabv. );
-    
+
     Fromadd = addrnum;
     Toadd = addrnum;
     
@@ -203,8 +205,8 @@ proc datasets lib=Mar;
     run;
 quit;
 
-%File_info( data=Mar.Geocode_dc_m, printobs=40, contents=y, stats=, freqvars=name )
-%File_info( data=Mar.Geocode_dc_s, printobs=200, contents=y )
+%File_info( data=Mar.Geocode_dc_m, printobs=40, contents=y, stats=n nmiss min max, freqvars=name )
+%File_info( data=Mar.Geocode_dc_s, printobs=20, contents=y )
 %File_info( data=Mar.Geocode_dc_p, printobs=40, contents=y, stats=n nmiss min max )
 
 ** Update metadata **;
@@ -214,7 +216,7 @@ quit;
   ds_name=Geocode_dc_m,
   creator_process=Geocode_dc_source.sas,
   restrictions=None,
-  revisions=%str(Updated with &mar_source..)
+  revisions=%str(&revisions)
 )
 
 %Dc_update_meta_file(
@@ -222,7 +224,7 @@ quit;
   ds_name=Geocode_dc_s,
   creator_process=Geocode_dc_source.sas,
   restrictions=None,
-  revisions=%str(Updated with &mar_source..)
+  revisions=%str(&revisions)
 )
 
 %Dc_update_meta_file(
@@ -230,6 +232,6 @@ quit;
   ds_name=Geocode_dc_p,
   creator_process=Geocode_dc_source.sas,
   restrictions=None,
-  revisions=%str(Updated with &mar_source..)
+  revisions=%str(&revisions)
 )
 

@@ -21,6 +21,8 @@
 %DCData_lib( MAR )
 
 %let mar_source = Address_points_2016_01;
+%let revisions = Updated with &mar_source..;
+%let revisions = Correct problem with missing streets.;
 
 %** Geography variables to include in geocoding file **;
 %let geo_vars = 
@@ -133,10 +135,6 @@ data
   set Mar_parse;
   by stname zipcode street_type quadrant addrnum;
   
-  ** FOR NOW: Only keep first address for places with addrnumsuffix ~= '' **;
-
-  if first.addrnum then do;
-    
     if scan( upcase( stname ), 1, ' ' ) in ( 'NORTH', 'SOUTH', 'EAST', 'WEST' ) and
        scan( upcase( stname ), 2, ' ' ) ~= '' then do;
       Predirabrv = substr( scan( upcase( stname ), 1, ' ' ), 1, 1 );
@@ -154,6 +152,10 @@ data
     
     Sufdirabrv = upcase( quadrant );
     Suftypabrv = put( upcase( street_type ), $streettype_to_uspsabv. );
+    
+  ** FOR NOW: Only keep first address for places with addrnumsuffix ~= '' **;
+
+  if first.addrnum then do;
     
     Fromadd = addrnum;
     Toadd = addrnum;
@@ -209,8 +211,8 @@ proc datasets lib=Mar;
     run;
 quit;
 
-%File_info( data=Mar.Geocode_94_dc_m, printobs=40, contents=y, stats=, freqvars= )
-%File_info( data=Mar.Geocode_94_dc_s, printobs=200, contents=y )
+%File_info( data=Mar.Geocode_94_dc_m, printobs=40, contents=y, stats=n nmiss min max, freqvars=name2 )
+%File_info( data=Mar.Geocode_94_dc_s, printobs=20, contents=y )
 %File_info( data=Mar.Geocode_94_dc_p, printobs=40, contents=y, stats=n nmiss min max )
 
 ** Update metadata **;
@@ -220,7 +222,7 @@ quit;
   ds_name=Geocode_94_dc_m,
   creator_process=Geocode_94_dc_source.sas,
   restrictions=None,
-  revisions=%str(Updated with &mar_source..)
+  revisions=%str(&revisions)
 )
 
 %Dc_update_meta_file(
@@ -228,7 +230,7 @@ quit;
   ds_name=Geocode_94_dc_s,
   creator_process=Geocode_94_dc_source.sas,
   restrictions=None,
-  revisions=%str(Updated with &mar_source..)
+  revisions=%str(&revisions)
 )
 
 %Dc_update_meta_file(
@@ -236,7 +238,7 @@ quit;
   ds_name=Geocode_94_dc_p,
   creator_process=Geocode_94_dc_source.sas,
   restrictions=None,
-  revisions=%str(Updated with &mar_source..)
+  revisions=%str(&revisions)
 )
 
 
