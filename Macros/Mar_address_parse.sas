@@ -1,5 +1,5 @@
 /**************************************************************************
- Program:  Address_parse.sas
+ Program:  Mar_address_parse.sas
  Library:  MAR
  Project:  NeigborhoodInfo DC
  Author:   P. Tatian (with code from B. Bajaj)
@@ -14,14 +14,14 @@
   01/24/16 PAT Adapted from RealProp macro %Address_parse().
 **************************************************************************/
 
-%macro Address_parse(
+%macro Mar_address_parse(
   address= ,
   var_prefix= addr_,
   debug=N
   );
 
  %if %mparam_is_yes( &debug ) %then %do;
-   PUT "STARTING ADDRESS_PARSE() MACRO / " &address;
+   PUT "STARTING Mar_address_parse() MACRO / " &address;
  %end;
  
  length &var_prefix.begnum &var_prefix.endnum 8 &var_prefix.numsuffix $ 16;
@@ -199,7 +199,7 @@
 
  _ap_temp_ad = trim(left(compbl(_ap_temp_ad))) || "";
 
- if _ap_temp_ad = "" then goto _address_parse_end;
+ if _ap_temp_ad = "" then goto _mar_address_parse_end;
 
  _ap_temp_ad = tranwrd(_ap_temp_ad,"1ST FLOOR"," 1STFL");
  _ap_temp_ad = tranwrd(_ap_temp_ad,"2ND FLOOR"," 2NDFL");
@@ -221,10 +221,10 @@
  i_3rdfl = index(_ap_temp_ad,"3RDFL");
  i_4thfl = index(_ap_temp_ad,"4THFL");
 
- %Addr_parse_floor(1st);
- %Addr_parse_floor(2nd);
- %Addr_parse_floor(3rd);
- %Addr_parse_floor(4th);
+ %Mar_addr_parse_floor(1st);
+ %Mar_addr_parse_floor(2nd);
+ %Mar_addr_parse_floor(3rd);
+ %Mar_addr_parse_floor(4th);
  
  drop i_1stfl i_2ndfl i_3rdfl i_4thfl;
 
@@ -757,7 +757,7 @@
  
  ** Remove unit number **;
 
-  %Addr_parse_unit( debug=&debug )
+  %Mar_addr_parse_unit( debug=&debug )
 
  **** PT: Separate quadrant from street name ****;
 
@@ -800,11 +800,11 @@
       i_dash1 i_dash2 d1_wrd abc_d1w d2_wrd abc_d2w 
       _ap_: pflag f_and2;
 
-  _address_parse_end:
+  _mar_address_parse_end:
 
  %if %mparam_is_yes( &debug ) %then %do;
-   PUT "EXITING ADDRESS_PARSE() MACRO" /;
+   PUT "EXITING Mar_address_parse() MACRO" /;
  %end;
 
-%mend Address_parse;
+%mend Mar_address_parse;
 

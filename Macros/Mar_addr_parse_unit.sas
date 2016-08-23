@@ -1,12 +1,12 @@
 /**************************************************************************
- Program:  Addr_parse_unit.sas
+ Program:  Mar_addr_parse_unit.sas
  Library:  MAR
  Project:  NeigborhoodInfo DC
  Author:   P. Tatian (with code from B. Bajaj)
  Created:  1/24/16
  Version:  SAS 9.2
 
- Description:  Autocall macro used by %Address_parse() macro to
+ Description:  Autocall macro used by %Mar_address_parse() macro to
  process apartment or unit specifications.
 
  Modifications: 
@@ -14,10 +14,10 @@
   02/28/16 PAT Rewritten to use a new approach.
 **************************************************************************/
 
-%macro Addr_parse_unit(debug=N);
+%macro Mar_addr_parse_unit(debug=N);
 
   %if %mparam_is_yes( &debug ) %then %do;
-    put "Addr_parse_unit: START: " pad=;
+    put "Mar_addr_parse_unit: START: " pad=;
   %end;
   
   pad1 = '';
@@ -127,8 +127,8 @@
   pad = left( compbl( pad1 ) );
 
   %if %mparam_is_yes( &debug ) %then %do;
-    put "Addr_parse_unit: END: " pad= &var_prefix.apt=;
+    put "Mar_addr_parse_unit: END: " pad= &var_prefix.apt=;
   %end;
   
-%mend Addr_parse_unit;
+%mend Mar_addr_parse_unit;
 

@@ -45,7 +45,6 @@
   basefile=,                  /* Base file for address matching (if not specified, default files are used) */
   stvalidfmt=$marvalidstnm,        /* Format for validating street names */
   streetalt_file=, /* File containing street name spelling corrections (if omitted, default file is used) */
-  /*staltfmt=$maraltstname,          /* Format with alternate street name spellings */
   punct_list=%str(,.*''""<>;[]{}|_+=^$@!~`%:?),    /* List of punctuation to strip (do not include dash '-') */
 
   listunmatched=Y,              /* List nonmatching addresses (Y/N, def. Y) */
@@ -57,8 +56,8 @@
 
   %local mversion mdate mname geo_valid u_keep_geo i gkw;
 
-  %let mversion = 1.0;
-  %let mdate = 04/11/16;
+  %let mversion = 1.1;
+  %let mdate = 08/13/16;
   %let mname = DC_mar_geocode;
 
   %push_option( mprint )
@@ -201,7 +200,7 @@
 
     ** Parse address **;
 
-    %Address_parse( address=_dcg_scrub_addr, var_prefix=_dcg_adr_, debug=&debug )    
+    %Mar_address_parse( address=_dcg_scrub_addr, var_prefix=_dcg_adr_, debug=&debug )    
 
     if _dcg_adr_street = "" then goto _DC_mar_geocode_end;
 
