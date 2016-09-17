@@ -277,6 +277,13 @@ data A;
   output;
   address = "2600 PENNSYLVANIA AV 00";
   output;
+  
+  ** Pennsylvania Ave vs. Penn Street **;
+  zip = .;
+  address = "2555 PENN AVE NW APT 405";
+  output;
+  address = "550 PENN ST NE";
+  output;
 
   label address = 'Street address';  
   
