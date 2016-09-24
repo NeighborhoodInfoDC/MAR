@@ -85,13 +85,13 @@
       
       if wrd2 in ( 'NO', 'NUM', 'NUMBER', 'NMBR', 'NMBER', '#' ) then do;
         %Mar_addr_parse_remv_lead_zero( wrd3 )
-        &var_prefix.apt = 'APT ' || wrd3;
+        &var_prefix.apt = trim( put( put( 'UNIT', $maraltunit. ), $marvalidunit. ) ) || ' ' || wrd3;
         pad1 = trim( pad1 ) || ' ' || wrd1;
         _ap_i = i_wrd3;
       end;
       else do;
         %Mar_addr_parse_remv_lead_zero( wrd2 )
-        &var_prefix.apt = 'APT ' || wrd2;
+        &var_prefix.apt = trim( put( put( 'UNIT', $maraltunit. ), $marvalidunit. ) ) || ' ' || wrd2;
         pad1 = trim( pad1 ) || ' ' || wrd1;
         _ap_i = i_wrd2;
       end;
@@ -107,13 +107,13 @@
       
       if wrd2 in ( 'NO', 'NUM', 'NUMBER', 'NMBR', 'NMBER', '#' ) then do;
         %Mar_addr_parse_remv_lead_zero( wrd3 )
-        &var_prefix.apt = 'APT ' || wrd3;
+        &var_prefix.apt = trim( put( put( 'UNIT', $maraltunit. ), $marvalidunit. ) ) || ' ' || wrd3;
         pad1 = trim( pad1 ) || ' ' || wrd1;
         _ap_i = i_wrd3;
       end;
       else do;
         %Mar_addr_parse_remv_lead_zero( wrd2 )
-        &var_prefix.apt = 'APT ' || wrd2;
+        &var_prefix.apt = trim( put( put( 'UNIT', $maraltunit. ), $marvalidunit. ) ) || ' ' || wrd2;
         pad1 = trim( pad1 ) || ' ' || wrd1;
         _ap_i = i_wrd2;
       end;

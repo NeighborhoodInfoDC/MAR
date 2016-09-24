@@ -284,6 +284,11 @@ data A;
   output;
   address = "550 PENN ST NE";
   output;
+  
+  ** Suites **;
+  zip = .;
+  address = '2405 I ST NW STE 8A';
+  output;
 
   label address = 'Street address';  
   
