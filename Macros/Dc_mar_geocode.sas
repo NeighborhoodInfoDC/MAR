@@ -54,10 +54,10 @@
   
   );
 
-  %local mversion mdate mname geo_valid u_keep_geo i gkw;
+  %local mversion mdate mname geo_valid u_keep_geo i gkw dsid rc;
 
-  %let mversion = 1.1;
-  %let mdate = 08/13/16;
+  %let mversion = 1.2;
+  %let mdate = 09/25/16;
   %let mname = DC_mar_geocode;
 
   %push_option( mprint )
@@ -213,6 +213,13 @@
     else do;
       _dcg_adr_streetname_clean = _dcg_adr_streetname;
     end;
+    
+    ** Special handling of PENNSYLVANIA AVE and PENN ST **;
+    
+    if _dcg_adr_streettype = 'AVENUE' and _dcg_adr_streetname_clean = 'PENN' then 
+      _dcg_adr_streetname_clean = 'PENNSYLVANIA';
+    else if _dcg_adr_streettype = 'STREET' and _dcg_adr_streetname_clean = 'PENNSYLVANIA' then 
+      _dcg_adr_streetname_clean = 'PENN';
 
     file log;
 

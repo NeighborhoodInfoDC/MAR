@@ -19,8 +19,7 @@
 
 proc format library=MAR;
   value $marvalidunit (default=40)
-    "APT" = "APT"
-    "STE" = "STE"
+    "UNIT" = "UNIT"
     other = " ";
 run;
 

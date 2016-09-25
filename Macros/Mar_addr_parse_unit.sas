@@ -61,10 +61,12 @@
       ** WRD1 is a unit identifier;
       
       if wrd2 in ( 'NO', 'NUM', 'NUMBER', 'NMBR', 'NMBER', '#' ) then do;
+        %Mar_addr_parse_remv_lead_zero( wrd3 )
         &var_prefix.apt = trim( put( put( wrd1, $maraltunit. ), $marvalidunit. ) ) || ' ' || wrd3;
         _ap_i = i_wrd3;
       end;
       else do;
+        %Mar_addr_parse_remv_lead_zero( wrd2 )
         &var_prefix.apt = trim( put( put( wrd1, $maraltunit. ), $marvalidunit. ) ) || ' ' || wrd2;
         _ap_i = i_wrd2;
       end;
@@ -82,12 +84,14 @@
     ** WRD1 is a quadrant but WRD2 is not a unit identifier: assume what follows is unit number;
       
       if wrd2 in ( 'NO', 'NUM', 'NUMBER', 'NMBR', 'NMBER', '#' ) then do;
-        &var_prefix.apt = 'APT ' || wrd3;
+        %Mar_addr_parse_remv_lead_zero( wrd3 )
+        &var_prefix.apt = trim( put( put( 'UNIT', $maraltunit. ), $marvalidunit. ) ) || ' ' || wrd3;
         pad1 = trim( pad1 ) || ' ' || wrd1;
         _ap_i = i_wrd3;
       end;
       else do;
-        &var_prefix.apt = 'APT ' || wrd2;
+        %Mar_addr_parse_remv_lead_zero( wrd2 )
+        &var_prefix.apt = trim( put( put( 'UNIT', $maraltunit. ), $marvalidunit. ) ) || ' ' || wrd2;
         pad1 = trim( pad1 ) || ' ' || wrd1;
         _ap_i = i_wrd2;
       end;
@@ -102,12 +106,14 @@
     ** assume what follows WRD1 is unit number;
       
       if wrd2 in ( 'NO', 'NUM', 'NUMBER', 'NMBR', 'NMBER', '#' ) then do;
-        &var_prefix.apt = 'APT ' || wrd3;
+        %Mar_addr_parse_remv_lead_zero( wrd3 )
+        &var_prefix.apt = trim( put( put( 'UNIT', $maraltunit. ), $marvalidunit. ) ) || ' ' || wrd3;
         pad1 = trim( pad1 ) || ' ' || wrd1;
         _ap_i = i_wrd3;
       end;
       else do;
-        &var_prefix.apt = 'APT ' || wrd2;
+        %Mar_addr_parse_remv_lead_zero( wrd2 )
+        &var_prefix.apt = trim( put( put( 'UNIT', $maraltunit. ), $marvalidunit. ) ) || ' ' || wrd2;
         pad1 = trim( pad1 ) || ' ' || wrd1;
         _ap_i = i_wrd2;
       end;

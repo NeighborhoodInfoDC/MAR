@@ -265,6 +265,31 @@ data A;
   address = '5010 Kimi Gray Court, SE';
   output;
 
+  ** Apartment number with leading zero (often found in real property data) **;
+  zip = .;
+  address = "2600 PENNSYLVANIA AV NW Unit: 0504";
+  output;
+  address = "2600 PENNSYLVANIA AV NW 0504B";
+  output;
+  address = "2600 PENNSYLVANIA AV NW Apt # 0007";
+  output;
+  address = "2600 PENNSYLVANIA AV NW 0";
+  output;
+  address = "2600 PENNSYLVANIA AV 00";
+  output;
+  
+  ** Pennsylvania Ave vs. Penn Street **;
+  zip = .;
+  address = "2555 PENN AVE NW APT 405";
+  output;
+  address = "550 PENN ST NE";
+  output;
+  
+  ** Suites **;
+  zip = .;
+  address = '2405 I ST NW STE 8A';
+  output;
+
   label address = 'Street address';  
   
 run;
