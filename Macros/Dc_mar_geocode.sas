@@ -54,10 +54,10 @@
   
   );
 
-  %local mversion mdate mname geo_valid u_keep_geo i gkw;
+  %local mversion mdate mname geo_valid u_keep_geo i gkw dsid rc;
 
-  %let mversion = 1.1;
-  %let mdate = 08/13/16;
+  %let mversion = 1.2;
+  %let mdate = 09/25/16;
   %let mname = DC_mar_geocode;
 
   %push_option( mprint )
