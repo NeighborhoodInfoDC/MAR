@@ -56,8 +56,8 @@
 
   %local mversion mdate mname geo_valid u_keep_geo i gkw dsid rc;
 
-  %let mversion = 1.2;
-  %let mdate = 09/25/16;
+  %let mversion = 1.3;
+  %let mdate = 10/5/16;
   %let mname = DC_mar_geocode;
 
   %push_option( mprint )
@@ -384,7 +384,11 @@
       
     %end;
     
-    data &out;
+    data &out
+          %if %length( &ds_label ) > 0 %then %do;
+            (label=&ds_label)
+          %end;
+    ;
     
       merge _dcg_hold _dcg_outdat;
       by _dcg_rec_id;
@@ -395,6 +399,20 @@
         drop _dcg_: ;
       %end;
       
+      label
+        M_ADDR = "Geocoded address (%nrstr(%DC_mar_geocode))"
+        M_CITY = "Geocoded city (%nrstr(%DC_mar_geocode))"
+        M_OBS = "Geocoded obs from address file (%nrstr(%DC_mar_geocode))"
+        M_STATE = "Geocoded state (%nrstr(%DC_mar_geocode))"
+        M_ZIP = "Geocoded ZIP code (%nrstr(%DC_mar_geocode))"
+        _MATCHED_ = "Geocode matching level (%nrstr(%DC_mar_geocode))"
+       _NOTES_ = "Geocode notes (%nrstr(%DC_mar_geocode))"
+       _SCORE_ = "Geocode score (%nrstr(%DC_mar_geocode))"
+       _STATUS_ = "Geocode result (%nrstr(%DC_mar_geocode))"
+       X = "Geocoded longitude (%nrstr(%DC_mar_geocode))"
+       Y = "Geocoded latitude (%nrstr(%DC_mar_geocode))"
+     ;
+     
     run;
     
     %pop_option( msglevel, quiet=y )
@@ -441,6 +459,13 @@
   %end;
 
   %exit:
+    
+  %if not( %mparam_is_yes( &debug ) ) %then %do;
+    ** Cleanup temporary files **;
+    proc datasets library=work nolist nowarn;
+      delete _dcg_: /memtype=data;
+    quit;
+  %end;
 
   %pop_option( mprint )
 
