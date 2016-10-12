@@ -32,7 +32,7 @@
 
   filename xin "&infile" lrecl=1000;
 
-  data StreetAlt;
+  data _StreetAlt;
 
     length streetname altname $ 50;
     
@@ -54,13 +54,13 @@
   
   %let stopped = 0;
 
-  proc sort data=StreetAlt nodupkey;
+  proc sort data=_StreetAlt nodupkey;
     by altname streetname;
   run;  
 
   data _null_;
 
-    set StreetAlt;
+    set _StreetAlt;
     by altname;
 
     if not last.altname then do;
@@ -97,7 +97,7 @@
   %Data_to_format(
     FmtLib=&lib,
     FmtName=$maraltstname,
-    Data=StreetAlt,
+    Data=_StreetAlt,
     Value=altname,
     Label=streetname,
     DefaultLen=40,
@@ -108,6 +108,12 @@
   run;
   
   %exit:
+  
+  ** Cleanup temporary files **;
+  
+  proc datasets library=work nolist nowarn;
+    delete _StreetAlt /memtype=data;
+  quit;
   
   %pop_option( mprint, quiet=Y )
 
