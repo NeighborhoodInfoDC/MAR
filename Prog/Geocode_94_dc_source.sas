@@ -22,7 +22,6 @@
 
 %let mar_source = Address_points_2016_01;
 %let revisions = Updated with &mar_source..;
-%let revisions = Correct problem with missing streets.;
 
 %** Geography variables to include in geocoding file **;
 %let geo_vars = 
