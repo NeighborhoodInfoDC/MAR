@@ -1,9 +1,9 @@
 /**************************************************************************
- Program:  Address_points_yyyy_mm.sas
+ Program:  Address_points_2017_08.sas
  Library:  MAR
  Project:  NeighborhoodInfo DC
- Author:   []
- Created:  []
+ Author:   I Mull
+ Created:  08/24/2017
  Version:  SAS 9.4
  Environment:  Local Windows session (desktop)
  
@@ -18,5 +18,5 @@
 %DCData_lib( MAR )
 
 
-%Read_address_points( filedate='ddmmmyyyy'd ) /* Filedate should be in the SASdate format such as '01jan2017'd */
+%Read_address_points( filedate='24aug2017'd ) /* Filedate should be in the SASdate format such as '01jan2017'd */
 

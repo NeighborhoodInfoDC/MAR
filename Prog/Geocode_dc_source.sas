@@ -4,6 +4,7 @@
  Project:  NeighborhoodInfo DC
  Author:   P. Tatian
  Created:  01/23/16
+ Editted:  08/24/17
  Version:  SAS 9.2
  Environment:  Local Windows session (desktop)
  
@@ -20,7 +21,7 @@
 ** Define libraries **;
 %DCData_lib( MAR )
 
-%let mar_source = Address_points_2016_01;
+%let mar_source = Address_points_2017_08;
 %let revisions = Updated with &mar_source..;
 
 %** Geography variables to include in geocoding file **;
