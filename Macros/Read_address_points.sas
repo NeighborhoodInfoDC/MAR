@@ -33,7 +33,7 @@
  
   filename fimport "&_dcdata_r_path\MAR\Raw\&filedate_fmt\Address_Points.csv" lrecl=2000;
 
-  data &outlib..&outfile (label="Master address repository, DC street addresses (%sysfunc( putn( &filedate, mmddyys10. ) ))");
+  data &outfile (label="Master address repository, DC street addresses (%sysfunc( putn( &filedate, mmddyys10. ) ))");
 
     infile fimport delimiter = ',' missover dsd firstobs=2;
 
@@ -349,13 +349,19 @@
 
   run;
 
-  %File_info( data=&outlib..&outfile, 
-    freqvars=Address_type status res_type entrancetype state city quadrant addrnumsuffix street_type stname 
-             Assessnbhd cfsa_name newcommselect06 newcommcandidate hotspot focus_: roc )
-
   %** If final file, register metadata **;
 
   %if %mparam_is_yes( &Finalize ) %then %do;
+
+  	%Finalize_data_set( 
+	data=&outfile.,
+	out=&outfile.,
+	outlib=&outlib.,
+	label="Master address repository, DC street addresses (%sysfunc( putn( &filedate, mmddyys10. ) ))",
+	sortby=ssl,
+	restrictions=None,
+	revisions=&revisions.
+	)
   
     ** Register metadata **;
     
