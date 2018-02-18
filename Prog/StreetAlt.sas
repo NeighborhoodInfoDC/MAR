@@ -22,5 +22,5 @@
 %DCData_lib( MAR )
 
 
-%StreetAlt( infile=&_dcdata_r_path\MAR\Prog\StreetAlt.txt, print=y, lib=mar )
+%StreetAlt( infile=&_dcdata_default_path\MAR\Prog\StreetAlt.txt, print=y, lib=mar )
 
