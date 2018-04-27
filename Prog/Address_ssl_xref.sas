@@ -18,15 +18,21 @@
 %DCData_lib( MAR, local=n )
 
 
-filename fimport "&_dcdata_r_path\MAR\Raw\2013-09-11\VW_ADDRESS_SSL_XREF.txt" lrecl=256;
+filename fimport "&_dcdata_r_path\MAR\Raw\2018-04-26\Address_and_Square_Suffix_Lot_Cross_Reference.csv" lrecl=256;
+
+/*
+OBJECTID,SSL,ADDRESS_ID,MARID,SQUARE,SUFFIX,LOT,COL,PARCEL,RESERVATION,LOT_TYPE
+*/
 
 data Address_ssl_xref;
 
   infile fimport dsd stopover firstobs=2;
   
   length 
+    ObjectId 8
     Ssl $ 17
     Address_Id 8
+    MarId 8
     Square $ 4
     Suffix $ 4
     Lot $ 4
@@ -36,8 +42,10 @@ data Address_ssl_xref;
     Lot_Type $ 20;
 
   input
+    ObjectId
     Ssl
     Address_Id
+    MarId
     Square
     Suffix
     Lot
@@ -48,10 +56,37 @@ data Address_ssl_xref;
 
 run;
 
+/*
 proc sort data=Address_ssl_xref out=Mar.Address_ssl_xref;
   by Address_id;
 run;
 
+
 %File_info( data=Address_ssl_xref, freqvars=col lot_type )
+*/
+
+%Finalize_data_set( 
+  /** Finalize data set parameters **/
+  data=Address_ssl_xref,
+  out=Address_ssl_xref,
+  outlib=MAR,
+  label="MAR address ID to SSL crosswalk",
+  sortby=address_id ssl,
+  archive=N,
+  archive_name=,
+  /** Metadata parameters **/
+  creator_process=&_program,
+  restrictions=None,
+  revisions=%str(New file.),
+  /** File info parameters **/
+  contents=Y,
+  printobs=10,
+  printchar=N,
+  printvars=,
+  freqvars=,
+  stats=n sum mean stddev min max
+)
+
+
 
 run;
