@@ -38,7 +38,7 @@ proc format library=MAR;
     'O' = 'Official';
     
   value $marlottyp_to_code
-    'AIR RIGHT' = 'AIRRGHT'
+    'AIR RIGHT' = 'AIRRIG'
     'CONDO'     = 'CONDO'
     'NA'        = 'NA'
     'PARCEL'    = 'PARCEL'
@@ -47,7 +47,7 @@ proc format library=MAR;
     'TAX LOT'    = 'TAXLOT';
     
   value $marlottyp
-    'AIRRGHT' = 'Air right'
+    'AIRRIG' = 'Air right'
     'CONDO' = 'Condominium'
     'NA' = 'Not applicable'
     'PARCEL' = 'Parcel'
