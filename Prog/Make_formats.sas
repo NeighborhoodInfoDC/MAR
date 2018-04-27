@@ -37,6 +37,24 @@ proc format library=MAR;
   value $marentrtyp
     'O' = 'Official';
     
+  value $marlottyp_to_code
+    'AIR RIGHT' = 'AIRRIG'
+    'CONDO'     = 'CONDO'
+    'NA'        = 'NA'
+    'PARCEL'    = 'PARCEL'
+    'RECORD LOT' = 'RECORD'
+    'RESERVATION' = 'RESERV'
+    'TAX LOT'    = 'TAXLOT';
+    
+  value $marlottyp
+    'AIRRIG' = 'Air right'
+    'CONDO' = 'Condominium'
+    'NA' = 'Not applicable'
+    'PARCEL' = 'Parcel'
+    'RECORD' = 'Record lot'
+    'RESERV' = 'Reservation'
+    'TAXLOT' = 'Tax lot';
+    
 run;
 
 proc catalog catalog=MAR.Formats;
@@ -44,7 +62,8 @@ proc catalog catalog=MAR.Formats;
   modify marstatus (desc="MAR address status") / entrytype=formatc;
   modify marrestyp (desc="MAR residential type") / entrytype=formatc;
   modify marentrtyp (desc="MAR entrance type") / entrytype=formatc;
-
+  modify marlottyp_to_code (desc="MAR convert lot type text to codes") / entrytype=formatc;
+  modify marlottyp (desc="MAR lot type") / entrytype=formatc;
   contents;
 quit;
 
