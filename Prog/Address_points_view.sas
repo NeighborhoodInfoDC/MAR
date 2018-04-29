@@ -18,12 +18,13 @@
 ** Define libraries **;
 %DCData_lib( MAR )
 
-%let revisions = New file.;
+%let Address_points = Address_points_2017_08;
+
 
 proc sql noprint;
   create view MAR.Address_points_view (label="Master address repository, Address_points + Address_points_xy") as
     select * from 
-      Mar.Address_points_2017_08 (drop=X Y) as Address_points 
+      Mar.&Address_points (drop=X Y) as Address_points 
       left join 
       Mar.Address_points_xy as XY
       on Address_points.Address_id = XY.Address_id
@@ -39,6 +40,6 @@ run;
   ds_name=Address_points_view,
   creator_process=Address_points_view.sas,
   restrictions=None,
-  revisions=%str(&revisions)
+  revisions=%str(Update with &Address_points..)
 )
 
