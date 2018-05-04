@@ -21,8 +21,6 @@
 ** Define libraries **;
 %DCData_lib( MAR )
 
-%let mar_source = Address_points_2017_08;
-%let revisions = Updated with &mar_source..;
 
 %** Geography variables to include in geocoding file **;
 %let geo_vars = 
@@ -61,7 +59,7 @@ proc format;
 run;
 
 proc sort 
-  data=Mar.&mar_source 
+  data=Mar.Address_points_view 
     (keep=address_id address_type fulladdress addrnum addrnumsuffix stname street_type quadrant zipcode x y
           &geo_vars
      where=(address_type = 'A' and fulladdress ~= ''))
@@ -94,15 +92,19 @@ run;
 
 ** Export list of valid street names **;
 
+%fdate()
+
 ods listing close;
 ods html body="&_dcdata_r_path\Mar\Doc\ValidStreets.html" style=Minimal;
+ods csvall body="&_dcdata_r_path\Mar\Doc\ValidStreets.csv";
 
 proc print data=Mar_streetnames noobs label;
   var stname;
-  label stname = "Valid street names (&mar_source)";
+  label stname = "Valid street names (&fdate)";
 run;
 
 ods html close;
+ods csvall close;
 ods listing;
 
 
@@ -222,7 +224,7 @@ quit;
   ds_name=Geocode_94_dc_m,
   creator_process=Geocode_94_dc_source.sas,
   restrictions=None,
-  revisions=%str(&revisions)
+  revisions=%str(Updated with latest address points.)
 )
 
 %Dc_update_meta_file(
@@ -230,7 +232,7 @@ quit;
   ds_name=Geocode_94_dc_s,
   creator_process=Geocode_94_dc_source.sas,
   restrictions=None,
-  revisions=%str(&revisions)
+  revisions=%str(Updated with latest address points.)
 )
 
 %Dc_update_meta_file(
@@ -238,7 +240,7 @@ quit;
   ds_name=Geocode_94_dc_p,
   creator_process=Geocode_94_dc_source.sas,
   restrictions=None,
-  revisions=%str(&revisions)
+  revisions=%str(Updated with latest address points.)
 )
 
 
