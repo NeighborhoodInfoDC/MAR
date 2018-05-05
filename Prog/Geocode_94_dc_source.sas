@@ -199,8 +199,8 @@ data
     Toadd = "End of address number range"
     LATITUDE = "Latitude of address (GCS North American Datum, 1983)"
     LONGITUDE = "Longitude of address (GCS North American Datum, 1983)"
-    X = "X coordinate of address point (GCS North American Datum, 1983)"
-    Y = "Y coordinate of address point (GCS North American Datum, 1983)"
+    X = "X coordinate of address point (MD State Plane Coord., NAD 1983 meters)"
+    Y = "Y coordinate of address point (MD State Plane Coord., NAD 1983 meters)"
   ;    
 
 run;
