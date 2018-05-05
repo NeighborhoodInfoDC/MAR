@@ -31,7 +31,7 @@
 
   keep_geo=address_id Anc2002 Anc2012 Cluster_tr2000 Geo2000   
            Geo2010 GeoBg2010 GeoBlk2010 Psa2004 Psa2012 
-           ssl VoterPre2012 Ward2002 Ward2012,  /* List of geo vars to keep in geocoded file */
+           ssl VoterPre2012 Ward2002 Ward2012 Latitude Longitude,  /* List of geo vars to keep in geocoded file */
 
   dcg_match_score=_score_,  /* Match score */
 
@@ -100,7 +100,7 @@
 
   %let geo_valid = /address_id/Anc2002/Anc2012/Cluster_tr2000/
                    /Geo2000/Geo2010/GeoBg2010/GeoBlk2010/Psa2004/Psa2012/
-                   /ssl/VoterPre2012/Ward2002/Ward2012/;
+                   /ssl/VoterPre2012/Ward2002/Ward2012/Latitude/Longitude/;
 
   %let geo_valid = %upcase( &geo_valid );
   %let u_keep_geo = %upcase( &keep_geo );
@@ -409,8 +409,8 @@
        _NOTES_ = "Geocode notes (%nrstr(%DC_mar_geocode))"
        _SCORE_ = "Geocode score (%nrstr(%DC_mar_geocode))"
        _STATUS_ = "Geocode result (%nrstr(%DC_mar_geocode))"
-       X = "Geocoded longitude (%nrstr(%DC_mar_geocode))"
-       Y = "Geocoded latitude (%nrstr(%DC_mar_geocode))"
+       X = "Geocoded longitude (MD State Plane Coord., NAD 1983 meters)"
+       Y = "Geocoded latitude (MD State Plane Coord., NAD 1983 meters)"
      ;
      
     run;
