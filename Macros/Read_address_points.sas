@@ -13,24 +13,16 @@
  Modifications:
 **************************************************************************/
 
-%macro Read_address_points( filedate=, finalize=Y, revisions=%str(New file.) );
+%macro Read_address_points( filedate=, finalize=Y, revisions=New file. );
 
-  %local filemonth fileyear filedate_fmt outfile outlib;
+  %local filemonth fileyear filedate_fmt outfile;
 
   %let filemonth = %sysfunc( month( &filedate ) );
   %let fileyear = %sysfunc( year( &filedate ) );
   %let filedate_fmt = %sysfunc( putn( &filedate, yymmddd10. ) );
   
   %let outfile = Address_points_&fileyear._%sysfunc( putn( &filemonth, z2. ) );
-  
-  %if %mparam_is_yes( &Finalize ) and not &_remote_batch_submit %then %do;
-       %warn_mput( macro=Read_address_points, msg=%str(Not a remote batch submit session. Finalize will be set to N.) )
-       %let Finalize = N;
-  %end; 
 
-  %if %mparam_is_yes( &Finalize ) %then %let outlib = MAR;
-  %else %let outlib = WORK;
- 
   filename fimport "&_dcdata_r_path\MAR\Raw\&filedate_fmt\Address_Points.csv" lrecl=2000;
 
   data &outfile (label="Master address repository, DC street addresses (%sysfunc( putn( &filedate, mmddyys10. ) ))");
@@ -349,31 +341,15 @@
 
   run;
 
-  %** If final file, register metadata **;
-
-  %if %mparam_is_yes( &Finalize ) %then %do;
-
-  	%Finalize_data_set( 
+  %Finalize_data_set( 
 	data=&outfile.,
 	out=&outfile.,
-	outlib=&outlib.,
+	outlib=MAR,
 	label="Master address repository, DC street addresses (%sysfunc( putn( &filedate, mmddyys10. ) ))",
 	sortby=ssl,
 	restrictions=None,
-	revisions=&revisions.
+	revisions=%str(&revisions)
 	)
-  
-    ** Register metadata **;
-    
-    %Dc_update_meta_file(
-      ds_lib=MAR,
-      ds_name=&outfile,
-      creator_process=&outfile..sas,
-      restrictions=None,
-      revisions=%str(&revisions)
-    )
-    
-  %end;
 
 %mend Read_address_points;
 
