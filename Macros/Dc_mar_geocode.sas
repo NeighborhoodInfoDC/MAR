@@ -31,7 +31,8 @@
 
   keep_geo=address_id Anc2002 Anc2012 Cluster_tr2000 Geo2000   
            Geo2010 GeoBg2010 GeoBlk2010 Psa2004 Psa2012 
-           ssl VoterPre2012 Ward2002 Ward2012,  /* List of geo vars to keep in geocoded file */
+           ssl VoterPre2012 Ward2002 Ward2012 
+		   Bridgepk Stantoncommons Cluster2017,  /* List of geo vars to keep in geocoded file */
 
   dcg_match_score=_score_,  /* Match score */
 
