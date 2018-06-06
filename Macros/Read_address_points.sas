@@ -333,7 +333,7 @@
         Y = "Y Coordinate of Address Point"
         ZIPCODE = "Address location Zip code"
         Anc2002 = "Advisory Neighborhood Commission (2002)"
-        Anc2012 = "Advisory Neighborhood Commission (2002)"
+        Anc2012 = "Advisory Neighborhood Commission (2012)"
         Assessnbhd = "Assessment neighborhood"
         Geo2010 = "Full census tract ID (2010): ssccctttttt"
         GeoBg2010 = "Full census block group ID (2010): sscccttttttb"
