@@ -245,7 +245,14 @@
       if put( VoterPre2012, $vote12v. ) = "" then do;
         %Warn_put( msg="Invalid voter precinct: " _n_= address_id= vote_prcnct= )
       end;
-      
+
+	  %Block10_to_cluster17 ()
+
+	  %Block10_to_stantoncommons ()
+
+	  %Block10_to_bpk ();
+
+
       Assessnbhd = put( upcase( compress( assessment_nbhd, ' .-/' ) ), $martext_to_assessnbhd. );
       
       Zip = left( zipcode );
@@ -270,6 +277,9 @@
         VoterPre2012 $vote12a.
         Assessnbhd $marassessnbhd.
         Zip $zipa.
+		bridgepk $bpka.
+		stantoncommons $stanca.
+		cluster2017 $clus17a.
       ;
       
       rename 
@@ -345,6 +355,9 @@
         VoterPre2012 = "Voting Precinct (2012)"
         Zip = "ZIP code (5-digit)"
         nZip = "ZIP code (5-digit)"
+		bridgepk = "11th Street Bridge Park Target Area (2017)"
+		stantoncommons = "Stanton Commons (2018)"
+		cluster2017 = "Neighborhood Clusters (2017)"
         ;
 
   run;
