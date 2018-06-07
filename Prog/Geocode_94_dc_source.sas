@@ -26,7 +26,7 @@
 %let geo_vars = 
   Ward2002 Ward2012 VoterPre2012 Psa2012 Psa2004 LATITUDE
   LONGITUDE Geo2000 Geo2010 GeoBg2010 GeoBlk2010 Cluster2000
-  Cluster_tr2000 Assessnbhd Anc2002 Anc2012 ssl;
+  Cluster_tr2000 Assessnbhd Anc2002 Anc2012 Bridgepk stantoncommons Cluster2017 ssl;
 
 proc format;
   value $streettype_to_uspsabv
