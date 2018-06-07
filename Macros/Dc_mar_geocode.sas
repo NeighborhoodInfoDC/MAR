@@ -102,7 +102,8 @@
 
   %let geo_valid = /address_id/Anc2002/Anc2012/Cluster_tr2000/
                    /Geo2000/Geo2010/GeoBg2010/GeoBlk2010/Psa2004/Psa2012/
-                   /ssl/VoterPre2012/Ward2002/Ward2012/Latitude/Longitude/;
+                   /ssl/VoterPre2012/Ward2002/Ward2012/Latitude/Longitude/
+				   /Bridgepk/Stantoncommons/Cluster2017/;
 
   %let geo_valid = %upcase( &geo_valid );
   %let u_keep_geo = %upcase( &keep_geo );
