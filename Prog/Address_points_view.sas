@@ -20,11 +20,9 @@
 
 %let Address_points = Address_points_2018_06;
 
-%let revisions = Update with &Address_points. ;
-
 
 proc sql noprint;
-  create view Address_points_view (label="Master address repository, Address_points + Address_points_xy") as
+  create view Mar.Address_points_view (label="Master address repository, Address_points + Address_points_xy") as
     select * from 
       Mar.&Address_points (drop=X Y) as Address_points 
       left join 
@@ -35,16 +33,15 @@ proc sql noprint;
 
 run;
 
-
-%Finalize_data_set( 
-	data=Address_points_view,
-	out=Address_points_view,
-	outlib=MAR,
-	label="Update with &Address_points..",
-	sortby=ssl,
-	restrictions=None,
-	revisions=%str(&revisions)
-	)
+%File_info( data=Mar.Address_points_view )
+ 
+%Dc_update_meta_file(
+  ds_lib=MAR,
+  ds_name=Address_points_view,
+  creator_process=Address_points_view.sas,
+  restrictions=None,
+  revisions=%str(Update with &Address_points..)
+)
 
 
 /* End of program */
