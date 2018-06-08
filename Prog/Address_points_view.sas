@@ -18,7 +18,9 @@
 ** Define libraries **;
 %DCData_lib( MAR )
 
-%let Address_points = Address_points_2018_08;
+%let Address_points = Address_points_2018_06;
+
+%let revisions = Update with &Address_points. ;
 
 
 proc sql noprint;
