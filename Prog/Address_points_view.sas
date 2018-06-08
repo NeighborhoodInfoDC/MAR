@@ -18,11 +18,11 @@
 ** Define libraries **;
 %DCData_lib( MAR )
 
-%let Address_points = Address_points_2017_08;
+%let Address_points = Address_points_2018_08;
 
 
 proc sql noprint;
-  create view MAR.Address_points_view (label="Master address repository, Address_points + Address_points_xy") as
+  create view Address_points_view (label="Master address repository, Address_points + Address_points_xy") as
     select * from 
       Mar.&Address_points (drop=X Y) as Address_points 
       left join 
@@ -33,13 +33,16 @@ proc sql noprint;
 
 run;
 
-%File_info( data=Mar.Address_points_view )
 
-%Dc_update_meta_file(
-  ds_lib=MAR,
-  ds_name=Address_points_view,
-  creator_process=Address_points_view.sas,
-  restrictions=None,
-  revisions=%str(Update with &Address_points..)
-)
+%Finalize_data_set( 
+	data=Address_points_view,
+	out=Address_points_view,
+	outlib=MAR,
+	label="Update with &Address_points..",
+	sortby=ssl,
+	restrictions=None,
+	revisions=%str(&revisions)
+	)
 
+
+/* End of program */
