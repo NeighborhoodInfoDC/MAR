@@ -31,7 +31,9 @@
 
   keep_geo=address_id Anc2002 Anc2012 Cluster_tr2000 Geo2000   
            Geo2010 GeoBg2010 GeoBlk2010 Psa2004 Psa2012 
-           ssl VoterPre2012 Ward2002 Ward2012 Latitude Longitude,  /* List of geo vars to keep in geocoded file */
+           ssl VoterPre2012 Ward2002 Ward2012 
+		   Bridgepk Stantoncommons Cluster2017
+           Latitude Longitude,  /* List of geo vars to keep in geocoded file */
 
   dcg_match_score=_score_,  /* Match score */
 
@@ -45,7 +47,6 @@
   basefile=,                  /* Base file for address matching (if not specified, default files are used) */
   stvalidfmt=$marvalidstnm,        /* Format for validating street names */
   streetalt_file=, /* File containing street name spelling corrections (if omitted, default file is used) */
-  stnamenotfound_export=,       /* Name for export file of not found street names */
   punct_list=%str(,.*''""<>;[]{}|_+=^$@!~`%:?),    /* List of punctuation to strip (do not include dash '-') */
 
   listunmatched=Y,              /* List nonmatching addresses (Y/N, def. Y) */
@@ -101,7 +102,8 @@
 
   %let geo_valid = /address_id/Anc2002/Anc2012/Cluster_tr2000/
                    /Geo2000/Geo2010/GeoBg2010/GeoBlk2010/Psa2004/Psa2012/
-                   /ssl/VoterPre2012/Ward2002/Ward2012/Latitude/Longitude/;
+                   /ssl/VoterPre2012/Ward2002/Ward2012/Latitude/Longitude/
+				   /Bridgepk/Stantoncommons/Cluster2017/;
 
   %let geo_valid = %upcase( &geo_valid );
   %let u_keep_geo = %upcase( &keep_geo );
@@ -163,13 +165,13 @@
 
   %note_mput( macro=&mname, msg=Cleaning and parsing address data. )
 
-  data _dcg_parse (compress=no drop=_dcg_blank) _dcg_stnamenotfound (keep=_dcg_adr_streetname_clean _dcg_blank);
+  data _dcg_parse (compress=no);
   
     set &data;
     
+    retain _dcg_city 'WASHINGTON' _dcg_st 'DC';
+    
     length _dcg_scrub_addr _dcg_adr_streetname_clean _dcg_adr_geocode $ 500 _dcg_zip 8;
-
-    retain _dcg_city 'WASHINGTON' _dcg_st 'DC' _dcg_blank ' ';
     
     _dcg_zip = .;
 
@@ -226,12 +228,9 @@
 
     ** Check for valid street names **;
 
-    if put( _dcg_adr_streetname_clean, &stvalidfmt.. ) = " " then do;
-      if not( %mparam_is_yes( &quiet ) ) then do;
-        %warn_put( macro=&mname, 
-                   msg="Street not found: " _dcg_adr_streetname_clean "( &staddr=" &staddr "/ " _n_= ")" )
-      end;
-      output _dcg_stnamenotfound;
+    if put( _dcg_adr_streetname_clean, &stvalidfmt.. ) = " " and not( %mparam_is_yes( &quiet ) ) then do;
+      %warn_put( macro=&mname, 
+                 msg="Street not found: " _dcg_adr_streetname_clean "( &staddr=" &staddr "/ " _n_= ")" )
     end;
     
     _DC_mar_geocode_end:    
@@ -312,29 +311,8 @@
 
     %end;
     
-    output _dcg_parse;
-    
   run;
   
-  proc sort data=_dcg_stnamenotfound nodupkey;
-    by _dcg_adr_streetname_clean;
-  run;
-  
-  %**** Export not found street names if requested ****;
-  
-  %if %length( &stnamenotfound_export ) > 0 %then %do;
-
-    filename fexport "&stnamenotfound_export" lrecl=256;
-
-    proc export data=_dcg_stnamenotfound
-        outfile=fexport
-        dbms=csv replace;
-      putnames=no;
-    run;
-
-    filename fexport clear;
-    
-  %end;
 
   %**** Perform geo matching ****;
   
