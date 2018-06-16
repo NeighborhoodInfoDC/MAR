@@ -23,11 +23,59 @@
   pad1 = '';
   &var_prefix.apt = '';
 
-  _ap_i = 1;
-  wrd1 = scan( pad, _ap_i, ' ' );
+  _ap_i = -1;
+  wrd0 = scan( pad, _ap_i, ' ' );
   
-  do while ( wrd1 ~= '' );
+  do while ( wrd0 ~= '' );
   
+    wrd1 = scan( pad, 1, ' ' );
+    
+    pad1 = substr( pad, length( wrd1 ) + 1, length( pad ) - length( wrd0 ) );
+    
+    PUT _AP_I= PAD= WRD0= WRD1= PAD1= &var_prefix.apt=;
+  
+    if put( put( wrd0, $maraltunit. ), $marvalidunit. ) ~= '' then do;
+    
+      ** WRD0 is a unit identifier;
+     
+      &var_prefix.apt = trim( put( wrd0, $maraltunit. ) ) || ' ' || &var_prefix.apt;
+
+      pad = trim( substr( pad, 1, length( pad ) - length( wrd0 ) ) );
+      
+      leave;
+     
+    end;
+    else if 
+      put( put( wrd0, $maraltquadrant. ), $marvalidquadrant. ) ~= '' or
+      put( put( wrd0, $maraltsttyp. ), $marvalidsttyp. ) ~= '' 
+      then do;
+    
+      ** WRD0 is a quandrant or street type **;
+      
+      leave;
+      
+    end;
+    else if put( put( pad1, $maraltstname. ), $marvalidstnm. ) ~= '' then do;
+    
+      ** Remaining part of PAD is a valid street name **;
+      
+      &var_prefix.apt = trim( wrd0 ) || ' ' || &var_prefix.apt;
+      
+      leave;
+            
+    end; 
+    else do;
+    
+      ** WRD0 is part of unit number **;
+      
+      &var_prefix.apt = trim( wrd0 ) || ' ' || &var_prefix.apt;
+      
+      pad = trim( substr( pad, 1, length( pad ) - length( wrd0 ) ) );
+      
+    end;
+
+      
+/************      
     ** Check for letters followed by numbers and split into separate words;
     ** EX: APT12;
     
@@ -124,13 +172,13 @@
       pad1 = trim( pad1 ) || ' ' || wrd1;
       
     end;
+    *******************/
     
-    _ap_i = _ap_i + 1;
-    wrd1 = scan( pad, _ap_i, ' ' );
+    wrd0 = scan( pad, _ap_i, ' ' );
 
   end;
   
-  pad = left( compbl( pad1 ) );
+  pad = left( compbl( pad ) );
 
   %if %mparam_is_yes( &debug ) %then %do;
     put "Mar_addr_parse_unit: END: " pad= &var_prefix.apt=;
