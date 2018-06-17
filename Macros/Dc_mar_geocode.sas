@@ -32,7 +32,7 @@
   keep_geo=address_id Anc2002 Anc2012 Cluster_tr2000 Geo2000   
            Geo2010 GeoBg2010 GeoBlk2010 Psa2004 Psa2012 
            ssl VoterPre2012 Ward2002 Ward2012 
-		   Bridgepk Stantoncommons Cluster2017
+           Bridgepk Stantoncommons Cluster2017
            Latitude Longitude,  /* List of geo vars to keep in geocoded file */
 
   dcg_match_score=_score_,  /* Match score */
@@ -59,8 +59,8 @@
 
   %local mversion mdate mname geo_valid u_keep_geo i gkw dsid rc;
 
-  %let mversion = 1.3;
-  %let mdate = 10/5/16;
+  %let mversion = 1.4;
+  %let mdate = 6/16/18;
   %let mname = DC_mar_geocode;
 
   %push_option( mprint )
@@ -73,7 +73,7 @@
   %end;
 
   %note_mput( macro=&mname, msg=&mname macro version &mversion (&mdate) written by %str(Peter Tatian, Beata Bajaj & David DOrio). )
-  %note_mput( macro=&mname, msg=(c) 2016 The Urban Institute/NeighborhoodInfo DC - All Rights Reserved. )
+  %note_mput( macro=&mname, msg=(c) 2018 Urban Institute/Urban-Greater DC - All Rights Reserved. )
 
   %note_mput( macro=&mname, msg=Starting macro. )
 
@@ -104,7 +104,7 @@
   %let geo_valid = /address_id/Anc2002/Anc2012/Cluster_tr2000/
                    /Geo2000/Geo2010/GeoBg2010/GeoBlk2010/Psa2004/Psa2012/
                    /ssl/VoterPre2012/Ward2002/Ward2012/Latitude/Longitude/
-				   /Bridgepk/Stantoncommons/Cluster2017/;
+                   /Bridgepk/Stantoncommons/Cluster2017/;
 
   %let geo_valid = %upcase( &geo_valid );
   %let u_keep_geo = %upcase( &keep_geo );
