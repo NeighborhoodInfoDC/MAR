@@ -28,7 +28,7 @@
  length &var_prefix.street &var_prefix.apt &var_prefix.streetname &var_prefix.streettype &var_prefix.quad $ 200;
 
  **PT 08/21/05:  Added to suppress INFO messages  **;
- length wrd1 wrd2 wrd3 d1_wrd d2_wrd _dcg_adr_apt $ 200;
+ length wrd0 wrd1 wrd2 wrd3 d1_wrd d2_wrd _dcg_adr_apt $ 200;
 
  length _ap_temp_ad _ap_temp_ad_b $ 500;
  length pad pad1 $200. apt num num2 num3 numsuf $32. pflag $20.;
@@ -794,7 +794,7 @@
  &var_prefix.numsuffix = numsuf;
 
  ***Drop other variables***;
- drop num num2 num3 numsuf apt pad pad1 
+ drop num num2 num3 numsuf apt pad pad1 wrd0
       wrd1 abc_wrd1 wrd2 abc_wrd2 i_wrd2 wrd3 i_wrd3
       l1_wrd1 l2_wrd1 l3_wrd1 l1_wrd2
       i_dash1 i_dash2 d1_wrd abc_d1w d2_wrd abc_d2w 
