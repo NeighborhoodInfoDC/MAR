@@ -46,7 +46,7 @@ data A;
   address = '2730 Wisconsin Ave NW #38';
   output;
 
-  address = '2730 Wisconsin Ave NW Apt B';
+  address = '2730 Wisconsin Ave NW Apt B 4';
   output;
 
   address = '2730 Wisconsin Ave NW Apt#38';
@@ -88,6 +88,8 @@ data A;
   address = '2730 Wisconsin Ave NE';
   output;
   
+  ** No ZIP code provided **;
+  
   zip = .;
 
   address = '2730 Wisconsin Ave NW';
@@ -110,6 +112,8 @@ data A;
 
   address = '2730 Wisconsin Ave NE';
   output;
+  
+  ** Wrong ZIP code provided **;
 
   zip = 20009;
 
@@ -134,6 +138,8 @@ data A;
   address = '2730 Wisconsin Ave NE';
   output;
   
+  ** Street spelling variations **;
+  
   zip = 20007;
   
   address = '2730 Wisconsi Ave NW';
@@ -147,6 +153,14 @@ data A;
   
   address = '2730 Wisconson Ave NW';
   output;
+  
+  ** Invalid street number **;
+
+  zip = 20007;
+  address = '2731 Wisconsin Ave NW';
+  output;
+
+  ** North Capitol Street variations **;
   
   ** Address ID: 57422 **;
   zip = 20002;
@@ -267,27 +281,40 @@ data A;
 
   ** Apartment number with leading zero (often found in real property data) **;
   zip = .;
-  address = "2600 PENNSYLVANIA AV NW Unit: 0504";
+  address = '2600 PENNSYLVANIA AV NW Unit: 0504';
   output;
-  address = "2600 PENNSYLVANIA AV NW 0504B";
+  address = '2600 PENNSYLVANIA AV NW 0504B';
   output;
-  address = "2600 PENNSYLVANIA AV NW Apt # 0007";
+  address = '2600 PENNSYLVANIA AV NW Apt # 0007';
   output;
-  address = "2600 PENNSYLVANIA AV NW 0";
+  address = '2600 PENNSYLVANIA AV NW 0';
   output;
-  address = "2600 PENNSYLVANIA AV 00";
+  address = '2600 PENNSYLVANIA AV 00';
   output;
   
   ** Pennsylvania Ave vs. Penn Street **;
   zip = .;
-  address = "2555 PENN AVE NW APT 405";
+  address = '2555 PENN AVE NW APT 405';
   output;
-  address = "550 PENN ST NE";
+  address = '550 PENN ST NE';
   output;
   
   ** Suites **;
   zip = .;
   address = '2405 I ST NW STE 8A';
+  output;
+  
+  ** Street name same as a street type **;
+  zip = .;
+  address = '2337 GREEN ST';
+  output;
+  address = '2804 Terrace Road SE #100';
+  output;
+  
+  ** Ambiguous quadrant - could be NE (address id: 286612) or SW (311793) **;
+  ** MACRO RETURNS NE ADDRESS, WHICH MAY NOT BE THE DESIRED RESULT. NO SOLUTION FOR THIS AT THE MOMENT **;
+  zip = .;
+  address = '210 A Street';
   output;
 
   label address = 'Street address';  
@@ -312,12 +339,16 @@ run;
 proc contents data=A_geo;
 run;
 
+%fdate()
+
 options orientation=landscape;
 
 %let outhtml = %mif_select( %sysevalf(&sysver >= 9.3), Geocode_test_94.html, Geocode_test_92.html );
 
 ods html body="&outhtml" style=Analysis;
 ods listing close;
+
+footnote1 "&fdate";
 
 proc print data=A_geo;
   *var address zip address_std _MATCHED_ _score_ M_ADDR M_ZIP X Y Address_id ssl;
@@ -327,5 +358,6 @@ run;
 ods html close;
 ods listing;
 
+footnote1;
 
 run;

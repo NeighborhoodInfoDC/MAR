@@ -46,6 +46,13 @@ proc format library=MAR;
     "APRTMNTNUM" = "UNIT"
     "APTNUM" = "UNIT"
     "UNITNUM" = "UNIT"
+    
+    "#" = "UNIT"
+    "NO" = "UNIT"
+    "NUM" = "UNIT"
+    "NUMBER" = "UNIT"
+    "NUMBR" = "UNIT"
+    "NMBER" = "UNIT"
 
     "SUITE" = "UNIT"
     "STE" = "UNIT"

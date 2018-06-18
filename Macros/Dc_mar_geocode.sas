@@ -32,7 +32,7 @@
   keep_geo=address_id Anc2002 Anc2012 Cluster_tr2000 Geo2000   
            Geo2010 GeoBg2010 GeoBlk2010 Psa2004 Psa2012 
            ssl VoterPre2012 Ward2002 Ward2012 
-		   Bridgepk Stantoncommons Cluster2017
+           Bridgepk Stantoncommons Cluster2017
            Latitude Longitude,  /* List of geo vars to keep in geocoded file */
 
   dcg_match_score=_score_,  /* Match score */
@@ -59,8 +59,8 @@
 
   %local mversion mdate mname geo_valid u_keep_geo i gkw dsid rc;
 
-  %let mversion = 1.3;
-  %let mdate = 10/5/16;
+  %let mversion = 1.4;
+  %let mdate = 6/18/18;
   %let mname = DC_mar_geocode;
 
   %push_option( mprint )
@@ -73,7 +73,7 @@
   %end;
 
   %note_mput( macro=&mname, msg=&mname macro version &mversion (&mdate) written by %str(Peter Tatian, Beata Bajaj & David DOrio). )
-  %note_mput( macro=&mname, msg=(c) 2016 The Urban Institute/NeighborhoodInfo DC - All Rights Reserved. )
+  %note_mput( macro=&mname, msg=(c) 2018 Urban Institute/Urban-Greater DC - All Rights Reserved. )
 
   %note_mput( macro=&mname, msg=Starting macro. )
 
@@ -104,7 +104,7 @@
   %let geo_valid = /address_id/Anc2002/Anc2012/Cluster_tr2000/
                    /Geo2000/Geo2010/GeoBg2010/GeoBlk2010/Psa2004/Psa2012/
                    /ssl/VoterPre2012/Ward2002/Ward2012/Latitude/Longitude/
-				   /Bridgepk/Stantoncommons/Cluster2017/;
+                   /Bridgepk/Stantoncommons/Cluster2017/;
 
   %let geo_valid = %upcase( &geo_valid );
   %let u_keep_geo = %upcase( &keep_geo );
@@ -170,7 +170,7 @@
   
     set &data;
     
-    length _dcg_scrub_addr _dcg_adr_streetname_clean _dcg_adr_geocode $ 500 _dcg_zip 8;
+    length _dcg_staddr_std $ 80 _dcg_scrub_addr _dcg_adr_streetname_clean _dcg_adr_geocode $ 500 _dcg_zip 8;
     
     retain _dcg_city 'WASHINGTON' _dcg_st 'DC' _dcg_blank ' ';
 
@@ -267,38 +267,38 @@
     %end;  
     
   
-    %** Standardized address **;
+    ** Standardized street address **;    
+    ** If street name not valid, set standard address to blank **;
+
+    if put( _dcg_adr_streetname_clean, &stvalidfmt.. ) = " " then do;
+      _dcg_staddr_std = "";
+    end;
+    else do;
+
+      _dcg_staddr_std = left( compbl( 
+                       trim( _dcg_adr_begnum ) || " " || 
+                       trim( _dcg_adr_numsuffix ) || " " ||
+                       trim( _dcg_adr_streetname_clean ) || " " ||
+                       trim( _dcg_adr_streettype ) || " " ||
+                       trim( _dcg_adr_quad ) || " " ||
+                       trim( _dcg_adr_apt )
+                     ) );
+
+      _dcg_staddr_std = left( compbl( _dcg_staddr_std ) );
+                     
+    end;
     
     %if &staddr_std ~= %then %do;
-    
-      ** Add standardized address **;
+  
+      ** Add standardized address to output data set **;
 
-      length &staddr._std $ 80;
+      length &staddr_std $ 80;
+      
+      &staddr_std = _dcg_staddr_std;
 
-      ** If street name not valid, set standard address to blank **;
-
-      if put( _dcg_adr_streetname_clean, &stvalidfmt.. ) = " " then do;
-        &staddr._std = "";
-      end;
-      else do;
-
-        &staddr._std = left( compbl( 
-                         trim( _dcg_adr_begnum ) || " " || 
-                         trim( _dcg_adr_numsuffix ) || " " ||
-                         trim( _dcg_adr_streetname_clean ) || " " ||
-                         trim( _dcg_adr_streettype ) || " " ||
-                         trim( _dcg_adr_quad ) || " " ||
-                         trim( _dcg_adr_apt )
-                       ) );
-
-        &staddr._std = left( compbl( &staddr._std ) );
-                       
-      end;
-
-      label &staddr._std = "&staddr_lbl (standardized by %nrstr(%DC_mar_geocode))";
+      label &staddr_std = "&staddr_lbl (standardized by %nrstr(%DC_mar_geocode))";
       
     %end;
-  
   
     %** Display parsing results for debugging **;
       
@@ -422,6 +422,18 @@
       by _dcg_rec_id;
       
       M_ADDR = compress( M_ADDR, '~' );
+      
+      ** Check for exact matches **;
+      
+      length M_EXACTMATCH 3;
+      
+      if scan( _dcg_staddr_std, 1 ) = scan( m_addr, 1 ) and &dcg_match_score >= &match_score_min and
+        upcase( _MATCHED_ ) = "STREET" and upcase( _STATUS_ ) = "FOUND" then
+        M_EXACTMATCH = 1;
+      else
+        M_EXACTMATCH = 0;
+        
+      format M_EXACTMATCH dyesno.;
 
       %if not %mparam_is_yes( &debug ) %then %do;
         drop _dcg_: ;
@@ -433,6 +445,7 @@
         M_OBS = "Geocoded obs from address file (%nrstr(%DC_mar_geocode))"
         M_STATE = "Geocoded state (%nrstr(%DC_mar_geocode))"
         M_ZIP = "Geocoded ZIP code (%nrstr(%DC_mar_geocode))"
+        M_EXACTMATCH = "Geocoded street address appears to be an exact match (%nrstr(%DC_mar_geocode))"
         _MATCHED_ = "Geocode matching level (%nrstr(%DC_mar_geocode))"
        _NOTES_ = "Geocode notes (%nrstr(%DC_mar_geocode))"
        _SCORE_ = "Geocode score (%nrstr(%DC_mar_geocode))"
@@ -452,7 +465,7 @@
       proc print data=&out n='TOTAL UNMATCHED ADDRESSES: ';
         where &dcg_match_score < &match_score_min;
         var &id &staddr &staddr_std &zip &dcg_match_score;
-        title2 '***************** UNMATCHED ADDRESSES *****************';
+        title2 "**************** UNMATCHED ADDRESSES (_SCORE_ < &match_score_min) ****************";
 
       run;
       title2;
