@@ -2,7 +2,7 @@
  Program:  MAR_summary_units.sas
  Library:  MAR
  Project:  Urban-Greater DC
- Author:   Rob Pitingolo
+ Author:   Rob and Yipeng
  Created:  9/26/2018
  Version:  SAS 9.4
  Environment:  Local Windows session (desktop)
@@ -17,9 +17,10 @@
 ** Define libraries **;
 %DCData_lib( MAR )
 
-%let address_pt_date = 2017_08;
+%let address_pt_date = 2018_06;
 
 
+/* Set Address Points dataset from most recent update */
 data mar_units;
 	set mar.address_points_&address_pt_date.;
 	mar_units = ACTIVE_RES_OCCUPANCY_COUNT;
@@ -44,6 +45,7 @@ proc summary data = mar_units;
 	output out = mar&geo_suffix. sum = ;
 run;
 
+/* Final cleanup */
 data mar_units&geo_suffix.;
 	set mar&geo_suffix.;
 	if _type_ = 1;
@@ -51,12 +53,12 @@ data mar_units&geo_suffix.;
 	label mar_units = "Number of housing units, &geo_label.";
 run;
 
+/** Finalize data set  **/
 %Finalize_data_set( 
-	  /** Finalize data set parameters **/
 	  data=mar_units&geo_suffix.,
-	  out=mar_sum_units&geo_suffix.,
+	  out=mar_sum_units&geo_suffix._&address_pt_date.,
 	  outlib=MAR,
-	  label="&file_lbl",
+	  label="MAR number of housing units, &geo_label.",
 	  sortby=&geo ,
 	  /** Metadata parameters **/
 	  restrictions=None,
@@ -81,3 +83,6 @@ run;
 %mar_geo (cluster2017);
 %mar_geo (cluster2000);
 %mar_geo (stantoncommons);
+
+
+/* End of program */
