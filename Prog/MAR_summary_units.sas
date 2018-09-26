@@ -34,6 +34,8 @@ run;
 %let geo_var = %sysfunc( putc( &geo_name, $geoval. ) );
 %let geo_suffix = %sysfunc( putc( &geo_name, $geosuf. ) );
 %let geo_label = %sysfunc( putc( &geo_name, $geodlbl. ) );
+%let file_lbl = Mar units summary, DC, &geo_label;
+%let revisions=.;
 
 
 proc summary data = mar_units;
@@ -49,6 +51,33 @@ data mar_units&geo_suffix.;
 	label mar_units = "Number of housing units, &geo_label.";
 run;
 
+%Finalize_data_set( 
+	  /** Finalize data set parameters **/
+	  data=mar_units&geo_suffix.,
+	  out=mar_sum_units&geo_suffix.,
+	  outlib=MAR,
+	  label="&file_lbl",
+	  sortby=&geo ,
+	  /** Metadata parameters **/
+	  restrictions=None,
+	  revisions=%str(&revisions),
+	  /** File info parameters **/
+	  printobs=0,
+	  freqvars=&geo
+	  );
+
 %mend mar_geo;
 %mar_geo (city);
 %mar_geo (ward2012);
+%mar_geo (geo2010);
+%mar_geo (geo2000);
+%mar_geo (anc2012);
+%mar_geo (anc2002);
+%mar_geo (psa2012);
+%mar_geo (psa2004);
+%mar_geo (zip);
+%mar_geo (voterpre2012);
+%mar_geo (bridgepk);
+%mar_geo (cluster2017);
+%mar_geo (cluster2000);
+%mar_geo (stantoncommons);
