@@ -37,8 +37,9 @@ data mar_units;
 			else res_flag = 0;
 	end;
 
+	/* Because condo units have individual SSLs, we have to assume
+	   a non-match to the address pt file is a condo unit */
 	if a and ui_proptype in (" ") then res_flag = 1;
-
 
 
 	/* Count number of units by property type*/
@@ -59,6 +60,7 @@ data mar_units;
 	/* City variable */
 	city = "1";
 	format city city.;
+
 run;
 
 proc freq data = mar_units;
@@ -87,13 +89,13 @@ data mar_units&geo_suffix.;
 	set mar&geo_suffix.;
 	if _type_ = 1;
 	drop _type_ _freq_;
-	label 	total_res_units = "Number of total residential units, &geo_label."
-			total_sf_units = "Number of single-family units, &geo_label."
-			total_mfapt_units = "Number of multi-family apartment units, &geo_label."
-			total_mfcondo_units = "Number of multi-family condo units, &geo_label."
-			total_mfcoop_units = "Number of multi-family coop units, &geo_label."
-			total_other_units = "Number of other residential units, &geo_label."
-			total_nonres_units = "Number of total non-residential units, &geo_label."
+	label 	total_res_units = "Number of total residential units"
+			total_sf_units = "Number of single-family units"
+			total_mfapt_units = "Number of multi-family apartment units"
+			total_mfcondo_units = "Number of multi-family condo units"
+			total_mfcoop_units = "Number of multi-family coop units"
+			total_other_units = "Number of other residential units"
+			total_nonres_units = "Number of total non-residential units"
 			;
 run;
 
