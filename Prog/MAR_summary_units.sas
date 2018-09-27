@@ -64,20 +64,13 @@ data mar_units;
 
 run;
 
-proc freq data = mar_units;
-	tables match;
-run;
-
 
 %macro mar_geo (geo,vfmt);
-
 
 %let geo_name = %upcase( &geo );
 %let geo_var = %sysfunc( putc( &geo_name, $geoval. ) );
 %let geo_suffix = %sysfunc( putc( &geo_name, $geosuf. ) );
 %let geo_label = %sysfunc( putc( &geo_name, $geodlbl. ) );
-
-%put &geovfmt.;
 
 proc summary data = mar_units;
 	class &geo_var.;
@@ -91,6 +84,7 @@ data mar_units&geo_suffix.;
 	if _type_ = 1;
 	drop _type_ _freq_;
 
+	/* Switch missing cells to zero when applicable */
 	%macro missing_zero ();
 	%do j=1 %to 7;
 	%let var = %scan(total_res_units total_sf_units total_mfapt_units total_mfcondo_units total_mfcoop_units total_other_units total_nonres_units
@@ -102,7 +96,6 @@ data mar_units&geo_suffix.;
 	%mend missing_zero;
 	%missing_zero;
 
-
 	label 	total_res_units = "Number of total residential units"
 			total_sf_units = "Number of single-family units"
 			total_mfapt_units = "Number of multi-family apartment units"
@@ -112,6 +105,7 @@ data mar_units&geo_suffix.;
 			total_nonres_units = "Number of total non-residential units"
 			;
 
+	/* Keep geos where there is a valid format */
 	if put( &geo_var., &vfmt. )  ^= " "; 
 
 run;
