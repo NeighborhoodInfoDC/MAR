@@ -37,16 +37,23 @@ data mar_units;
 			else res_flag = 0;
 	end;
 
-	/* Remove non-res units */
-	if res_flag = 0 then delete;
+	if a and ui_proptype in (" ") then res_flag = 1;
+
+
 
 	/* Count number of units by property type*/
-	total_mar_units = ACTIVE_RES_OCCUPANCY_COUNT;
-	if ui_proptype in ("10") then total_sf_units = ACTIVE_RES_OCCUPANCY_COUNT;
-	if ui_proptype in ("13") then total_mfapt_units = ACTIVE_RES_OCCUPANCY_COUNT;
-	if ui_proptype in ("11"," ") then total_mfcondo_units = ACTIVE_RES_OCCUPANCY_COUNT;
-	if ui_proptype in ("12") then total_mfcoop_units = ACTIVE_RES_OCCUPANCY_COUNT;
-	if ui_proptype in ("19") then total_other_units = ACTIVE_RES_OCCUPANCY_COUNT;
+	if res_flag = 1 then do;
+		total_res_units = ACTIVE_RES_OCCUPANCY_COUNT;
+		if ui_proptype in ("10") then total_sf_units = ACTIVE_RES_OCCUPANCY_COUNT;
+		if ui_proptype in ("13") then total_mfapt_units = ACTIVE_RES_OCCUPANCY_COUNT;
+		if ui_proptype in ("11"," ") then total_mfcondo_units = ACTIVE_RES_OCCUPANCY_COUNT;
+		if ui_proptype in ("12") then total_mfcoop_units = ACTIVE_RES_OCCUPANCY_COUNT;
+		if ui_proptype in ("19") then total_other_units = ACTIVE_RES_OCCUPANCY_COUNT;
+	end;
+
+	if res_flag = 0 then do;
+		total_nonres_units = ACTIVE_RES_OCCUPANCY_COUNT;
+	end;
 
 
 	/* City variable */
@@ -71,7 +78,7 @@ run;
 
 proc summary data = mar_units;
 	class &geo_var.;
-	var total_mar_units total_sf_units total_mfapt_units total_mfcondo_units total_mfcoop_units total_other_units;
+	var total_res_units total_sf_units total_mfapt_units total_mfcondo_units total_mfcoop_units total_other_units total_nonres_units;
 	output out = mar&geo_suffix. sum = ;
 run;
 
@@ -80,7 +87,14 @@ data mar_units&geo_suffix.;
 	set mar&geo_suffix.;
 	if _type_ = 1;
 	drop _type_ _freq_;
-	label mar_units = "Number of housing units, &geo_label.";
+	label 	total_res_units = "Number of total residential units, &geo_label."
+			total_sf_units = "Number of single-family units, &geo_label."
+			total_mfapt_units = "Number of multi-family apartment units, &geo_label."
+			total_mfcondo_units = "Number of multi-family condo units, &geo_label."
+			total_mfcoop_units = "Number of multi-family coop units, &geo_label."
+			total_other_units = "Number of other residential units, &geo_label."
+			total_nonres_units = "Number of total non-residential units, &geo_label."
+			;
 run;
 
 /** Finalize data set  **/
