@@ -29,7 +29,7 @@ proc sort data = realprop.parcel_base out = parcel_in; by ssl; run;
 /* Set Address Points dataset from most recent update */
 data mar_units;
 	merge addpt_in (in=a)
-		  parcel_in (in=b);
+		  parcel_in (in=b where=(in_last_ownerpt=1));
 	by ssl;
 
 	/* If matched to parcel base, flag res and non-res units */
@@ -48,7 +48,7 @@ data mar_units;
 		total_res_units = ACTIVE_RES_OCCUPANCY_COUNT;
 		if ui_proptype in ("10") then total_sf_units = ACTIVE_RES_OCCUPANCY_COUNT;
 		if ui_proptype in ("13") then total_mfapt_units = ACTIVE_RES_OCCUPANCY_COUNT;
-		if ui_proptype in ("11"," ") then total_mfcondo_units = ACTIVE_RES_OCCUPANCY_COUNT;
+		if ui_proptype in ("11"," ") then total_condo_units = ACTIVE_RES_OCCUPANCY_COUNT;
 		if ui_proptype in ("12") then total_mfcoop_units = ACTIVE_RES_OCCUPANCY_COUNT;
 		if ui_proptype in ("19") then total_other_units = ACTIVE_RES_OCCUPANCY_COUNT;
 	end;
