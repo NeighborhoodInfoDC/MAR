@@ -16,16 +16,46 @@
 
 ** Define libraries **;
 %DCData_lib( MAR )
+%DCData_lib( realprop )
 
 %let address_pt_date = 2018_06;
 
 
+proc sort data = mar.address_points_&address_pt_date. out = addpt_in; by ssl; run;
+proc sort data = realprop.parcel_base out = parcel_in; by ssl; run;
+
+
 /* Set Address Points dataset from most recent update */
 data mar_units;
-	set mar.address_points_&address_pt_date.;
-	mar_units = ACTIVE_RES_OCCUPANCY_COUNT;
+	merge addpt_in (in=a)
+		  parcel_in (in=b);
+	by ssl;
+
+	/* If matched to parcel base, flag res and non-res units */
+	if b then do;
+		if ui_proptype in ("10","11","12","13","19") then res_flag = 1;
+			else res_flag = 0;
+	end;
+
+	/* Remove non-res units */
+	if res_flag = 0 then delete;
+
+	/* Count number of units by property type*/
+	total_mar_units = ACTIVE_RES_OCCUPANCY_COUNT;
+	if ui_proptype in ("10") then total_sf_units = ACTIVE_RES_OCCUPANCY_COUNT;
+	if ui_proptype in ("13") then total_mfapt_units = ACTIVE_RES_OCCUPANCY_COUNT;
+	if ui_proptype in ("11"," ") then total_mfcondo_units = ACTIVE_RES_OCCUPANCY_COUNT;
+	if ui_proptype in ("12") then total_mfcoop_units = ACTIVE_RES_OCCUPANCY_COUNT;
+	if ui_proptype in ("19") then total_other_units = ACTIVE_RES_OCCUPANCY_COUNT;
+
+
+	/* City variable */
 	city = "1";
 	format city city.;
+run;
+
+proc freq data = mar_units;
+	tables match;
 run;
 
 
@@ -41,7 +71,7 @@ run;
 
 proc summary data = mar_units;
 	class &geo_var.;
-	var mar_units;
+	var total_mar_units total_sf_units total_mfapt_units total_mfcondo_units total_mfcoop_units total_other_units;
 	output out = mar&geo_suffix. sum = ;
 run;
 
