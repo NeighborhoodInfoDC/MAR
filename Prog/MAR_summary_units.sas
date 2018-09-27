@@ -19,6 +19,7 @@
 %DCData_lib( realprop )
 
 %let address_pt_date = 2018_06;
+%let revisions= New file;
 
 
 proc sort data = mar.address_points_&address_pt_date. out = addpt_in; by ssl; run;
@@ -68,15 +69,15 @@ proc freq data = mar_units;
 run;
 
 
-%macro mar_geo (geo);
+%macro mar_geo (geo,vfmt);
+
 
 %let geo_name = %upcase( &geo );
 %let geo_var = %sysfunc( putc( &geo_name, $geoval. ) );
 %let geo_suffix = %sysfunc( putc( &geo_name, $geosuf. ) );
 %let geo_label = %sysfunc( putc( &geo_name, $geodlbl. ) );
-%let file_lbl = Mar units summary, DC, &geo_label;
-%let revisions=.;
 
+%put &geovfmt.;
 
 proc summary data = mar_units;
 	class &geo_var.;
@@ -89,6 +90,19 @@ data mar_units&geo_suffix.;
 	set mar&geo_suffix.;
 	if _type_ = 1;
 	drop _type_ _freq_;
+
+	%macro missing_zero ();
+	%do j=1 %to 7;
+	%let var = %scan(total_res_units total_sf_units total_mfapt_units total_mfcondo_units total_mfcoop_units total_other_units total_nonres_units
+					, &j., ' ');
+
+	if &var. = . then &var. = 0;
+
+	%end;
+	%mend missing_zero;
+	%missing_zero;
+
+
 	label 	total_res_units = "Number of total residential units"
 			total_sf_units = "Number of single-family units"
 			total_mfapt_units = "Number of multi-family apartment units"
@@ -97,6 +111,9 @@ data mar_units&geo_suffix.;
 			total_other_units = "Number of other residential units"
 			total_nonres_units = "Number of total non-residential units"
 			;
+
+	if put( &geo_var., &vfmt. )  ^= " "; 
+
 run;
 
 /** Finalize data set  **/
@@ -115,20 +132,21 @@ run;
 	  );
 
 %mend mar_geo;
-%mar_geo (city);
-%mar_geo (ward2012);
-%mar_geo (geo2010);
-%mar_geo (geo2000);
-%mar_geo (anc2012);
-%mar_geo (anc2002);
-%mar_geo (psa2012);
-%mar_geo (psa2004);
-%mar_geo (zip);
-%mar_geo (voterpre2012);
-%mar_geo (bridgepk);
-%mar_geo (cluster2017);
-%mar_geo (cluster2000);
-%mar_geo (stantoncommons);
+%mar_geo (city, $city.);
+%mar_geo (ward2012, $ward12v.);
+%mar_geo (geo2010, $geo10v.);
+%mar_geo (geo2000, $geo00v.);
+%mar_geo (anc2012, $anc12v.);
+%mar_geo (anc2002, $anc02v.);
+%mar_geo (psa2012, $psa12v.);
+%mar_geo (psa2004, $psa04v.);
+%mar_geo (zip, $zipv.);
+%mar_geo (voterpre2012, $vote12v.);
+%mar_geo (bridgepk, $bpkv. );
+%mar_geo (cluster2017, $clus17v.);
+%mar_geo (cluster2000, $clus00v.);
+%mar_geo (stantoncommons, $stancv.);
+
 
 
 /* End of program */
