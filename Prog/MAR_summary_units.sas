@@ -21,26 +21,40 @@
 %let address_pt_date = 2018_06;
 %let revisions= New file;
 
+/* Create a list of address IDs for condos buildings */
+data condolist;
+	set mar.address_ssl_xref;
+	if lot_type = "CONDO";
+run;
 
-proc sort data = mar.address_points_&address_pt_date. out = addpt_in; by ssl; run;
-proc sort data = realprop.parcel_base out = parcel_in; by ssl; run;
+
+/* Merge condo building list onto address pts */
+proc sort data = mar.address_points_&address_pt_date. out = addpt_in; by address_id; run;
+proc sort data = condolist out = address_ssl_xref (keep = ssl address_id Lot_type) nodupkey; by address_id; run;
+
+data condo_xref;
+	merge addpt_in address_ssl_xref;
+	by address_id;
+run;
 
 
-/* Set Address Points dataset from most recent update */
+/* Merge address pt to parcel base */
+proc sort data = condo_xref; by ssl; run;
+proc sort data = realprop.parcel_base out = parcel_in (keep = ssl ui_proptype); by ssl; run;
+
 data mar_units;
-	merge addpt_in (in=a)
-		  parcel_in (in=b where=(in_last_ownerpt=1));
+	merge condo_xref (in=a)
+		  /*parcel_in (in=b where=(in_last_ownerpt=1));*/
+		  parcel_in (in=b);
 	by ssl;
 
-	/* If matched to parcel base, flag res and non-res units */
-	if b then do;
-		if ui_proptype in ("10","11","12","13","19") then res_flag = 1;
-			else res_flag = 0;
+	if a then do;
+		if Lot_type = "CONDO" then ui_proptype = "11";
 	end;
 
-	/* Because condo units have individual SSLs, we have to assume
-	   a non-match to the address pt file is a condo unit */
-	if a and ui_proptype in (" ") then res_flag = 1;
+	/* Flag residential vs. non-residential units */
+		if ui_proptype in ("10","11","12","13","19") then res_flag = 1;
+			else if ui_proptype ^= " " then res_flag = 0;
 
 
 	/* Count number of units by property type*/
@@ -48,7 +62,7 @@ data mar_units;
 		total_res_units = ACTIVE_RES_OCCUPANCY_COUNT;
 		if ui_proptype in ("10") then total_sf_units = ACTIVE_RES_OCCUPANCY_COUNT;
 		if ui_proptype in ("13") then total_mfapt_units = ACTIVE_RES_OCCUPANCY_COUNT;
-		if ui_proptype in ("11"," ") then total_condo_units = ACTIVE_RES_OCCUPANCY_COUNT;
+		if ui_proptype in ("11") then total_condo_units = ACTIVE_RES_OCCUPANCY_COUNT;
 		if ui_proptype in ("12") then total_mfcoop_units = ACTIVE_RES_OCCUPANCY_COUNT;
 		if ui_proptype in ("19") then total_other_units = ACTIVE_RES_OCCUPANCY_COUNT;
 	end;
@@ -65,6 +79,10 @@ data mar_units;
 run;
 
 
+%let sumvars = total_res_units total_sf_units total_mfapt_units total_condo_units total_mfcoop_units total_other_units 
+			   total_nonres_units;
+
+
 %macro mar_geo (geo,vfmt);
 
 %let geo_name = %upcase( &geo );
@@ -74,7 +92,7 @@ run;
 
 proc summary data = mar_units;
 	class &geo_var.;
-	var total_res_units total_sf_units total_mfapt_units total_mfcondo_units total_mfcoop_units total_other_units total_nonres_units;
+	var &sumvars.;
 	output out = mar&geo_suffix. sum = ;
 run;
 
@@ -87,8 +105,7 @@ data mar_units&geo_suffix.;
 	/* Switch missing cells to zero when applicable */
 	%macro missing_zero ();
 	%do j=1 %to 7;
-	%let var = %scan(total_res_units total_sf_units total_mfapt_units total_mfcondo_units total_mfcoop_units total_other_units total_nonres_units
-					, &j., ' ');
+	%let var = %scan(&sumvars. , &j., ' ');
 
 	if &var. = . then &var. = 0;
 
@@ -99,7 +116,7 @@ data mar_units&geo_suffix.;
 	label 	total_res_units = "Number of total residential units"
 			total_sf_units = "Number of single-family units"
 			total_mfapt_units = "Number of multi-family apartment units"
-			total_mfcondo_units = "Number of multi-family condo units"
+			total_condo_units = "Number of multi-family condo units"
 			total_mfcoop_units = "Number of multi-family coop units"
 			total_other_units = "Number of other residential units"
 			total_nonres_units = "Number of total non-residential units"
