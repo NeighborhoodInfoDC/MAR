@@ -116,7 +116,7 @@ data mar_units&geo_suffix.;
 	label 	total_res_units = "Number of total residential units"
 			total_sf_units = "Number of single-family units"
 			total_mfapt_units = "Number of multi-family apartment units"
-			total_condo_units = "Number of multi-family condo units"
+			total_condo_units = "Number of condominium units"
 			total_mfcoop_units = "Number of multi-family coop units"
 			total_other_units = "Number of other residential units"
 			total_nonres_units = "Number of total non-residential units"
