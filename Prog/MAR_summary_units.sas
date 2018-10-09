@@ -132,7 +132,7 @@ run;
 	  data=mar_units&geo_suffix.,
 	  out=mar_sum_units&geo_suffix._&address_pt_date.,
 	  outlib=MAR,
-	  label="MAR number of housing units, &geo_label.",
+	  label="MAR number of housing units as of &address_pt_date., &geo_label.",
 	  sortby=&geo ,
 	  /** Metadata parameters **/
 	  restrictions=None,
