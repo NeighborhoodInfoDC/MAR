@@ -4,7 +4,7 @@
  Project:  NeighborhoodInfo DC
  Author:   P. Tatian
  Created:  09/27/14
- Version:  SAS 9.2
+ Version:  SAS 9.4
  Environment:  Local Windows session (desktop)
  
  Description:  Read in latest MAR address-SSL crosswalk file.
@@ -12,7 +12,8 @@
  Data downloaded from 
  http://opendata.dc.gov/datasets/address-and-square-suffix-lot-cross-reference
 
- Modifications:
+ Modifications: PT 4-26-2018 Updated with 4/26/2018 download.
+				LH 3-15-2019 Updated with 3/15/2019 download.
 **************************************************************************/
 
 %include "L:\SAS\Inc\StdLocal.sas";
@@ -20,10 +21,10 @@
 ** Define libraries **;
 %DCData_lib( MAR )
 
-%let revisions = Updated with 4/26/2018 download.;
+%let revisions = Updated with 3/15/2019 download.;
 
 
-filename fimport "&_dcdata_r_path\MAR\Raw\2018-04-26\Address_and_Square_Suffix_Lot_Cross_Reference.csv" lrecl=256;
+filename fimport "&_dcdata_r_path\MAR\Raw\2019-03-15\Address_and_Square_Suffix_Lot_Cross_Reference.csv" lrecl=256;
 
 data Address_ssl_xref;
 
