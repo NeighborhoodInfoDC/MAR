@@ -32,8 +32,10 @@
     informat X best32. ;
     informat Y best32. ;
     informat OBJECTID_12 best32. ;
+	informat OBJECTID best32. ;
     informat SITE_ADDRESS_PK best32. ;
     informat ADDRESS_ID best32. ;
+	informat ROADWAYSEGID best32. ;
     informat STATUS $32. ;
     informat SSL $17. ;
     informat TYPE_ $32. ;
@@ -50,6 +52,12 @@
     informat SUFFIX $4. ;
     informat LOT $4. ;
     informat NATIONALGRID $32. ;
+	informat ZIPCODE4 $10. ;
+	informat XCOORD best32. ;
+	informat YCOORD best32. ;
+	informat STATUS_ID best32. ;	
+	informat METADATA_ID	best32. ;
+	informat OBJECTID_1 best32. ;
     informat ASSESSMENT_NBHD $32. ;
     informat ASSESSMENT_SUBNBHD $80. ;
     informat CFSA_NAME $80. ;
@@ -86,8 +94,10 @@
       X
       Y
       OBJECTID_12
+	  OBJECTID
       SITE_ADDRESS_PK
       ADDRESS_ID
+	  ROADWAYSEGID
       STATUS $
       SSL $
       TYPE_ $
@@ -104,6 +114,12 @@
       SUFFIX $
       LOT $
       NATIONALGRID $
+	  ZIPCODE4 $
+	  XCOORD
+	  YCOORD
+	  STATUS_ID 	
+	  METADATA_ID
+	  OBJECTID_1 
       ASSESSMENT_NBHD $
       ASSESSMENT_SUBNBHD $
       CFSA_NAME $
@@ -290,6 +306,7 @@
         ACTIVE_RES_OCCUPANCY_COUNT = "Number of housing units at the primary address"
         ACTIVE_RES_UNIT_COUNT = "Active residential use count"
         ADDRESS_ID = "Address identifier"
+		ROADWAYSEGID = "Roadway segment ID"
         ADDRNUM = "Address location house number"
         ADDRNUMSUFFIX = "Address location house number suffix"
         ANC = "Address location Advisory Neighborhood Commission"
@@ -311,7 +328,8 @@
         NATIONALGRID = "Address location national grid coordinate"
         NEWCOMMCANDIDATE = "Address location New Community Candidate"
         NEWCOMMSELECT06 = "Address location New Community Selected 2006"
-        OBJECTID_12 = "Internal feature number."
+        OBJECTID_12 = "Internal feature number"
+		OBJECTID = "Internal feature number"
         POLDIST = "Address location police district"
         PSA = "Address location Police Service Area"
         QUADRANT = "Address location quadrant name"
@@ -350,6 +368,12 @@
 		bridgepk = "11th Street Bridge Park Target Area (2017)"
 		stantoncommons = "Stanton Commons (2018)"
 		cluster2017 = "Neighborhood Clusters (2017)"
+		ZIPCODE4 = "Zip +4"
+		XCOORD = "X Coordinate"
+		YCOORD = "Y Coordinate"
+		STATUS_ID = "Status ID"
+		METADATA_ID = "Internal ID Number"
+		OBJECTID_1 = "Internal feature number"
         ;
 
   run;
