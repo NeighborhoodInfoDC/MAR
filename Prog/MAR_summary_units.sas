@@ -19,6 +19,7 @@
 %DCData_lib( realprop )
 
 %let address_pt_date = 2018_06;
+%let update_year = 2018;
 %let revisions= New file;
 
 /* Create a list of address IDs for condos buildings */
@@ -59,16 +60,16 @@ data mar_units;
 
 	/* Count number of units by property type*/
 	if res_flag = 1 then do;
-		total_res_units = ACTIVE_RES_OCCUPANCY_COUNT;
-		if ui_proptype in ("10") then total_sf_units = ACTIVE_RES_OCCUPANCY_COUNT;
-		if ui_proptype in ("13") then total_mfapt_units = ACTIVE_RES_OCCUPANCY_COUNT;
-		if ui_proptype in ("11") then total_condo_units = ACTIVE_RES_OCCUPANCY_COUNT;
-		if ui_proptype in ("12") then total_mfcoop_units = ACTIVE_RES_OCCUPANCY_COUNT;
-		if ui_proptype in ("19") then total_other_units = ACTIVE_RES_OCCUPANCY_COUNT;
+		total_res_units_&update_year. = ACTIVE_RES_OCCUPANCY_COUNT;
+		if ui_proptype in ("10") then total_sf_units_&update_year. = ACTIVE_RES_OCCUPANCY_COUNT;
+		if ui_proptype in ("13") then total_mfapt_units_&update_year. = ACTIVE_RES_OCCUPANCY_COUNT;
+		if ui_proptype in ("11") then total_condo_units_&update_year. = ACTIVE_RES_OCCUPANCY_COUNT;
+		if ui_proptype in ("12") then total_mfcoop_units_&update_year. = ACTIVE_RES_OCCUPANCY_COUNT;
+		if ui_proptype in ("19") then total_other_units_&update_year. = ACTIVE_RES_OCCUPANCY_COUNT;
 	end;
 
 	if res_flag = 0 then do;
-		total_nonres_units = ACTIVE_RES_OCCUPANCY_COUNT;
+		total_nonres_units_&update_year. = ACTIVE_RES_OCCUPANCY_COUNT;
 	end;
 
 
@@ -79,8 +80,9 @@ data mar_units;
 run;
 
 
-%let sumvars = total_res_units total_sf_units total_mfapt_units total_condo_units total_mfcoop_units total_other_units 
-			   total_nonres_units;
+%let sumvars = total_res_units_&update_year. total_sf_units_&update_year. total_mfapt_units_&update_year. total_condo_units_&update_year. 
+			   total_mfcoop_units_&update_year. total_other_units_&update_year. total_nonres_units_&update_year.;
+
 
 
 %macro mar_geo (geo,vfmt);
@@ -113,13 +115,13 @@ data mar_units&geo_suffix.;
 	%mend missing_zero;
 	%missing_zero;
 
-	label 	total_res_units = "Number of total residential units"
-			total_sf_units = "Number of single-family units"
-			total_mfapt_units = "Number of multi-family apartment units"
-			total_condo_units = "Number of condominium units"
-			total_mfcoop_units = "Number of multi-family coop units"
-			total_other_units = "Number of other residential units"
-			total_nonres_units = "Number of total non-residential units"
+	label 	total_res_units_&update_year. = "Number of total residential units &update_year."
+			total_sf_units_&update_year. = "Number of single-family units &update_year."
+			total_mfapt_units_&update_year. = "Number of multi-family apartment units &update_year."
+			total_condo_units_&update_year. = "Number of condominium units &update_year."
+			total_mfcoop_units_&update_year. = "Number of multi-family coop units &update_year."
+			total_other_units_&update_year. = "Number of other residential units &update_year."
+			total_nonres_units_&update_year. = "Number of total non-residential units &update_year."
 			;
 
 	/* Keep geos where there is a valid format */
