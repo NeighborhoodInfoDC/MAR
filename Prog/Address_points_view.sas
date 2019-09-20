@@ -21,13 +21,10 @@
 %let Address_points = Address_points_2019_09;
 
 
-proc sql noprint;
+  proc sql noprint;
   create view Mar.Address_points_view (label="Master address repository, Address_points + Address_points_xy") as
     select * from 
       Mar.&Address_points (drop=X Y) as Address_points 
-      left join 
-      Mar.Address_points_xy as XY
-      on Address_points.Address_id = XY.Address_id
      order by Address_points.Address_id;
   quit;
 
