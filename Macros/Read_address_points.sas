@@ -29,8 +29,8 @@
 
     infile fimport delimiter = ',' missover dsd firstobs=2;
 
-    informat X best32. ;
-    informat Y best32. ;
+    informat X_in best32. ;
+    informat Y_in best32. ;
     informat OBJECTID_12 best32. ;
 	informat OBJECTID best32. ;
     informat SITE_ADDRESS_PK best32. ;
@@ -91,8 +91,8 @@
     informat SMD_2012 $32. ;
     
     input
-      X
-      Y
+      X_in
+      Y_in
       OBJECTID_12
 	  OBJECTID
       SITE_ADDRESS_PK
@@ -295,6 +295,10 @@
         xRes_type=Res_type
         xEntrancetype=Entrancetype
         nZip=Zipcode
+		x_in = xlat
+		y_in = xlong
+		xcoord = x
+		ycoord = y
       ;
       
       drop 
@@ -349,8 +353,8 @@
         Address_type = "Address type"
         VOTE_PRCNCT = "Address location voting precinct"
         WARD = "Address location Ward name"
-        X = "X Coordinate of Address Point"
-        Y = "Y Coordinate of Address Point"
+        X = "X Coordinate of Address Point (decimal degrees)"
+        Y = "Y Coordinate of Address Point (decimal degrees)"
         ZIPCODE = "Address location Zip code"
         Anc2002 = "Advisory Neighborhood Commission (2002)"
         Anc2012 = "Advisory Neighborhood Commission (2012)"
@@ -369,8 +373,10 @@
 		stantoncommons = "Stanton Commons (2018)"
 		cluster2017 = "Neighborhood Clusters (2017)"
 		ZIPCODE4 = "Zip +4"
-		XCOORD = "X Coordinate"
-		YCOORD = "Y Coordinate"
+		XCOORD = "X coordinate of address point (MD State Plane Coord., NAD 1983 meters)"
+		YCOORD = "Y coordinate of address point (MD State Plane Coord., NAD 1983 meters)"
+		X_in = "X coordinate of address point (decimal degrees)"
+		Y_in = "Y coordinate of address point (decimal degrees)"
 		STATUS_ID = "Status ID"
 		METADATA_ID = "Internal ID Number"
 		OBJECTID_1 = "Internal feature number"
