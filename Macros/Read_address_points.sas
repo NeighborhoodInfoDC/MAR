@@ -295,8 +295,8 @@
         xRes_type=Res_type
         xEntrancetype=Entrancetype
         nZip=Zipcode
-		x_in = xlat
-		y_in = xlong
+		x_in = lat
+		y_in = lon
 		xcoord = x
 		ycoord = y
       ;
