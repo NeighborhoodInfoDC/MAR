@@ -24,7 +24,7 @@
   proc sql noprint;
   create view Mar.Address_points_view (label="Master address repository, Address_points + Address_points_xy") as
     select * from 
-      Mar.&Address_points (drop=X Y) as Address_points 
+      Mar.&Address_points as Address_points 
      order by Address_points.Address_id;
   quit;
 
