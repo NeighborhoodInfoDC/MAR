@@ -14,6 +14,7 @@
 
  Modifications: PT 4-26-2018 Updated with 4/26/2018 download.
 				LH 3-15-2019 Updated with 3/15/2019 download.
+				LH 9-24-2019 Updated with 9/19/2019 download.
 **************************************************************************/
 
 %include "L:\SAS\Inc\StdLocal.sas";
@@ -21,10 +22,10 @@
 ** Define libraries **;
 %DCData_lib( MAR )
 
-%let revisions = Updated with 3/15/2019 download.;
+%let revisions = Updated with 9/19/2019 download.;
 
 
-filename fimport "&_dcdata_r_path\MAR\Raw\2019-03-15\Address_and_Square_Suffix_Lot_Cross_Reference.csv" lrecl=256;
+filename fimport "&_dcdata_r_path\MAR\Raw\2019-09-19\Address_and_Square_Suffix_Lot_Cross_Reference.csv" lrecl=256;
 
 data Address_ssl_xref;
 
