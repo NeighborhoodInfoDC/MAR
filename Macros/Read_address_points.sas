@@ -31,7 +31,6 @@
 
     informat X_in best32. ;
     informat Y_in best32. ;
-
     informat SITE_ADDRESS_PK best32. ;
     informat ADDRESS_ID best32. ;
 	informat ROADWAYSEGID best32. ;
@@ -56,7 +55,6 @@
 	informat YCOORD best32. ;
 	informat STATUS_ID best32. ;	
 	informat METADATA_ID	best32. ;
-
     informat ASSESSMENT_NBHD $32. ;
     informat ASSESSMENT_SUBNBHD $80. ;
     informat CFSA_NAME $80. ;
@@ -196,9 +194,9 @@
       
       ** Standard geographic vars **;
       
-      Geo2010 = '11001' || left( compress( census_tract ) );
-      GeoBg2010 = '11001' || left( compress( census_blockgroup ) );
-      GeoBlk2010 = '11001' || left( compress( census_block ) );
+	  GeoBlk2020 = '11001' || left( compress( census_block ) );
+	  GeoBg2020 = substr(GeoBlk2020,1,12);
+	  Geo2020 = substr(GeoBlk2020,1,11);
       
       if put( Geo2010, $geo10v. ) = "" then do;
         %Warn_put( msg="Invalid census tract: " _n_= address_id= census_tract= )
