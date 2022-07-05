@@ -228,10 +228,6 @@
 
 	  %Block20_to_ward22()
 
-	  if put( Ward2022, $ward22v. ) = "" then do;
-        %Warn_put( msg="Invalid ward: " _n_= address_id= ward_2022= )
-      end;
-
       %Block20_to_cluster00()
       
       %Block20_to_cluster_tr00()
