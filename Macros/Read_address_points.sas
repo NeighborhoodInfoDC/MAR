@@ -155,12 +155,12 @@
       
       length 
         Address_type xStatus xRes_type xEntrancetype $ 1
-        Ward2002 Ward2012 $ 1
+        Ward2002 Ward2012 Ward2022 $ 1
         Cluster2000 Anc2002 Anc2012 $ 2
-        Psa2012 VoterPre2012 $ 3
-        Geo2010 $ 11
-        GeoBg2010 $ 12
-        GeoBlk2010 $ 15
+        Psa2004 Psa2012 VoterPre2012 $ 3
+        Geo2020 $ 11
+        GeoBg2020 $ 12
+        GeoBlk2020 $ 15
         Assessnbhd $ 3
         Zip $ 5
         nZip 8
@@ -232,28 +232,21 @@
         %Warn_put( msg="Invalid ward: " _n_= address_id= ward_2022= )
       end;
 
-      if cluster_ ~= "" then do;
-        Cluster2000 = put( input( scan( cluster_, 2, ' ' ), 8. ), z2. );
-      end;
-      else do;
-        %Block20_to_cluster00()
-      end;
-      
-      if put( Cluster2000, $clus00v. ) = "" then do;
-        %Warn_put( msg="Invalid neighborhood cluster: " _n_= address_id= cluster_= )
-      end;
+      %Block20_to_cluster00()
       
       %Block20_to_cluster_tr00()
 
 	  %Block20_to_cluster17()
+
+	  if put( Cluster2000, $clus17v. ) = "" then do;
+        %Warn_put( msg="Invalid neighborhood cluster: " _n_= address_id= cluster_= )
+      end;
       
       %Block20_to_psa04()
 
 	  %Block20_to_psa12()
-
-	  %Block20_to_psa17()
       
-      if put( Psa2017, $psa17v. ) = "" then do;
+      if put( Psa2012, $psa12v. ) = "" then do;
         %Warn_put( msg="Invalid PSA: " _n_= address_id= psa= )
       end;
       
@@ -285,19 +278,23 @@
         xEntrancetype $marentrtyp.
         Ward2002 $ward02a.
         Ward2012 $ward12a.
+		Ward2012 $ward22a.
         Cluster2000 $clus00a.
-        Psa2012 $psa12a.
+		cluster2017 $clus17a.
+        Psa2004 $psa04a.
+		Psa2012 $psa12a.
         Anc2002 $anc02a.
         Anc2012 $anc12a.
-        Geo2010 $geo10a.
-        GeoBg2010 $bg10a.
-        GeoBlk2010 $blk10a.
+        Geo2020 $geo20a.
+        GeoBg2020 $bg20a.
+        GeoBlk2020 $blk20a.
+		Geo2010 $geo10a.
+		Geo2000 $geo00a.
         VoterPre2012 $vote12a.
         Assessnbhd $marassessnbhd.
         Zip $zipa.
 		bridgepk $bpka.
 		stantoncommons $stanca.
-		cluster2017 $clus17a.
       ;
       
       rename 
@@ -369,13 +366,16 @@
         Anc2002 = "Advisory Neighborhood Commission (2002)"
         Anc2012 = "Advisory Neighborhood Commission (2012)"
         Assessnbhd = "Assessment neighborhood"
-        Geo2010 = "Full census tract ID (2010): ssccctttttt"
-        GeoBg2010 = "Full census block group ID (2010): sscccttttttb"
-        GeoBlk2010 = "Full census block ID (2010): sscccttttttbbbb"
+        Geo2020 = "Full census tract ID (2020): ssccctttttt"
+        GeoBg2020 = "Full census block group ID (2020): sscccttttttb"
+        GeoBlk2020 = "Full census block ID (2020): sscccttttttbbbb"
+		Geo2020 = "Full census tract ID (2010): ssccctttttt"
+		Geo2020 = "Full census tract ID (2000): ssccctttttt"
         Psa2012 = "Police Service Area (2012)"
         SMD_2012 = "Single member district, 2012"
         Ward2002 = "Ward (2002)"
         Ward2012 = "Ward (2012)"
+		Ward2022 = "Ward (2022)"
         VoterPre2012 = "Voting Precinct (2012)"
         Zip = "ZIP code (5-digit)"
         nZip = "ZIP code (5-digit)"
