@@ -31,8 +31,7 @@
 
     informat X_in best32. ;
     informat Y_in best32. ;
-    informat OBJECTID_12 best32. ;
-	informat OBJECTID best32. ;
+
     informat SITE_ADDRESS_PK best32. ;
     informat ADDRESS_ID best32. ;
 	informat ROADWAYSEGID best32. ;
@@ -57,7 +56,7 @@
 	informat YCOORD best32. ;
 	informat STATUS_ID best32. ;	
 	informat METADATA_ID	best32. ;
-	informat OBJECTID_1 best32. ;
+
     informat ASSESSMENT_NBHD $32. ;
     informat ASSESSMENT_SUBNBHD $80. ;
     informat CFSA_NAME $80. ;
@@ -89,12 +88,13 @@
     informat ANC_2012 $32. ;
     informat SMD_2002 $32. ;
     informat SMD_2012 $32. ;
+	informat OBJECTID_12 best32. ;
+	informat OBJECTID best32. ;
+	informat OBJECTID_1 best32. ;
     
     input
       X_in
       Y_in
-      OBJECTID_12
-	  OBJECTID
       SITE_ADDRESS_PK
       ADDRESS_ID
 	  ROADWAYSEGID
@@ -118,8 +118,7 @@
 	  XCOORD
 	  YCOORD
 	  STATUS_ID 	
-	  METADATA_ID
-	  OBJECTID_1 
+	  METADATA_ID 
       ASSESSMENT_NBHD $
       ASSESSMENT_SUBNBHD $
       CFSA_NAME $
@@ -151,6 +150,9 @@
       ANC_2012 $
       SMD_2002 $
       SMD_2012 $
+	  OBJECTID_12
+	  OBJECTID
+	  OBJECTID_1
       ;
       
       length 
