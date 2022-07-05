@@ -198,19 +198,21 @@
 	  GeoBg2020 = substr(GeoBlk2020,1,12);
 	  Geo2020 = substr(GeoBlk2020,1,11);
       
-      if put( Geo2010, $geo10v. ) = "" then do;
+      if put( Geo2020, $geo20v. ) = "" then do;
         %Warn_put( msg="Invalid census tract: " _n_= address_id= census_tract= )
       end;
 
-      if put( GeoBg2010, $bg10v. ) = "" then do;
+      if put( GeoBg2020, $bg20v. ) = "" then do;
         %Warn_put( msg="Invalid census block group: " _n_= address_id= census_blockgroup= )
       end;
 
-      if put( GeoBlk2010, $blk10v. ) = "" then do;
+      if put( GeoBlk2020, $blk20v. ) = "" then do;
         %Warn_put( msg="Invalid census block: " _n_= address_id= census_block= )
       end;
       
-      %Block10_to_tr00()
+      %Block20_to_tr00()
+
+	  %Block20_to_tr10()
       
       Ward2002 = scan( ward_2002, 2, ' ' );
       
@@ -224,24 +226,34 @@
         %Warn_put( msg="Invalid ward: " _n_= address_id= ward_2012= )
       end;
 
+	  %Block20_to_ward22()
+
+	  if put( Ward2022, $ward22v. ) = "" then do;
+        %Warn_put( msg="Invalid ward: " _n_= address_id= ward_2022= )
+      end;
+
       if cluster_ ~= "" then do;
         Cluster2000 = put( input( scan( cluster_, 2, ' ' ), 8. ), z2. );
       end;
       else do;
-        %Block10_to_cluster00()
+        %Block20_to_cluster00()
       end;
       
       if put( Cluster2000, $clus00v. ) = "" then do;
         %Warn_put( msg="Invalid neighborhood cluster: " _n_= address_id= cluster_= )
       end;
       
-      %Block10_to_cluster_tr00()
+      %Block20_to_cluster_tr00()
+
+	  %Block20_to_cluster17()
       
-      %Block10_to_psa04()
+      %Block20_to_psa04()
+
+	  %Block20_to_psa12()
+
+	  %Block20_to_psa17()
       
-      Psa2012 = scan( psa, 4, ' ' );
-      
-      if put( Psa2012, $psa12v. ) = "" then do;
+      if put( Psa2017, $psa17v. ) = "" then do;
         %Warn_put( msg="Invalid PSA: " _n_= address_id= psa= )
       end;
       
@@ -254,11 +266,9 @@
         %Warn_put( msg="Invalid voter precinct: " _n_= address_id= vote_prcnct= )
       end;
 
-	  %Block10_to_cluster17 ()
+	  %Block20_to_stantoncommons ()
 
-	  %Block10_to_stantoncommons ()
-
-	  %Block10_to_bpk ();
+	  %Block20_to_bpk ()
 
 
       Assessnbhd = put( upcase( compress( assessment_nbhd, ' .-/' ) ), $martext_to_assessnbhd. );
