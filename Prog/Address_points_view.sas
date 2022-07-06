@@ -13,12 +13,12 @@
  Modifications:
 **************************************************************************/
 
-%include "L:\SAS\Inc\StdLocal.sas";
+%include "\\sas1\DCdata\SAS\Inc\StdLocal.sas";
 
 ** Define libraries **;
 %DCData_lib( MAR )
 
-%let Address_points = Address_points_2019_09;
+%let Address_points = Address_points_2022_07;
 
 
   proc sql noprint;
