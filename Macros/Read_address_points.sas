@@ -157,7 +157,7 @@
         Address_type xStatus xRes_type xEntrancetype $ 1
         Ward2002 Ward2012 Ward2022 $ 1
         Cluster2000 Anc2002 Anc2012 $ 2
-        Psa2004 Psa2012 Psa2017 VoterPre2012 $ 3
+        Psa2004 Psa2012 Psa2019 VoterPre2012 $ 3
         Geo2020 $ 11
         GeoBg2020 $ 12
         GeoBlk2020 $ 15
@@ -242,7 +242,7 @@
 
 	  %Block20_to_psa12()
 
-	  %Block20_to_psa17()
+	  %Block20_to_psa19()
       
       Anc2002 = scan( anc_2002, 2, ' ' );
       Anc2012 = scan( anc_2012, 2, ' ' );
@@ -277,7 +277,7 @@
 		cluster2017 $clus17a.
         Psa2004 $psa04a.
 		Psa2012 $psa12a.
-		Psa2017 $psa17a.
+		Psa2019 $psa19a.
         Anc2002 $anc02a.
         Anc2012 $anc12a.
         Geo2020 $geo20a.
@@ -368,7 +368,7 @@
 		Geo2020 = "Full census tract ID (2000): ssccctttttt"
 		Psa2004 = "Police Service Area (2004)"
         Psa2012 = "Police Service Area (2012)"
-		Psa2017 = "Police Service Area (2017)"
+		Psa2019 = "Police Service Area (2019)"
         SMD_2012 = "Single member district, 2012"
         Ward2002 = "Ward (2002)"
         Ward2012 = "Ward (2012)"
