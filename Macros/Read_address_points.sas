@@ -25,7 +25,7 @@
 
   filename fimport "&_dcdata_r_path\MAR\Raw\&filedate_fmt\Address_Points.csv" lrecl=2000;
 
-  data &outfile (label="Master address repository, DC street addresses (%sysfunc( putn( &filedate, mmddyys10. ) ))");
+  data &outfile ;
 
     infile fimport delimiter = ',' missover dsd firstobs=2;
 
@@ -157,7 +157,7 @@
         Address_type xStatus xRes_type xEntrancetype $ 1
         Ward2002 Ward2012 Ward2022 $ 1
         Cluster2000 Anc2002 Anc2012 $ 2
-        Psa2004 Psa2012 VoterPre2012 $ 3
+        Psa2004 Psa2012 Psa2017 VoterPre2012 $ 3
         Geo2020 $ 11
         GeoBg2020 $ 12
         GeoBlk2020 $ 15
@@ -194,22 +194,26 @@
       
       ** Standard geographic vars **;
       
-	  GeoBlk2020 = '11001' || left( compress( census_block ) );
+	  if census_block ^= "" then do;
+	  	GeoBlk2020 = '11001' || left( compress( census_block ) );
+	  end;
+
+	  if put( GeoBlk2020, $blk20v. ) = "" then do;
+        %Warn_put( msg="Invalid census block: " _n_= address_id= census_block= )
+      end;
+
 	  GeoBg2020 = substr(GeoBlk2020,1,12);
+
+	  if put( GeoBg2020, $bg20v. ) = "" then do;
+        %Warn_put( msg="Invalid census block group: " _n_= address_id= census_blockgroup= )
+      end;
+
 	  Geo2020 = substr(GeoBlk2020,1,11);
       
       if put( Geo2020, $geo20v. ) = "" then do;
         %Warn_put( msg="Invalid census tract: " _n_= address_id= census_tract= )
       end;
 
-      if put( GeoBg2020, $bg20v. ) = "" then do;
-        %Warn_put( msg="Invalid census block group: " _n_= address_id= census_blockgroup= )
-      end;
-
-      if put( GeoBlk2020, $blk20v. ) = "" then do;
-        %Warn_put( msg="Invalid census block: " _n_= address_id= census_block= )
-      end;
-      
       %Block20_to_tr00()
 
 	  %Block20_to_tr10()
@@ -233,18 +237,12 @@
       %Block20_to_cluster_tr00()
 
 	  %Block20_to_cluster17()
-
-	  if put( Cluster2000, $clus17v. ) = "" then do;
-        %Warn_put( msg="Invalid neighborhood cluster: " _n_= address_id= cluster_= )
-      end;
       
       %Block20_to_psa04()
 
 	  %Block20_to_psa12()
-      
-      if put( Psa2012, $psa12v. ) = "" then do;
-        %Warn_put( msg="Invalid PSA: " _n_= address_id= psa= )
-      end;
+
+	  %Block20_to_psa17()
       
       Anc2002 = scan( anc_2002, 2, ' ' );
       Anc2012 = scan( anc_2012, 2, ' ' );
@@ -279,6 +277,7 @@
 		cluster2017 $clus17a.
         Psa2004 $psa04a.
 		Psa2012 $psa12a.
+		Psa2017 $psa17a.
         Anc2002 $anc02a.
         Anc2012 $anc12a.
         Geo2020 $geo20a.
@@ -367,7 +366,9 @@
         GeoBlk2020 = "Full census block ID (2020): sscccttttttbbbb"
 		Geo2020 = "Full census tract ID (2010): ssccctttttt"
 		Geo2020 = "Full census tract ID (2000): ssccctttttt"
+		Psa2004 = "Police Service Area (2004)"
         Psa2012 = "Police Service Area (2012)"
+		Psa2017 = "Police Service Area (2017)"
         SMD_2012 = "Single member district, 2012"
         Ward2002 = "Ward (2002)"
         Ward2012 = "Ward (2012)"
