@@ -31,8 +31,6 @@
 
     informat X_in best32. ;
     informat Y_in best32. ;
-    informat OBJECTID_12 best32. ;
-	informat OBJECTID best32. ;
     informat SITE_ADDRESS_PK best32. ;
     informat ADDRESS_ID best32. ;
 	informat ROADWAYSEGID best32. ;
@@ -57,7 +55,6 @@
 	informat YCOORD best32. ;
 	informat STATUS_ID best32. ;	
 	informat METADATA_ID	best32. ;
-	informat OBJECTID_1 best32. ;
     informat ASSESSMENT_NBHD $32. ;
     informat ASSESSMENT_SUBNBHD $80. ;
     informat CFSA_NAME $80. ;
@@ -89,12 +86,13 @@
     informat ANC_2012 $32. ;
     informat SMD_2002 $32. ;
     informat SMD_2012 $32. ;
+	informat OBJECTID_12 best32. ;
+	informat OBJECTID best32. ;
+	informat OBJECTID_1 best32. ;
     
     input
       X_in
       Y_in
-      OBJECTID_12
-	  OBJECTID
       SITE_ADDRESS_PK
       ADDRESS_ID
 	  ROADWAYSEGID
@@ -118,8 +116,7 @@
 	  XCOORD
 	  YCOORD
 	  STATUS_ID 	
-	  METADATA_ID
-	  OBJECTID_1 
+	  METADATA_ID 
       ASSESSMENT_NBHD $
       ASSESSMENT_SUBNBHD $
       CFSA_NAME $
@@ -151,16 +148,19 @@
       ANC_2012 $
       SMD_2002 $
       SMD_2012 $
+	  OBJECTID_12
+	  OBJECTID
+	  OBJECTID_1
       ;
       
       length 
         Address_type xStatus xRes_type xEntrancetype $ 1
-        Ward2002 Ward2012 $ 1
+        Ward2002 Ward2012 Ward2022 $ 1
         Cluster2000 Anc2002 Anc2012 $ 2
-        Psa2012 VoterPre2012 $ 3
-        Geo2010 $ 11
-        GeoBg2010 $ 12
-        GeoBlk2010 $ 15
+        Psa2004 Psa2012 VoterPre2012 $ 3
+        Geo2020 $ 11
+        GeoBg2020 $ 12
+        GeoBlk2020 $ 15
         Assessnbhd $ 3
         Zip $ 5
         nZip 8
@@ -194,23 +194,25 @@
       
       ** Standard geographic vars **;
       
-      Geo2010 = '11001' || left( compress( census_tract ) );
-      GeoBg2010 = '11001' || left( compress( census_blockgroup ) );
-      GeoBlk2010 = '11001' || left( compress( census_block ) );
+	  GeoBlk2020 = '11001' || left( compress( census_block ) );
+	  GeoBg2020 = substr(GeoBlk2020,1,12);
+	  Geo2020 = substr(GeoBlk2020,1,11);
       
-      if put( Geo2010, $geo10v. ) = "" then do;
+      if put( Geo2020, $geo20v. ) = "" then do;
         %Warn_put( msg="Invalid census tract: " _n_= address_id= census_tract= )
       end;
 
-      if put( GeoBg2010, $bg10v. ) = "" then do;
+      if put( GeoBg2020, $bg20v. ) = "" then do;
         %Warn_put( msg="Invalid census block group: " _n_= address_id= census_blockgroup= )
       end;
 
-      if put( GeoBlk2010, $blk10v. ) = "" then do;
+      if put( GeoBlk2020, $blk20v. ) = "" then do;
         %Warn_put( msg="Invalid census block: " _n_= address_id= census_block= )
       end;
       
-      %Block10_to_tr00()
+      %Block20_to_tr00()
+
+	  %Block20_to_tr10()
       
       Ward2002 = scan( ward_2002, 2, ' ' );
       
@@ -224,22 +226,21 @@
         %Warn_put( msg="Invalid ward: " _n_= address_id= ward_2012= )
       end;
 
-      if cluster_ ~= "" then do;
-        Cluster2000 = put( input( scan( cluster_, 2, ' ' ), 8. ), z2. );
-      end;
-      else do;
-        %Block10_to_cluster00()
-      end;
+	  %Block20_to_ward22()
+
+      %Block20_to_cluster00()
       
-      if put( Cluster2000, $clus00v. ) = "" then do;
+      %Block20_to_cluster_tr00()
+
+	  %Block20_to_cluster17()
+
+	  if put( Cluster2000, $clus17v. ) = "" then do;
         %Warn_put( msg="Invalid neighborhood cluster: " _n_= address_id= cluster_= )
       end;
       
-      %Block10_to_cluster_tr00()
-      
-      %Block10_to_psa04()
-      
-      Psa2012 = scan( psa, 4, ' ' );
+      %Block20_to_psa04()
+
+	  %Block20_to_psa12()
       
       if put( Psa2012, $psa12v. ) = "" then do;
         %Warn_put( msg="Invalid PSA: " _n_= address_id= psa= )
@@ -254,11 +255,9 @@
         %Warn_put( msg="Invalid voter precinct: " _n_= address_id= vote_prcnct= )
       end;
 
-	  %Block10_to_cluster17 ()
+	  %Block20_to_stantoncommons ()
 
-	  %Block10_to_stantoncommons ()
-
-	  %Block10_to_bpk ();
+	  %Block20_to_bpk ()
 
 
       Assessnbhd = put( upcase( compress( assessment_nbhd, ' .-/' ) ), $martext_to_assessnbhd. );
@@ -275,19 +274,23 @@
         xEntrancetype $marentrtyp.
         Ward2002 $ward02a.
         Ward2012 $ward12a.
+		Ward2012 $ward22a.
         Cluster2000 $clus00a.
-        Psa2012 $psa12a.
+		cluster2017 $clus17a.
+        Psa2004 $psa04a.
+		Psa2012 $psa12a.
         Anc2002 $anc02a.
         Anc2012 $anc12a.
-        Geo2010 $geo10a.
-        GeoBg2010 $bg10a.
-        GeoBlk2010 $blk10a.
+        Geo2020 $geo20a.
+        GeoBg2020 $bg20a.
+        GeoBlk2020 $blk20a.
+		Geo2010 $geo10a.
+		Geo2000 $geo00a.
         VoterPre2012 $vote12a.
         Assessnbhd $marassessnbhd.
         Zip $zipa.
 		bridgepk $bpka.
 		stantoncommons $stanca.
-		cluster2017 $clus17a.
       ;
       
       rename 
@@ -359,13 +362,16 @@
         Anc2002 = "Advisory Neighborhood Commission (2002)"
         Anc2012 = "Advisory Neighborhood Commission (2012)"
         Assessnbhd = "Assessment neighborhood"
-        Geo2010 = "Full census tract ID (2010): ssccctttttt"
-        GeoBg2010 = "Full census block group ID (2010): sscccttttttb"
-        GeoBlk2010 = "Full census block ID (2010): sscccttttttbbbb"
+        Geo2020 = "Full census tract ID (2020): ssccctttttt"
+        GeoBg2020 = "Full census block group ID (2020): sscccttttttb"
+        GeoBlk2020 = "Full census block ID (2020): sscccttttttbbbb"
+		Geo2020 = "Full census tract ID (2010): ssccctttttt"
+		Geo2020 = "Full census tract ID (2000): ssccctttttt"
         Psa2012 = "Police Service Area (2012)"
         SMD_2012 = "Single member district, 2012"
         Ward2002 = "Ward (2002)"
         Ward2012 = "Ward (2012)"
+		Ward2022 = "Ward (2022)"
         VoterPre2012 = "Voting Precinct (2012)"
         Zip = "ZIP code (5-digit)"
         nZip = "ZIP code (5-digit)"
