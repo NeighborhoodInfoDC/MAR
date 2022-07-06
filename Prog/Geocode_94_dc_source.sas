@@ -13,10 +13,10 @@
  
  Also updates $marvalidstnm format and ValidStreets.html file.
 
- Modifications:
+ Modifications: RP Updated to add post-2020 geographies and use %Finalize_data_set
 **************************************************************************/
 
-%include "L:\SAS\Inc\StdLocal.sas";
+%include "\\sas1\DCdata\SAS\Inc\StdLocal.sas";
 
 ** Define libraries **;
 %DCData_lib( MAR )
@@ -24,9 +24,13 @@
 
 %** Geography variables to include in geocoding file **;
 %let geo_vars = 
-  Ward2002 Ward2012 VoterPre2012 Psa2012 Psa2004 LATITUDE
-  LONGITUDE Geo2000 Geo2010 GeoBg2010 GeoBlk2010 Cluster2000
-  Cluster_tr2000 Assessnbhd Anc2002 Anc2012 Bridgepk stantoncommons Cluster2017 ssl;
+  Geo2000 Geo2010 Geo2020
+  GeoBg2020 GeoBlk2020
+  Ward2002 Ward2012 Ward2022 
+  Psa2004 Psa2012 Psa2019
+  Cluster2000 Cluster_tr2000 Cluster2017
+  Latitude Longitude SSL
+  VoterPre2012 Assessnbhd Anc2002 Anc2012 Bridgepk stantoncommons;
 
 proc format;
   value $streettype_to_uspsabv
@@ -65,6 +69,7 @@ proc sort
      where=(address_type = 'A' and fulladdress ~= ''))
   out=Mar_parse;
   by stname zipcode street_type quadrant addrnum addrnumsuffix;
+run;
 
 proc freq data=Mar_parse;
   tables street_type quadrant;
@@ -111,14 +116,14 @@ ods listing;
 ** Create geocoding data sets for Proc Geocode (v9.4) **;
 
 data 
-  Mar.Geocode_94_dc_m
+  Geocode_94_dc_m
     (keep=Name Name2 City City2 Mapidnameabrv Zipcode Zcta First Last
      rename=(Zipcode=Zip)
      label="Primary street lookup data for Proc Geocode 9.4 (DC MAR)")
-  Mar.Geocode_94_dc_s 
+  Geocode_94_dc_s 
     (keep=Address_id Predirabrv Pretypabrv Sufdirabrv Suftypabrv Side Fromadd Toadd N Start &geo_vars
      label="Secondary street lookup data for Proc Geocode 9.4 (DC MAR)")
-  Mar.Geocode_94_dc_p
+  Geocode_94_dc_p
     (keep=X Y
      label="Tertiary street lookup data for Proc Geocode 9.4 (DC MAR)");
 
@@ -164,9 +169,9 @@ data
     
     Start + 1;
 
-    output Mar.Geocode_94_dc_p;
+    output Geocode_94_dc_p;
     
-    output Mar.Geocode_94_dc_s;
+    output Geocode_94_dc_s;
         
     Last + 1;    
   
@@ -174,7 +179,7 @@ data
   
   if last.zipcode then do;
     Zcta = Zipcode;
-    output Mar.Geocode_94_dc_m;
+    output Geocode_94_dc_m;
     First = Last + 1;
   end;
 
@@ -205,6 +210,44 @@ data
 
 run;
 
+
+%Finalize_data_set( 
+	data=Geocode_94_dc_m,
+	out=Geocode_94_dc_m,
+	outlib=MAR,
+	label="Primary street lookup data for Proc Geocode 9.4 (DC MAR)",
+	sortby=first,
+	restrictions=None,
+	revisions=%str(Updated with latest address points.),
+	printobs=40, 
+    stats=n nmiss min max,
+    freqvars=name2 
+	)
+
+%Finalize_data_set( 
+	data=Geocode_94_dc_s,
+	out=Geocode_94_dc_s,
+	outlib=MAR,
+	label="Secondary street lookup data for Proc Geocode 9.4 (DC MAR)",
+	sortby=address_id,
+	restrictions=None,
+	revisions=%str(Updated with latest address points.),
+	printobs=20
+	)
+
+%Finalize_data_set( 
+	data=Geocode_94_dc_p,
+	out=Geocode_94_dc_p,
+	outlib=MAR,
+	label="Tertiary street lookup data for Proc Geocode 9.4 (DC MAR)",
+	sortby=x y,
+	restrictions=None,
+	revisions=%str(Updated with latest address points.),
+	printobs=40, 
+    stats=n nmiss min max
+	)
+
+
 proc datasets lib=Mar;
     modify Geocode_94_dc_m;
       index create Name2_Zip        = (name2 zip);             /* street+zip search */
@@ -213,34 +256,4 @@ proc datasets lib=Mar;
     run;
 quit;
 
-%File_info( data=Mar.Geocode_94_dc_m, printobs=40, contents=y, stats=n nmiss min max, freqvars=name2 )
-%File_info( data=Mar.Geocode_94_dc_s, printobs=20, contents=y )
-%File_info( data=Mar.Geocode_94_dc_p, printobs=40, contents=y, stats=n nmiss min max )
-
-** Update metadata **;
-
-%Dc_update_meta_file(
-  ds_lib=MAR,
-  ds_name=Geocode_94_dc_m,
-  creator_process=Geocode_94_dc_source.sas,
-  restrictions=None,
-  revisions=%str(Updated with latest address points.)
-)
-
-%Dc_update_meta_file(
-  ds_lib=MAR,
-  ds_name=Geocode_94_dc_s,
-  creator_process=Geocode_94_dc_source.sas,
-  restrictions=None,
-  revisions=%str(Updated with latest address points.)
-)
-
-%Dc_update_meta_file(
-  ds_lib=MAR,
-  ds_name=Geocode_94_dc_p,
-  creator_process=Geocode_94_dc_source.sas,
-  restrictions=None,
-  revisions=%str(Updated with latest address points.)
-)
-
-
+/* End of program */
