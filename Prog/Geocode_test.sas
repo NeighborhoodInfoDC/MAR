@@ -348,10 +348,8 @@ run;
 options orientation=landscape;
 
 %let outhtml = %mif_select( %sysevalf(&sysver >= 9.3), Geocode_test_94.html, Geocode_test_92.html );
-%let outcsv = %mif_select( %sysevalf(&sysver >= 9.3), Geocode_test_94.csv, Geocode_test_92.csv );
 
 ods html body="&outhtml" style=Analysis;
-ods csvall body="&outcsv";
 
 ods listing close;
 
@@ -363,7 +361,6 @@ proc print data=A_geo;
 run;
 
 ods html close;
-ods csvall close;
 ods listing;
 
 footnote1;
