@@ -100,8 +100,8 @@ run;
 %fdate()
 
 ods listing close;
-ods html body="&_dcdata_r_path\Mar\Doc\ValidStreets.html" style=Minimal;
-ods csvall body="&_dcdata_r_path\Mar\Doc\ValidStreets.csv";
+ods html body="&_dcdata_default_path\Mar\Doc\ValidStreets.html" style=Minimal;
+ods csvall body="&_dcdata_default_path\Mar\Doc\ValidStreets.csv";
 
 proc print data=Mar_streetnames noobs label;
   var stname;
