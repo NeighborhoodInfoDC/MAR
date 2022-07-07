@@ -29,11 +29,15 @@
 
   geo_match=y,                /* Perform geo. matching with parcels (Y/N) */
 
-  keep_geo=address_id Anc2002 Anc2012 Cluster_tr2000 Geo2000   
-           Geo2010 GeoBg2010 GeoBlk2010 Psa2004 Psa2012 
-           ssl VoterPre2012 Ward2002 Ward2012 
-           Bridgepk Stantoncommons Cluster2017
-           Latitude Longitude,  /* List of geo vars to keep in geocoded file */
+  keep_geo=address_id 
+           Anc2012 
+           Cluster2017
+           Geo2020 GeoBg2020 GeoBlk2020 
+           Psa2012 
+           ssl 
+           VoterPre2012 
+           Ward2022
+           Latitude Longitude,  /* Default list of geo vars to keep in geocoded file */
 
   dcg_match_score=_score_,  /* Match score */
 
@@ -102,8 +106,11 @@
   %**** Check for valid keywords in keep_geo= ****;
 
   %let geo_valid = /address_id/Anc2002/Anc2012/Cluster_tr2000/
-                   /Geo2000/Geo2010/GeoBg2010/GeoBlk2010/Psa2004/Psa2012/
-                   /ssl/VoterPre2012/Ward2002/Ward2012/Latitude/Longitude/
+                   /Geo2000/Geo2010/Geo2020/
+                   /GeoBg2010/GeoBlk2010/
+                   /GeoBg2020/GeoBlk2020/
+                   /Psa2004/Psa2012/
+                   /ssl/VoterPre2012/Ward2002/Ward2012/Ward2022/Latitude/Longitude/
                    /Bridgepk/Stantoncommons/Cluster2017/;
 
   %let geo_valid = %upcase( &geo_valid );

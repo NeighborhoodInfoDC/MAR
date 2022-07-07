@@ -4,7 +4,7 @@
  Project:  NeighborhoodInfo DC
  Author:   P. Tatian
  Created:  01/23/16
- Version:  SAS 9.2
+ Version:  SAS 9.4
  Environment:  Local Windows session (desktop)
  
  Description:  Test geocoding against MAR database.
@@ -12,7 +12,7 @@
  Modifications:
 **************************************************************************/
 
-%include "L:\SAS\Inc\StdLocal.sas";
+%include "\\sas1\DCdata\SAS\Inc\StdLocal.sas";
 
 ** Define libraries **;
 %DCData_lib( MAR )
@@ -32,9 +32,6 @@ data A;
   output;
 
   address = '2730 Wisconsin Ave NW Apt38';
-  output;
-
-  address = '2730 Wisconsin Ave Apt 38 NW';
   output;
 
   address = '2730 Wisconsin Ave Northwest';
@@ -87,7 +84,7 @@ data A;
 
   address = '2730 Wisconsin Ave NE';
   output;
-  
+    
   ** No ZIP code provided **;
   
   zip = .;
@@ -138,7 +135,14 @@ data A;
   address = '2730 Wisconsin Ave NE';
   output;
   
-  ** Street spelling variations **;
+  ** Street not found (parsing error, quadrant in wrong place) **;
+
+  zip = 20007;
+  
+  address = '2730 Wisconsin Ave Apt 38 NW';
+  output;
+
+  ** Street spelling variations. May produce street not found error. **;
   
   zip = 20007;
   
@@ -330,7 +334,7 @@ options spool;
   out = A_geo,
   geo_match = Y,
   debug = N,
-  mprint = Y
+  mprint = N
 )
 
 proc contents data=A;
@@ -346,6 +350,7 @@ options orientation=landscape;
 %let outhtml = %mif_select( %sysevalf(&sysver >= 9.3), Geocode_test_94.html, Geocode_test_92.html );
 
 ods html body="&outhtml" style=Analysis;
+
 ods listing close;
 
 footnote1 "&fdate";
