@@ -16,6 +16,7 @@
 				LH 3-15-2019 Updated with 3/15/2019 download.
 				LH 9-24-2019 Updated with 9/19/2019 download.
 				RP 7-7-2022 Updated with 7/5/2022 download.
+				RP 7-15-2022 Changed SSL to 17 characters. 
 **************************************************************************/
 
 %include "\\sas1\DCdata\SAS\Inc\StdLocal.sas";
@@ -23,18 +24,18 @@
 ** Define libraries **;
 %DCData_lib( MAR )
 
-%let revisions = Updated with 7/5/2022 download.;
+%let revisions = Changed SSL variable to 17 characters;
 
 
 filename fimport "&_dcdata_r_path\MAR\Raw\2022-07-05\Address_and_Square_Suffix_Lot_Cross_Reference.csv" lrecl=256;
 
-data Address_ssl_xref;
+data Address_ssl_xref_raw;
 
   infile fimport dsd stopover firstobs=2;
   
   length 
     ObjectId 8
-    Ssl $ 25        /** Need to accomodate values like '1179    UNNUMBERED LOT' **/
+    Ssl_in $ 25        /** Need to accomodate values like '1179    UNNUMBERED LOT' **/
     Address_Id 8
     MarId 8
     Square $ 4
@@ -48,7 +49,7 @@ data Address_ssl_xref;
 
   input
     ObjectId
-    Ssl
+    Ssl_in
     Address_Id
     MarId
     Square
@@ -79,6 +80,32 @@ data Address_ssl_xref;
     Lot_Type = "Type of lot";
 
   drop Lot_type_text;
+
+run;
+
+/* Fix the SSL variable so it's consistent with SSL on other datasets */
+data Address_ssl_xref;
+   set Address_ssl_xref_raw;
+
+   length ssl $17.;
+
+   if index(ssl_in, 'UNNUMBERED') > 0 then fixssl = 1;
+   	else if index(ssl_in, 'KINGS') > 0 then fixssl = 1;
+	else if index(ssl_in, 'ORIGINAL') > 0 then fixssl = 1;
+	else if index(ssl_in, 'PT') > 0 then fixssl = 1;
+	else if index(ssl_in, 'PART') > 0 then fixssl = 1;
+	else if index(ssl_in, 'LOT') > 0 then fixssl = 1;
+
+	if fixssl = 1 then do;
+		ssl = square || suffix || "XXXX";
+	end;
+	else do;
+		ssl = ssl_in;
+	end;
+	
+	drop ssl_in fixssl;
+
+	label Ssl = "Property identification number (square/suffix/lot)";
 
 run;
 
