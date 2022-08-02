@@ -61,10 +61,10 @@
   
   );
 
-  %local mversion mdate mname geo_valid u_keep_geo i gkw dsid rc;
+  %local mversion mdate mname geo_valid u_keep_geo i gkw dsid rc _geocode_zip _geocode_opt;
 
-  %let mversion = 1.4;
-  %let mdate = 6/18/18;
+  %let mversion = 1.5;
+  %let mdate = 8/2/2022;
   %let mname = DC_mar_geocode;
 
   %push_option( mprint )
@@ -77,7 +77,7 @@
   %end;
 
   %note_mput( macro=&mname, msg=&mname macro version &mversion (&mdate) written by %str(Peter Tatian, Beata Bajaj & David DOrio). )
-  %note_mput( macro=&mname, msg=(c) 2018 Urban Institute/Urban-Greater DC - All Rights Reserved. )
+  %note_mput( macro=&mname, msg=(c) 2022 Urban Institute/Urban-Greater DC - All Rights Reserved. )
 
   %note_mput( macro=&mname, msg=Starting macro. )
 
@@ -266,7 +266,7 @@
     
     end;
     
-    %if &zip ~= %then %do;
+    %if %length( &zip ) > 0 %then %do;
       _dcg_zip = &zip;
     %end;
     %else %do;
@@ -373,38 +373,26 @@
     
     options msglevel=n;
     
-    %if &sysver = 9.2 or &sysver = 9.3 %then %do;
-    
-      %if &basefile = %then %let basefile = Mar.Geocode_dc_m;
-    
-      %note_mput( macro=&mname, msg=Starting address match. Base file is %upcase(&basefile). )
-    
-      proc geocode method=street nozip nocity
-        data=_dcg_indat     
-        out=_dcg_outdat
-        addressvar=_dcg_adr_geocode
-        addresscityvar=_dcg_city
-        addressstatevar=_dcg_st
-        addresszipvar=_dcg_zip
-        lookupstreet=&basefile
-        attributevar=(&keep_geo);
-        run;
-      quit;
-      
-    %end;
-    %else %if %sysevalf(&sysver >= 9.4) %then %do;
+    %if %sysevalf(&sysver >= 9.4) %then %do;
     
       %if &basefile = %then %let basefile = Mar.Geocode_94_dc_m;
+      
+      %if %length( &zip ) > 0 %then %do;
+        %let _geocode_zip = addresszipvar=_dcg_zip;
+        %let _geocode_opt = nocity;
+      %end;
+      %else %do;
+        %let _geocode_zip = addresscityvar=_dcg_city addressstatevar=_dcg_st;
+        %let _geocode_opt = nozip;
+      %end;
 
       %note_mput( macro=&mname, msg=Starting address match. Base file is %upcase(&basefile). )
       
-      proc geocode method=street nozip nocity
+      proc geocode method=street &_geocode_opt
         data=_dcg_indat     
         out=_dcg_outdat
         addressvar=_dcg_adr_geocode
-        addresscityvar=_dcg_city
-        addressstatevar=_dcg_st
-        addresszipvar=_dcg_zip
+        &_geocode_zip
         lookupstreet=&basefile
         attributevar=(&keep_geo);
         run;
@@ -413,7 +401,7 @@
     %end;
     %else %do;
     
-      %err_mput( macro=DC_mar_geocode, msg=Geocoding only available for SAS versions 9.2 or later. )
+      %err_mput( macro=DC_mar_geocode, msg=Geocoding only available for SAS versions 9.4 or later. )
       %pop_option( msglevel, quiet=y )
       %goto exit;
       
