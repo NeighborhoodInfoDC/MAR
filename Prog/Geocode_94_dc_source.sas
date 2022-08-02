@@ -221,7 +221,7 @@ run;
 	revisions=%str(Updated with latest address points.),
 	printobs=40, 
     stats=n nmiss min max,
-    freqvars=name2 
+    freqvars=name2 zip zcta Mapidnameabrv City2
 	)
 
 %Finalize_data_set( 
@@ -232,7 +232,8 @@ run;
 	sortby=address_id,
 	restrictions=None,
 	revisions=%str(Updated with latest address points.),
-	printobs=20
+	stats=n nmiss min max,
+	printobs=5
 	)
 
 %Finalize_data_set( 
@@ -248,7 +249,7 @@ run;
 	)
 
 
-proc datasets lib=Mar;
+proc datasets lib=Mar noprint;
     modify Geocode_94_dc_m;
       index create Name2_Zip        = (name2 zip);             /* street+zip search */
       index create Name2_Zcta        = (name zcta);             /* street+zcta search */
