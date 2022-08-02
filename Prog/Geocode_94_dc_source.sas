@@ -210,18 +210,19 @@ data
 
 run;
 
+**** NOTE: DO NOT SORT THE OUTPUT DATA SETS ****;
 
 %Finalize_data_set( 
 	data=Geocode_94_dc_m,
 	out=Geocode_94_dc_m,
 	outlib=MAR,
 	label="Primary street lookup data for Proc Geocode 9.4 (DC MAR)",
-	sortby=first,
+	sortby=,
 	restrictions=None,
 	revisions=%str(Updated with latest address points.),
 	printobs=40, 
     stats=n nmiss min max,
-    freqvars=name2 
+    freqvars=name2 zip zcta Mapidnameabrv City2
 	)
 
 %Finalize_data_set( 
@@ -229,10 +230,11 @@ run;
 	out=Geocode_94_dc_s,
 	outlib=MAR,
 	label="Secondary street lookup data for Proc Geocode 9.4 (DC MAR)",
-	sortby=address_id,
+	sortby=,
 	restrictions=None,
 	revisions=%str(Updated with latest address points.),
-	printobs=20
+	stats=n nmiss min max,
+	printobs=5
 	)
 
 %Finalize_data_set( 
@@ -240,7 +242,7 @@ run;
 	out=Geocode_94_dc_p,
 	outlib=MAR,
 	label="Tertiary street lookup data for Proc Geocode 9.4 (DC MAR)",
-	sortby=x y,
+	sortby=,
 	restrictions=None,
 	revisions=%str(Updated with latest address points.),
 	printobs=40, 
@@ -248,7 +250,7 @@ run;
 	)
 
 
-proc datasets lib=Mar;
+proc datasets lib=Mar noprint;
     modify Geocode_94_dc_m;
       index create Name2_Zip        = (name2 zip);             /* street+zip search */
       index create Name2_Zcta        = (name zcta);             /* street+zcta search */
