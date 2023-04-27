@@ -459,7 +459,7 @@
 
       proc print data=&out n='TOTAL UNMATCHED ADDRESSES: ';
         where &dcg_match_score < &match_score_min;
-        var &id &staddr &staddr_std &zip &dcg_match_score;
+        var &id &staddr &staddr_std m_addr &zip &dcg_match_score m_exactmatch;
         title2 "**************** UNMATCHED ADDRESSES (_SCORE_ < &match_score_min) ****************";
 
       run;
