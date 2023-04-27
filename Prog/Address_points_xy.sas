@@ -13,25 +13,28 @@
  Modifications:
 **************************************************************************/
 
-%include "L:\SAS\Inc\StdLocal.sas";
+%include "\\sas1\DCdata\SAS\Inc\StdLocal.sas";
 
 ** Define libraries **;
 %DCData_lib( MAR )
 
-%let revisions = New file.;
+%let revisions = Update with 4/27/2023 download.;
 
-filename inf  "&_dcdata_r_path\MAR\Maps\Address_points_xy.csv" lrecl=2000;
+filename inf  "&_dcdata_r_path\MAR\Maps\Address points 2023-04-27\Address_points_xy.csv" lrecl=2000;
 
 data Address_points_xy;
 
   infile inf dsd stopover firstobs=2;
   
   length Address_id X Y 8;
+  
+  ** NOTE: Double check input statement to make sure input file format has not changed.
+  **       Only X, Y, and Address_id fields are needed. No need to read anything after those fields.
+  **;
 
   input
     X
     Y
-    OBJECTID_1
     SITE_ADDRE
     Address_id;
 
@@ -40,7 +43,7 @@ data Address_points_xy;
     X = 'X coordinate of address point (MD State Plane Coord., NAD 1983 meters)'
     Y = 'Y coordinate of address point (MD State Plane Coord., NAD 1983 meters)';
 
-  drop objectid_1 site_addre;
+  keep Address_id x y;
 
 run;
 
