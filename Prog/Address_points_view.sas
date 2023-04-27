@@ -7,8 +7,7 @@
  Version:  SAS 9.4
  Environment:  Local Windows session (desktop)
  
- Description:  Create SAS View with combined 
- latest Address_points and Address_points_xy data sets.
+ Description:  Create SAS View with latest Address_points.
 
  Modifications:
 **************************************************************************/
@@ -18,11 +17,11 @@
 ** Define libraries **;
 %DCData_lib( MAR )
 
-%let Address_points = Address_points_2022_07;
+%let Address_points = Address_points_2023_04;
 
 
   proc sql noprint;
-  create view Mar.Address_points_view (label="Master address repository, Address_points + Address_points_xy") as
+  create view Mar.Address_points_view (label="Master address repository, Latest Address_points") as
     select * from 
       Mar.&Address_points as Address_points 
      order by Address_points.Address_id;
