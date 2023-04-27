@@ -1,5 +1,5 @@
 /**************************************************************************
- Program:  L:\Libraries\MAR\Prog\Address_ssl_xref.sas
+ Program:  Address_ssl_xref.sas
  Library:  MAR
  Project:  NeighborhoodInfo DC
  Author:   P. Tatian
@@ -24,10 +24,10 @@
 ** Define libraries **;
 %DCData_lib( MAR )
 
-%let revisions = Changed SSL variable to 17 characters;
+%let revisions = Updated with 4/27/2023 download.;
 
 
-filename fimport "&_dcdata_r_path\MAR\Raw\2022-07-05\Address_and_Square_Suffix_Lot_Cross_Reference.csv" lrecl=256;
+filename fimport "&_dcdata_r_path\MAR\Raw\2023-04-27\Address_and_Square_Suffix_Lot_Cross_Reference.csv" lrecl=256;
 
 data Address_ssl_xref_raw;
 
@@ -68,7 +68,7 @@ data Address_ssl_xref_raw;
 
   label
     ObjectId = "Input file ObjectID"
-    Ssl = "Property identification number (square/suffix/lot)"
+    Ssl_in = "Property identification number (square/suffix/lot) [TEMPORARY]"
     Address_Id = "MAR address ID"
     MarId = "MAR address ID (seems to duplicate Address_Id)"
     Square = "Square map number"
