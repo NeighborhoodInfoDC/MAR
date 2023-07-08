@@ -316,46 +316,98 @@ data A;
   output;
   
   ** Ambiguous quadrant - could be NE (address id: 286612) or SW (311793) **;
-  ** MACRO RETURNS NE ADDRESS, WHICH MAY NOT BE THE DESIRED RESULT. NO SOLUTION FOR THIS AT THE MOMENT **;
+  ** Macro returns NE address if ZIP code matching is not used, but marked as non-exact match **;
   zip = .;
   address = '210 A Street';
   output;
 
+  ** Incorrect quadrant **;
+  zip = 20019;
+  address = '4212 East Capitol Street NE';
+  output;
+  
+  address = '4212 East Capitol Street SE';
+  output;
+  
+  address = '4212 Capitol Street NE';
+  output;
+  
+  zip = .;
+  address = '4212 East Capitol Street SE';
+  output;
+  
   label address = 'Street address';  
   
 run;
 
+
+** Run geocoding tests **;
+
 options spool;
+
+proc contents data=A;
+run;
+
+%fdate()
+
+%let outhtml = %mif_select( %sysevalf(&sysver >= 9.3), Geocode_test_94, Geocode_test_92 );
+
+
+title2 '-- Geocoding with ZIP Code --';
 
 %DC_mar_geocode(
   data = A,
   staddr = address,
   zip = zip,
-  out = A_geo,
+  out = A_geo_with_zip,
   geo_match = Y,
+  title_num = 3,
   debug = N,
   mprint = N
 )
 
-proc contents data=A;
+proc contents data=A_geo_with_zip;
 run;
 
-proc contents data=A_geo;
-run;
-
-%fdate()
-
-options orientation=landscape;
-
-%let outhtml = %mif_select( %sysevalf(&sysver >= 9.3), Geocode_test_94.html, Geocode_test_92.html );
-
-ods html body="&outhtml" style=Analysis;
+ods html body="&outhtml._with_zip.html" style=Analysis;
 
 ods listing close;
 
 footnote1 "&fdate";
 
-proc print data=A_geo;
+proc print data=A_geo_with_zip;
+  *var address zip address_std _MATCHED_ _score_ M_ADDR M_ZIP X Y Address_id ssl;
+  format x y 12.8;
+run;
+
+ods html close;
+ods listing;
+
+footnote1;
+
+
+title2 '-- Geocoding without ZIP Code --';
+
+%DC_mar_geocode(
+  data = A,
+  staddr = address,
+  out = A_geo_without_zip,
+  geo_match = Y,
+  title_num = 3,
+  debug = N,
+  mprint = N
+)
+
+proc contents data=A_geo_without_zip;
+run;
+
+ods html body="&outhtml._without_zip.html" style=Analysis;
+
+ods listing close;
+
+footnote1 "&fdate";
+
+proc print data=A_geo_without_zip;
   *var address zip address_std _MATCHED_ _score_ M_ADDR M_ZIP X Y Address_id ssl;
   format x y 12.8;
 run;
