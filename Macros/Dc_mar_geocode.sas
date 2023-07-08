@@ -55,6 +55,7 @@
   punct_list=%str(,.*''""<>;[]{}|_+=^$@!~`%:?),    /* List of punctuation to strip (do not include dash '-') */
 
   listunmatched=Y,              /* List nonmatching addresses (Y/N, def. Y) */
+  title_num=2,                  /* Title number for nonmatching address list */
   quiet=N,                     /* Suppress warning messages (Y/N, def. N) */
   debug=N,                     /* Print debugging information (Y/N, def. N) */
   mprint=N                     /* Print resolved macro code in LOG (Y/N, def. N) */
@@ -63,8 +64,8 @@
 
   %local mversion mdate mname geo_valid u_keep_geo i gkw dsid rc _geocode_zip _geocode_opt;
 
-  %let mversion = 1.5;
-  %let mdate = 8/2/2022;
+  %let mversion = 1.6;
+  %let mdate = 7/8/2023;
   %let mname = DC_mar_geocode;
 
   %push_option( mprint )
@@ -423,13 +424,16 @@
       length M_EXACTMATCH 3;
       
       if scan( _dcg_staddr_std, 1 ) = scan( m_addr, 1 ) and &dcg_match_score >= &match_score_min and
-        upcase( _MATCHED_ ) = "STREET" and upcase( _STATUS_ ) = "FOUND" then
+        upcase( _MATCHED_ ) = "STREET" and upcase( _STATUS_ ) = "FOUND" and 
+        ( findw( _NOTES_, 'ZC' ) or 
+          not( findw( _NOTES_, 'NODSM' ) or findw( _NOTES_, 'NODPA' ) or findw( _NOTES_, 'NODSA' ) ) ) 
+        then
         M_EXACTMATCH = 1;
       else
         M_EXACTMATCH = 0;
         
       format M_EXACTMATCH dyesno.;
-
+      
       %if not %mparam_is_yes( &debug ) %then %do;
         drop _dcg_: ;
       %end;
@@ -456,15 +460,14 @@
     %if %mparam_is_yes( &listunmatched ) %then %do;
 
       %note_mput( macro=&mname, msg=Printing unmatched addresses to output (LISTUNMATCHED=Y). )
-
+      
       proc print data=&out n='TOTAL UNMATCHED ADDRESSES: ';
-        where &dcg_match_score < &match_score_min;
+        where &dcg_match_score < &match_score_min or not( m_exactmatch );
         var &id &staddr &staddr_std m_addr &zip &dcg_match_score m_exactmatch;
-        title2 "**************** UNMATCHED ADDRESSES (_SCORE_ < &match_score_min) ****************";
-
+        title&title_num "**************** UNMATCHED OR NONEXACT ADDRESSES (_SCORE_ < &match_score_min OR M_EXACTMATCH = NO) ****************";
       run;
-      title2;
-
+      title&title_num;
+      
     %end;
     %else %do;
       %note_mput( macro=&mname, msg=At users request (LISTUNMATCHED=N) unmatched addresses will not be printed. )
