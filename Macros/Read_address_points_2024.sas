@@ -48,20 +48,20 @@
       Y_COORDINATE
       LATITUDE : best32.
       LONGITUDE : best32.
-      ADDRESS_TYPE : $40.
-      STATUS : $40.
+      _ADDRESS_TYPE : $40.
+      _STATUS : $40.
       ROUTEID : $40.
       BLOCKKEY : $40.
       SUBBLOCKKEY : $40.
       WARD : $8.
       METADATA_ID
       NATIONAL_GRID : $40.
-      HAS_SSL : $8.
-      HAS_PLACE_NAME : $8.
-      HAS_CONDO : $8.
-      HAS_RESIDENTIAL_UNIT : $8.
+      _HAS_SSL : $8.
+      _HAS_PLACE_NAME : $8.
+      _HAS_CONDO : $8.
+      _HAS_RESIDENTIAL_UNIT : $8.
       STREET_VIEW_URL : $1000.
-      RESIDENTIAL_TYPE : $40.
+      _RESIDENTIAL_TYPE : $40.
       PLACEMENT : $40.
       SSL_ALIGNMENT : $40.
       BUILDING : $40.
@@ -94,7 +94,46 @@
     
     address_id = mar_id;
     
-    drop x y;
+    ** Recoded categorical variables **;
+    
+    length Address_type Res_type Status $1;
+    
+    Address_type = left( upcase( _Address_type ) );
+    Res_type = left( upcase( _Residential_type ) );
+    
+    select ( left( upcase( _Status ) ) );
+      when ( 'ACTIVE' )
+        Status = 'A';
+      when ( 'ASSIGNED' )
+        Status = 'S';
+      when ( 'RETIRE' )
+        Status = 'R';
+      when ( 'TEMPORARY' )
+        Status = 'T';
+      otherwise do;
+        %Err_put( macro=Read_address_points_2024, msg="Unrecognized STATUS value: " _n_= address_id= _status= )
+      end;
+    end;
+    
+    format Address_type $maraddrtyp. Res_type $marrestyp. Status $marstatus.;
+    
+    array c{*} _HAS_SSL _HAS_PLACE_NAME _HAS_CONDO _HAS_RESIDENTIAL_UNIT;
+    array n{*} HAS_SSL HAS_PLACE_NAME HAS_CONDO HAS_RESIDENTIAL_UNIT;
+    
+    do i = 1 to dim( c );
+      select ( left( upcase( c{i} ) ) );
+        when ( 'N' ) n{i} = 0;
+        when ( 'Y' ) n{i} = 1;
+        when ( ' ' ) n{i} = .u;
+        otherwise do;
+          %Err_put( macro=Read_address_points_2024, msg="Unrecognized Y/N var value: " _n_= address_id= c{i}= )
+        end;
+      end;
+    end;
+    
+    format has_: dyesno.;
+    
+    drop i x y _Address_type _Residential_type _Status _has_: ;
     
     rename 
       housing_unit_count = active_res_occupancy_count
@@ -109,15 +148,6 @@
 
 RUN;
 
-%FILE_INFO( DATA=&outfile, freqvars=STREET_TYPE ADDRESS_TYPE HAS_: RESIDENTIAL_TYPE PLACEMENT SSL_ALIGNMENT )
-
-proc print data=&outfile (obs=50);
-  where not( missing( building ) );
-  id mar_id;
-  var building;
-run;
-
-RUN;
 
 %MACRO SKIP;      
       length 

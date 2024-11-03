@@ -22,6 +22,8 @@
 %Read_address_points_2024( filedate='02nov2024'd ) /* Filedate should be in the SASdate format such as '01jan2017'd */
 
 
+%File_info( data=Address_points_2024_11, freqvars=STREET_TYPE ADDRESS_TYPE STATUS RES_TYPE PLACEMENT SSL_ALIGNMENT )
+
 
 proc datasets;
   copy in=MAR out=work memtype=data;
