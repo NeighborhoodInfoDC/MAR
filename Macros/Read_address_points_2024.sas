@@ -73,15 +73,15 @@
       GRID_DIRECTION : $40.
       HOUSING_UNIT_COUNT
       RESIDENTIAL_UNIT_COUNT
-      BEFORE_DATE : $80.
+      BEFORE_DATE : yymmdd10.
       BEFORE_DATE_SOURCE : $80.
-      BEGIN_DATE : $80.
+      BEGIN_DATE : yymmdd10.
       BEGIN_DATE_SOURCE : $80.
-      FIRST_KNOWN_DATE : $80.
+      FIRST_KNOWN_DATE : yymmdd10.
       FIRST_KNOWN_DATE_SOURCE : $80.
-      CREATED_DATE : $80.
+      CREATED_DATE : yymmdd10. 
       CREATED_USER : $80.
-      LAST_EDITED_DATE : $80.
+      LAST_EDITED_DATE : yymmdd10.
       LAST_EDITED_USER : $80.
       SE_ANNO_CAD_DATA : $80.
       SMD : $32.
@@ -89,6 +89,23 @@
     ;
     
     format LATITUDE LONGITUDE 12.8;
+    
+    format BEFORE_DATE BEGIN_DATE FIRST_KNOWN_DATE CREATED_DATE LAST_EDITED_DATE mmddyy10.;
+    
+    address_id = mar_id;
+    
+    drop x y;
+    
+    rename 
+      housing_unit_count = active_res_occupancy_count
+      residential_unit_count = active_res_unit_count
+      address_number_suffix = addrnumsuffix
+      address = fulladdress
+      national_grid = nationalgrid
+      street_name = stname
+      x_coordinate = x
+      y_coordinate = y
+    ;
 
 RUN;
 
@@ -99,13 +116,6 @@ proc print data=&outfile (obs=50);
   id mar_id;
   var building;
 run;
-
-proc datasets;
-  copy in=MAR out=work memtype=data;
-  select Address_points_2023_04;
-quit;
-
-%Compare_file_struct( file_list=Address_points_2023_04 &outfile )
 
 RUN;
 
