@@ -41,7 +41,7 @@
       STREET_TYPE : $32.
       QUADRANT : $8.
       ZIPCODE
-      CITY : $10.
+      CITY_NAME : $10.
       STATE : $2.
       COUNTRY : $20.
       X_COORDINATE
