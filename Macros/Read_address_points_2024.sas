@@ -175,6 +175,30 @@ data &outfile;
   merge &outfile._A &outfile._w_blocks (keep=address_id geocode rename=(geocode=GeoBlk2020));
   by address_id;
   
+  ** Create other geos from 2020 block groups **;
+  
+  %Block20_to_anc02()
+  %Block20_to_anc12()
+  %Block20_to_bg20()
+  %Block20_to_bpk()
+  %Block20_to_city()
+  %Block20_to_cluster_tr00()
+  %Block20_to_cluster00()
+  %Block20_to_cluster17()
+  %Block20_to_eor()
+  %Block20_to_npa19()
+  %Block20_to_psa04()
+  %Block20_to_psa12()
+  %Block20_to_psa19()
+  %Block20_to_stantoncommons()
+  %Block20_to_tr00()
+  %Block20_to_tr10()
+  %Block20_to_tr20()
+  %Block20_to_vp12()
+  %Block20_to_ward02()
+  %Block20_to_ward12()
+  %Block20_to_ward22()
+
   format
     GeoBlk2020 $blk20a.
   ;
