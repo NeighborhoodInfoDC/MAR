@@ -25,7 +25,7 @@
 
   filename fimport "&_dcdata_r_path\MAR\Raw\&filedate_fmt\Address_Points.csv" lrecl=2000;
 
-  data &outfile ;
+  data &outfile._A ;
 
     infile fimport delimiter = ',' missover dsd firstobs=2;
     
@@ -147,6 +147,43 @@
     ;
 
 RUN;
+
+proc sort data=&outfile._A;
+  by address_id;
+run;
+
+** Add block IDs using spatial merge **;
+
+proc mapimport out=Blocks_2020
+  datafile="\\sas1\DCDATA\Libraries\OCTO\Maps\Census_Blocks_in_2020.shp";
+run;
+
+goptions reset=global border;
+
+proc ginside includeborder dropmapvars
+  data=&outfile._A (keep=address_id latitude longitude rename=(latitude=y longitude=x)) 
+  map=Blocks_2020
+  out=&outfile._w_blocks;
+  id geocode;
+run;
+
+/* %File_info( data=&outfile._w_blocks, freqvars=geocode )
+ */
+ 
+data &outfile;
+
+  merge &outfile._A &outfile._w_blocks (keep=address_id geocode rename=(geocode=GeoBlk2020));
+  by address_id;
+  
+  format
+    GeoBlk2020 $blk20a.
+  ;
+
+  label
+    GeoBlk2020 = "Full census block ID (2020): sscccttttttbbbb"
+  ;
+
+run;
 
 
 %MACRO SKIP;      
