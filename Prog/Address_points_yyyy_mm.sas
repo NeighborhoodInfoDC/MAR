@@ -6,9 +6,9 @@
  Created:  
  Version:  SAS 9.4
  Environment:  Local Windows session (desktop)
- GitHub issue:  
+ GitHub issue: 
  
- Description:  Read address_points data set.
+ Description: Read address_points data set.
 
  Modifications:
 **************************************************************************/
@@ -19,5 +19,5 @@
 %DCData_lib( MAR )
 
 
-%Read_address_points( filedate='ddmmmyyyy'd ) /* Filedate should be in the SASdate format such as '01jan2017'd */
+%Read_address_points_2024( filedate='ddmmmyyyy'd ) /* Filedate should be in the SASdate format such as '01jan2017'd */
 
