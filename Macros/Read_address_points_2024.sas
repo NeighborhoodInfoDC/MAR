@@ -152,362 +152,119 @@
       y_coordinate = y
     ;
 
-RUN;
+  run;
 
-proc sort data=&outfile._A;
-  by address_id;
-run;
+  proc sort data=&outfile._A;
+    by address_id;
+  run;
 
-** Add block IDs using spatial merge **;
+  ** Add block IDs using spatial merge **;
 
-proc mapimport out=Blocks_2020
-  datafile="\\sas1\DCDATA\Libraries\OCTO\Maps\Census_Blocks_in_2020.shp";
-run;
+  proc mapimport out=Blocks_2020
+    datafile="\\sas1\DCDATA\Libraries\OCTO\Maps\Census_Blocks_in_2020.shp";
+  run;
 
-goptions reset=global border;
+  goptions reset=global border;
 
-proc ginside includeborder dropmapvars
-  data=&outfile._A (keep=address_id latitude longitude rename=(latitude=y longitude=x)) 
-  map=Blocks_2020
-  out=&outfile._w_blocks;
-  id geocode;
-run;
+  proc ginside includeborder dropmapvars
+    data=&outfile._A (keep=address_id latitude longitude rename=(latitude=y longitude=x)) 
+    map=Blocks_2020
+    out=&outfile._w_blocks;
+    id geocode;
+  run;
 
-/* %File_info( data=&outfile._w_blocks, freqvars=geocode )
- */
- 
-data &outfile;
+  ** Merge block IDs and create other geos **;
+    
+  data &outfile;
 
-  merge &outfile._A &outfile._w_blocks (keep=address_id geocode rename=(geocode=GeoBlk2020));
-  by address_id;
-  
-  ** Create other geos from 2020 block groups **;
-  
-  %Block20_to_anc02()
-  %Block20_to_anc12()
-  %Block20_to_bg20()
-  %Block20_to_bpk()
-  %Block20_to_city()
-  %Block20_to_cluster_tr00()
-  %Block20_to_cluster00()
-  %Block20_to_cluster17()
-  %Block20_to_eor()
-  %Block20_to_npa19()
-  %Block20_to_psa04()
-  %Block20_to_psa12()
-  %Block20_to_psa19()
-  %Block20_to_stantoncommons()
-  %Block20_to_tr00()
-  %Block20_to_tr10()
-  %Block20_to_tr20()
-  %Block20_to_vp12()
-  %Block20_to_ward02()
-  %Block20_to_ward12()
-  %Block20_to_ward22()
+    merge &outfile._A &outfile._w_blocks (keep=address_id geocode rename=(geocode=GeoBlk2020));
+    by address_id;
+    
+    %Block20_to_anc02()
+    %Block20_to_anc12()
+    %Block20_to_bg20()
+    %Block20_to_bpk()
+    %Block20_to_city()
+    %Block20_to_cluster_tr00()
+    %Block20_to_cluster00()
+    %Block20_to_cluster17()
+    %Block20_to_eor()
+    %Block20_to_npa19()
+    %Block20_to_psa04()
+    %Block20_to_psa12()
+    %Block20_to_psa19()
+    %Block20_to_stantoncommons()
+    %Block20_to_tr00()
+    %Block20_to_tr10()
+    %Block20_to_tr20()
+    %Block20_to_vp12()
+    %Block20_to_ward02()
+    %Block20_to_ward12()
+    %Block20_to_ward22()
 
-  format
-    GeoBlk2020 $blk20a.
-  ;
+    format
+      GeoBlk2020 $blk20a.
+    ;
 
-  label
-    ACTIVE_RES_OCCUPANCY_COUNT = "Number of housing units at the primary address [source file HOUSING_UNIT_COUNT]"
-    ACTIVE_RES_UNIT_COUNT = "Active residential use count [source file RESIDENTIAL_UNIT_COUNT]"
-    ADDRESS_ID = "Address identifier [source file MAR_ID]"
-    MAR_ID = "Address identifier"
-    ADDRESS_NUMBER = "Address location house number"
-    ADDRNUMSUFFIX = "Address location house number suffix [source file ADDRESS_NUMBER_SUFFIX]"
-    ANC = "Address location Advisory Neighborhood Commission [source file]"
-    CITY_NAME = "Address location city [source file CITY]"
-    FULLADDRESS = "House number, street name, street type, and quadrant"
-    LATITUDE = "Latitude of address"
-    LONGITUDE = "Longitude of Address"
-    LOT = "Address location property lot"
-    NATIONALGRID = "Address location national grid coordinate [source file NATIONAL_GRID]"
-    OBJECTID = "Internal feature number"
-    QUADRANT = "Address location quadrant name"
-    RES_TYPE = "Address residential type"
-    SE_ANNO_CAD_DATA = "SDO data type"
-    SMD = "Address location Single Member District"
-    SQUARE = "Address location property square"
-    SSL = "Property identification number (square/suffix/lot)"
-    STATE = "Address location state abbreviation"
-    STATUS = "Address status"
-    STNAME = "Address location street name [source file STREET_NAME]"
-    STREET_TYPE = "Address location street type"
-    SUFFIX = "Address location property suffix"
-    Address_type = "Address type"
-    WARD = "Address location Ward name [source file]"
-    X = "X coordinate of address point (MD State Plane Coord., NAD 1983 meters)"
-    Y = "Y coordinate of address point (MD State Plane Coord., NAD 1983 meters)"
-    ZIP = "ZIP code (5-digit)"
-    ZIPCODE = "ZIP code (5-digit)"
-    METADATA_ID = "Internal ID Number"
-    before_date = "Address definitely did not exist at this date"
-    before_date_source = "Source for Before_Date"
-    begin_date = "Date address began"
-    begin_date_source = "Source for Begin_Date"
-    blockkey = "Block key from DDOT Roads & Highways"
-    building = "Is address associated with a building?"
-    country = "Country"
-    created_date = "Date the address record was created in the MAR database" 
-    created_user = "Which agency created address record"
-    first_known_date = "Earliest known date, if no Begin_Date"
-    first_known_date_source = "Source for First_known_date"
-    grid_direction = "Grid direction of the address"
-    has_condo = "Address has associated residential condominium unit"
-    has_place_name = "Address has place name"
-    has_residential_unit = "Address has associated residential unit"
-    has_ssl = "Address has property information"
-    last_edited_date = "Date address was last edited"
-    last_edited_user = "Which agency last edited the address record"
-    multiple_land_ssl = "Multiple Land Square, Suffix, Lot"
-    placement = "Location of address"
-    routeid = "Route ID from DDOT Roads & Highways"
-    ssl_alignment = "How well addresses aligns with associated SSL (property)"
-    street_view_url = "URL to Google Maps Street View"
-    subblockkey = "Sub-block key from DDOT Roads & Highways"
-    GeoBlk2020 = "Full census block ID (2020): sscccttttttbbbb"
-  ;
-
-run;
-
-
-%MACRO SKIP;      
-      length 
-        Address_type xStatus xRes_type xEntrancetype $ 1
-        Ward2002 Ward2012 Ward2022 $ 1
-        Cluster2000 Anc2002 Anc2012 $ 2
-        Psa2004 Psa2012 Psa2019 VoterPre2012 $ 3
-        Geo2020 $ 11
-        GeoBg2020 $ 12
-        GeoBlk2020 $ 15
-        Assessnbhd $ 3
-        Zip $ 5
-        nZip 8
-      ;
-      
-      array a{*} Stname Street_type Quadrant City State Smd: Newcomm: Focus_improvement_area;
-      
-      do i = 1 to dim( a );
-        a{i} = left( upcase( compbl( a{i} ) ) );
-      end;
-      
-      Address_type = left( upcase( type_ ) );
-      
-      select ( left( upcase( Status ) ) );
-        when ( 'ACTIVE' )
-          xStatus = 'A';
-        when ( 'ASSIGNED' )
-          xStatus = 'S';
-        when ( 'RETIRE' )
-          xStatus = 'R';
-        when ( 'TEMPORARY' )
-          xStatus = 'T';
-        otherwise do;
-          %Err_put( macro=, msg="Unrecognized STATUS value: " _n_= address_id= status= )
-        end;
-      end;
-      
-      xRes_type = left( upcase( Res_type ) );
-      
-      xEntrancetype = left( upcase( entrancetype ) );
-      
-      ** Standard geographic vars **;
-      
-	  if census_block ^= "" then do;
-	  	GeoBlk2020 = '11001' || left( compress( census_block ) );
-	  end;
-
-	  if put( GeoBlk2020, $blk20v. ) = "" then do;
-        %Warn_put( msg="Invalid census block: " _n_= address_id= census_block= )
-      end;
-
-	  GeoBg2020 = substr(GeoBlk2020,1,12);
-
-	  if put( GeoBg2020, $bg20v. ) = "" then do;
-        %Warn_put( msg="Invalid census block group: " _n_= address_id= census_blockgroup= )
-      end;
-
-	  Geo2020 = substr(GeoBlk2020,1,11);
-      
-      if put( Geo2020, $geo20v. ) = "" then do;
-        %Warn_put( msg="Invalid census tract: " _n_= address_id= census_tract= )
-      end;
-
-      %Block20_to_tr00()
-
-	  %Block20_to_tr10()
-      
-      Ward2002 = scan( ward_2002, 2, ' ' );
-      
-      if put( Ward2002, $ward02v. ) = "" then do;
-        %Warn_put( msg="Invalid ward: " _n_= address_id= ward_2002= )
-      end;
-
-      Ward2012 = scan( ward_2012, 2, ' ' );
-
-      if put( Ward2012, $ward12v. ) = "" then do;
-        %Warn_put( msg="Invalid ward: " _n_= address_id= ward_2012= )
-      end;
-
-	  %Block20_to_ward22()
-
-      %Block20_to_cluster00()
-      
-      %Block20_to_cluster_tr00()
-
-	  %Block20_to_cluster17()
-      
-      %Block20_to_psa04()
-
-	  %Block20_to_psa12()
-
-	  %Block20_to_psa19()
-      
-      Anc2002 = scan( anc_2002, 2, ' ' );
-      Anc2012 = scan( anc_2012, 2, ' ' );
-      
-      VoterPre2012 = put( input( scan( vote_prcnct, 2, ' ' ), 8. ), z3. );
-
-      if put( VoterPre2012, $vote12v. ) = "" then do;
-        %Warn_put( msg="Invalid voter precinct: " _n_= address_id= vote_prcnct= )
-      end;
-
-	  %Block20_to_stantoncommons ()
-
-	  %Block20_to_bpk ()
-
-
-      Assessnbhd = put( upcase( compress( assessment_nbhd, ' .-/' ) ), $martext_to_assessnbhd. );
-      
-      Zip = left( zipcode );
-      nZip = input( Zip, 5. );
-
-      informat _all_ ;
-      
-      format
-        Address_type $maraddrtyp.
-        xStatus $marstatus.
-        xRes_type $marrestyp.
-        xEntrancetype $marentrtyp.
-        Ward2002 $ward02a.
-        Ward2012 $ward12a.
-		Ward2012 $ward22a.
-        Cluster2000 $clus00a.
-		cluster2017 $clus17a.
-        Psa2004 $psa04a.
-		Psa2012 $psa12a.
-		Psa2019 $psa19a.
-        Anc2002 $anc02a.
-        Anc2012 $anc12a.
-        Geo2020 $geo20a.
-        GeoBg2020 $bg20a.
-        GeoBlk2020 $blk20a.
-		Geo2010 $geo10a.
-		Geo2000 $geo00a.
-        VoterPre2012 $vote12a.
-        Assessnbhd $marassessnbhd.
-        Zip $zipa.
-		bridgepk $bpka.
-		stantoncommons $stanca.
-      ;
-      
-      rename 
-        xStatus=Status
-        xRes_type=Res_type
-        xEntrancetype=Entrancetype
-        nZip=Zipcode
-		x_in = lat
-		y_in = lon
-		xcoord = x
-		ycoord = y
-      ;
-      
-      drop 
-        i OBJECTID_12 type_ status res_type entrancetype ANC ANC_2002 ANC_2012 
-        cluster_ psa census_tract census_blockgroup census_block 
-        POLDIST VOTE_PRCNCT ward ward_2002 ward_2012 zipcode;
-
-      label
-        ACTIVE_RES_OCCUPANCY_COUNT = "Number of housing units at the primary address"
-        ACTIVE_RES_UNIT_COUNT = "Active residential use count"
-        ADDRESS_ID = "Address identifier"
-		ROADWAYSEGID = "Roadway segment ID"
-        ADDRNUM = "Address location house number"
-        ADDRNUMSUFFIX = "Address location house number suffix"
-        ANC = "Address location Advisory Neighborhood Commission"
-        ASSESSMENT_NBHD = "Address Assessment Neighborhood Name (text label)"
-        ASSESSMENT_SUBNBHD = "Address Assessment SubNeighborhood Name"
-        CENSUS_BLOCK = "Census Block Value Address is in"
-        CENSUS_BLOCKGROUP = "Census Block Group value"
-        CENSUS_TRACT = "Address location census tract"
-        CFSA_NAME = "Address CFSA area name"
-        CITY = "Address location city"
-        CLUSTER_ = "Address location neighborhood cluster name"
-        xENTRANCETYPE = "Address entrance type"
-        FOCUS_IMPROVEMENT_AREA = "Focus improvement area name"
-        FULLADDRESS = "House number, street name, street type, and quadrant"
-        HOTSPOT = "Address location hot spot"
-        LATITUDE = "Latitude of address"
-        LONGITUDE = "Longitude of Address"
-        LOT = "Address location property lot"
-        NATIONALGRID = "Address location national grid coordinate"
-        NEWCOMMCANDIDATE = "Address location New Community Candidate"
-        NEWCOMMSELECT06 = "Address location New Community Selected 2006"
-        OBJECTID_12 = "Internal feature number"
-		OBJECTID = "Internal feature number"
-        POLDIST = "Address location police district"
-        PSA = "Address location Police Service Area"
-        QUADRANT = "Address location quadrant name"
-        xRES_TYPE = "Address residential type"
-        ROC = "Address location regional operations command area"
-        SE_ANNO_CAD_DATA = "SDO data type"
-        SITE_ADDRESS_PK = "Address Identifier"
-        SMD = "Address location Single Member District"
-        SMD_2002 = "Single member district, 2002"
-        SQUARE = "Address location property square"
-        SSL = "Property identification number (square/suffix/lot)"
-        STATE = "Address location state name"
-        xSTATUS = "Address status"
-        STNAME = "Address location street name"
-        STREET_TYPE = "Address location street type"
-        SUFFIX = "Address location property suffix"
-        Address_type = "Address type"
-        VOTE_PRCNCT = "Address location voting precinct"
-        WARD = "Address location Ward name"
-        X = "X Coordinate of Address Point (decimal degrees)"
-        Y = "Y Coordinate of Address Point (decimal degrees)"
-        ZIPCODE = "Address location Zip code"
-        Anc2002 = "Advisory Neighborhood Commission (2002)"
-        Anc2012 = "Advisory Neighborhood Commission (2012)"
-        Assessnbhd = "Assessment neighborhood"
-        Geo2020 = "Full census tract ID (2020): ssccctttttt"
-        GeoBg2020 = "Full census block group ID (2020): sscccttttttb"
-        GeoBlk2020 = "Full census block ID (2020): sscccttttttbbbb"
-		Geo2010 = "Full census tract ID (2010): ssccctttttt"
-		Geo2000 = "Full census tract ID (2000): ssccctttttt"
-		Psa2004 = "Police Service Area (2004)"
-        Psa2012 = "Police Service Area (2012)"
-		Psa2019 = "Police Service Area (2019)"
-        SMD_2012 = "Single member district, 2012"
-        Ward2002 = "Ward (2002)"
-        Ward2012 = "Ward (2012)"
-		Ward2022 = "Ward (2022)"
-        VoterPre2012 = "Voting Precinct (2012)"
-        Zip = "ZIP code (5-digit)"
-        nZip = "ZIP code (5-digit)"
-		bridgepk = "11th Street Bridge Park Target Area (2017)"
-		stantoncommons = "Stanton Commons (2018)"
-		cluster2017 = "Neighborhood Clusters (2017)"
-		ZIPCODE4 = "Zip +4"
-		XCOORD = "X coordinate of address point (MD State Plane Coord., NAD 1983 meters)"
-		YCOORD = "Y coordinate of address point (MD State Plane Coord., NAD 1983 meters)"
-		X_in = "X coordinate of address point (decimal degrees)"
-		Y_in = "Y coordinate of address point (decimal degrees)"
-		STATUS_ID = "Status ID"
-		METADATA_ID = "Internal ID Number"
-		OBJECTID_1 = "Internal feature number"
-        ;
+    label
+      ACTIVE_RES_OCCUPANCY_COUNT = "Number of housing units at the primary address [source file HOUSING_UNIT_COUNT]"
+      ACTIVE_RES_UNIT_COUNT = "Active residential use count [source file RESIDENTIAL_UNIT_COUNT]"
+      ADDRESS_ID = "Address identifier [source file MAR_ID]"
+      MAR_ID = "Address identifier"
+      ADDRESS_NUMBER = "Address location house number"
+      ADDRNUMSUFFIX = "Address location house number suffix [source file ADDRESS_NUMBER_SUFFIX]"
+      ANC = "Address location Advisory Neighborhood Commission [source file]"
+      CITY_NAME = "Address location city [source file CITY]"
+      FULLADDRESS = "House number, street name, street type, and quadrant"
+      LATITUDE = "Latitude of address"
+      LONGITUDE = "Longitude of Address"
+      LOT = "Address location property lot"
+      NATIONALGRID = "Address location national grid coordinate [source file NATIONAL_GRID]"
+      OBJECTID = "Internal feature number"
+      QUADRANT = "Address location quadrant name"
+      RES_TYPE = "Address residential type"
+      SE_ANNO_CAD_DATA = "SDO data type"
+      SMD = "Address location Single Member District"
+      SQUARE = "Address location property square"
+      SSL = "Property identification number (square/suffix/lot)"
+      STATE = "Address location state abbreviation"
+      STATUS = "Address status"
+      STNAME = "Address location street name [source file STREET_NAME]"
+      STREET_TYPE = "Address location street type"
+      SUFFIX = "Address location property suffix"
+      Address_type = "Address type"
+      WARD = "Address location Ward name [source file]"
+      X = "X coordinate of address point (MD State Plane Coord., NAD 1983 meters)"
+      Y = "Y coordinate of address point (MD State Plane Coord., NAD 1983 meters)"
+      ZIP = "ZIP code (5-digit)"
+      ZIPCODE = "ZIP code (5-digit)"
+      METADATA_ID = "Internal ID Number"
+      before_date = "Address definitely did not exist at this date"
+      before_date_source = "Source for Before_Date"
+      begin_date = "Date address began"
+      begin_date_source = "Source for Begin_Date"
+      blockkey = "Block key from DDOT Roads & Highways"
+      building = "Is address associated with a building?"
+      country = "Country"
+      created_date = "Date the address record was created in the MAR database" 
+      created_user = "Which agency created address record"
+      first_known_date = "Earliest known date, if no Begin_Date"
+      first_known_date_source = "Source for First_known_date"
+      grid_direction = "Grid direction of the address"
+      has_condo = "Address has associated residential condominium unit"
+      has_place_name = "Address has place name"
+      has_residential_unit = "Address has associated residential unit"
+      has_ssl = "Address has property information"
+      last_edited_date = "Date address was last edited"
+      last_edited_user = "Which agency last edited the address record"
+      multiple_land_ssl = "Multiple Land Square, Suffix, Lot"
+      placement = "Location of address"
+      routeid = "Route ID from DDOT Roads & Highways"
+      ssl_alignment = "How well addresses aligns with associated SSL (property)"
+      street_view_url = "URL to Google Maps Street View"
+      subblockkey = "Sub-block key from DDOT Roads & Highways"
+      GeoBlk2020 = "Full census block ID (2020): sscccttttttbbbb"
+    ;
 
   run;
 
@@ -516,12 +273,10 @@ run;
 	out=&outfile.,
 	outlib=MAR,
 	label="Master address repository, DC street addresses (%sysfunc( putn( &filedate, mmddyys10. ) ))",
-	sortby=ssl,
+	sortby=address_id,
 	restrictions=None,
 	revisions=%str(&revisions)
-	)
-
-%MEND SKIP;
+  )
 
 %mend Read_address_points_2024;
 
