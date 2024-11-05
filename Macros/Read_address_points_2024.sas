@@ -133,6 +133,12 @@
     
     format has_: dyesno.;
     
+    length Zip $ 5;
+    
+    Zip = put( Zipcode, z5.0 );
+    
+    format Zip $zipa.;
+    
     drop i x y _Address_type _Residential_type _Status _has_: ;
     
     rename 
@@ -204,6 +210,62 @@ data &outfile;
   ;
 
   label
+    ACTIVE_RES_OCCUPANCY_COUNT = "Number of housing units at the primary address [source file HOUSING_UNIT_COUNT]"
+    ACTIVE_RES_UNIT_COUNT = "Active residential use count [source file RESIDENTIAL_UNIT_COUNT]"
+    ADDRESS_ID = "Address identifier [source file MAR_ID]"
+    MAR_ID = "Address identifier"
+    ADDRESS_NUMBER = "Address location house number"
+    ADDRNUMSUFFIX = "Address location house number suffix [source file ADDRESS_NUMBER_SUFFIX]"
+    ANC = "Address location Advisory Neighborhood Commission [source file]"
+    CITY_NAME = "Address location city [source file CITY]"
+    FULLADDRESS = "House number, street name, street type, and quadrant"
+    LATITUDE = "Latitude of address"
+    LONGITUDE = "Longitude of Address"
+    LOT = "Address location property lot"
+    NATIONALGRID = "Address location national grid coordinate [source file NATIONAL_GRID]"
+    OBJECTID = "Internal feature number"
+    QUADRANT = "Address location quadrant name"
+    RES_TYPE = "Address residential type"
+    SE_ANNO_CAD_DATA = "SDO data type"
+    SMD = "Address location Single Member District"
+    SQUARE = "Address location property square"
+    SSL = "Property identification number (square/suffix/lot)"
+    STATE = "Address location state abbreviation"
+    STATUS = "Address status"
+    STNAME = "Address location street name [source file STREET_NAME]"
+    STREET_TYPE = "Address location street type"
+    SUFFIX = "Address location property suffix"
+    Address_type = "Address type"
+    WARD = "Address location Ward name [source file]"
+    X = "X coordinate of address point (MD State Plane Coord., NAD 1983 meters)"
+    Y = "Y coordinate of address point (MD State Plane Coord., NAD 1983 meters)"
+    ZIP = "ZIP code (5-digit)"
+    ZIPCODE = "ZIP code (5-digit)"
+    METADATA_ID = "Internal ID Number"
+    before_date = "Address definitely did not exist at this date"
+    before_date_source = "Source for Before_Date"
+    begin_date = "Date address began"
+    begin_date_source = "Source for Begin_Date"
+    blockkey = "Block key from DDOT Roads & Highways"
+    building = "Is address associated with a building?"
+    country = "Country"
+    created_date = "Date the address record was created in the MAR database" 
+    created_user = "Which agency created address record"
+    first_known_date = "Earliest known date, if no Begin_Date"
+    first_known_date_source = "Source for First_known_date"
+    grid_direction = "Grid direction of the address"
+    has_condo = "Address has associated residential condominium unit"
+    has_place_name = "Address has place name"
+    has_residential_unit = "Address has associated residential unit"
+    has_ssl = "Address has property information"
+    last_edited_date = "Date address was last edited"
+    last_edited_user = "Which agency last edited the address record"
+    multiple_land_ssl = "Multiple Land Square, Suffix, Lot"
+    placement = "Location of address"
+    routeid = "Route ID from DDOT Roads & Highways"
+    ssl_alignment = "How well addresses aligns with associated SSL (property)"
+    street_view_url = "URL to Google Maps Street View"
+    subblockkey = "Sub-block key from DDOT Roads & Highways"
     GeoBlk2020 = "Full census block ID (2020): sscccttttttbbbb"
   ;
 

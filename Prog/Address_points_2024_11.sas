@@ -30,7 +30,16 @@ proc datasets;
   select Address_points_2023_04;
 quit;
 
+proc sort data=Address_points_2023_04;
+  by address_id;
+run;
+
 %Compare_file_struct( file_list=Address_points_2023_04 Address_points_2024_11, print=n, csv_out="&_dcdata_default_path\mar\prog\temp\compare_file_struct.csv" )
+
+proc compare base=Address_points_2023_04 compare=Address_points_2024_11 maxprint=(40,32000);
+  id address_id;
+run;
+
 
 
 /*****
