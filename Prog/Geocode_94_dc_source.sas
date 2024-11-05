@@ -30,7 +30,7 @@
   Psa2004 Psa2012 Psa2019
   Cluster2000 Cluster_tr2000 Cluster2017
   Latitude Longitude SSL
-  VoterPre2012 Assessnbhd Anc2002 Anc2012 Bridgepk stantoncommons;
+  VoterPre2012 Anc2002 Anc2012 Bridgepk stantoncommons;
 
 proc format;
   value $streettype_to_uspsabv
