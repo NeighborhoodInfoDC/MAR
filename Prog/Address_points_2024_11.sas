@@ -19,5 +19,5 @@
 %DCData_lib( MAR )
 
 
-%Read_address_points_2024( filedate='02nov2024'd ) /* Filedate should be in the SASdate format such as '01jan2017'd */
+%Read_address_points_2024( filedate='02nov2024'd, revisions=%str(Restore addrnum var.) ) /* Filedate should be in the SASdate format such as '01jan2017'd */
 

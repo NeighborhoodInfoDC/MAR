@@ -94,6 +94,8 @@
     
     address_id = mar_id;
     
+    addrnum = input( address_number, 20. ); 
+    
     ** Recoded categorical variables **;
     
     length Address_type Res_type Status $1;
@@ -212,6 +214,7 @@
       ADDRESS_ID = "Address identifier [source file MAR_ID]"
       MAR_ID = "Address identifier"
       ADDRESS_NUMBER = "Address location house number"
+      addrnum = "Address location house number [numeric, source file ADDRESS_NUMBER]"
       ADDRNUMSUFFIX = "Address location house number suffix [source file ADDRESS_NUMBER_SUFFIX]"
       ANC = "Address location Advisory Neighborhood Commission [source file]"
       CITY_NAME = "Address location city [source file CITY]"
@@ -261,7 +264,7 @@
       placement = "Location of address"
       routeid = "Route ID from DDOT Roads & Highways"
       ssl_alignment = "How well addresses aligns with associated SSL (property)"
-      street_view_url = "URL to Google Maps Street View"
+      street_view_url = "URL to Google Maps Street View"
       subblockkey = "Sub-block key from DDOT Roads & Highways"
       GeoBlk2020 = "Full census block ID (2020): sscccttttttbbbb"
     ;
