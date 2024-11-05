@@ -24,10 +24,10 @@
 ** Define libraries **;
 %DCData_lib( MAR )
 
-%let revisions = Updated with 4/27/2023 download.;
+%let revisions = Updated with 11/2/2024 download.;
 
 
-filename fimport "&_dcdata_r_path\MAR\Raw\2023-04-27\Address_and_Square_Suffix_Lot_Cross_Reference.csv" lrecl=256;
+filename fimport "&_dcdata_r_path\MAR\Raw\2024-11-02\Address_and_Square_Suffix_Lot_Cross_Reference.csv" lrecl=256;
 
 data Address_ssl_xref_raw;
 
