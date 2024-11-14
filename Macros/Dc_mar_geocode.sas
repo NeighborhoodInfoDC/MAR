@@ -50,7 +50,7 @@
 
   basefile=,                  /* Base file for address matching (if not specified, default files are used) */
   stvalidfmt=$marvalidstnm,        /* Format for validating street names */
-  streetalt_file=, /* File containing street name spelling corrections (if omitted, default file is used) */
+  streetalt_file=&_dcdata_r_path\MAR\Prog\StreetAlt.txt, /* File containing street name spelling corrections (if omitted, default file is used) */
   stnamenotfound_export=,       /* Name for export file of not found street names */
   punct_list=%str(,.*''""<>;[]{}|_+=^$@!~`%:?),    /* List of punctuation to strip (do not include dash '-') */
 
@@ -64,8 +64,8 @@
 
   %local mversion mdate mname geo_valid u_keep_geo i gkw dsid rc _geocode_zip _geocode_opt;
 
-  %let mversion = 1.6;
-  %let mdate = 7/8/2023;
+  %let mversion = 1.7;
+  %let mdate = 11/14/2024;
   %let mname = DC_mar_geocode;
 
   %push_option( mprint )
