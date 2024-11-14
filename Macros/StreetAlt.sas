@@ -74,7 +74,7 @@
     
     if put( streetname, $marvalidstnm. ) = " " then do;
       %err_put( macro=StreetAlt, msg="Invalid entry for correct spelling of street name " altname " as " streetname )
-      %err_put( macro=StreetAlt, msg="Correct street spelling must match names in L:\Libraries\MAR\Doc\ValidStreets.html" )
+      %err_put( macro=StreetAlt, msg="Correct street spelling must match names in &_dcdata_r_path\MAR\Doc\ValidStreets.html" )
       %err_put( macro=StreetAlt, msg="Please edit &infile and resubmit program." )
       %err_put( macro=StreetAlt, msg="Alternate street name spelling list NOT created." )
       %err_put( macro=StreetAlt, msg="Default street correction file will be used instead." )
