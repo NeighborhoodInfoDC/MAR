@@ -361,6 +361,7 @@ title2 '-- Geocoding with ZIP Code --';
   zip = zip,
   out = A_geo_with_zip,
   geo_match = Y,
+  streetalt_file = &_dcdata_default_path\MAR\Prog\StreetAlt.txt,
   title_num = 3,
   debug = N,
   mprint = N
@@ -393,6 +394,7 @@ title2 '-- Geocoding without ZIP Code --';
   staddr = address,
   out = A_geo_without_zip,
   geo_match = Y,
+  streetalt_file = &_dcdata_default_path\MAR\Prog\StreetAlt.txt,
   title_num = 3,
   debug = N,
   mprint = N
