@@ -124,7 +124,7 @@ filename fexport "&_dcdata_default_path\MAR\Prog\StreetAlt.txt" lrecl=256;
 
 proc export data=A
     outfile=fexport
-    dbms=csv replace;
+    dbms=csv label replace;
 
 run;
 
