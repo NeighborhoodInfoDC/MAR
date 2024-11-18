@@ -81,6 +81,7 @@ data A;
   set &StreetAlt_ds_list;
   
   if put( correct, $marvalidstnm. ) = " " then delete;
+  if put( incorrect, $marvalidstnm. ) ~= " " then delete;
   
   ** Manual cleaning **;
   
@@ -92,6 +93,8 @@ data A;
     ( indexc( incorrect, '&' ) ) or 
     ( prxmatch( "/WASHINGTON$/", trim(incorrect) ) ) 
   then delete;
+  
+  if incorrect = "FRED DOU" and correct = "FREEDOM" then correct = "FREDERICK DOUGLASS";
   
   label 
     incorrect = "Incorrect spelling"
