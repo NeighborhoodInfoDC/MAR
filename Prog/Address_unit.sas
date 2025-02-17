@@ -13,31 +13,48 @@
   09/27/14 PAT Updated for SAS1.
 **************************************************************************/
 
-%include "L:\SAS\Inc\StdLocal.sas";
+%include "\\sas1\DCdata\SAS\Inc\StdLocal.sas";
 
 ** Define libraries **;
 %DCData_lib( MAR, local=n )
 
-filename csvFile "&_dcdata_r_path\MAR\Raw\2013-09-11\VW_ADDRESS_UNIT.txt" lrecl=1000;
+filename csvFile "&_dcdata_r_path\MAR\Raw\2025-02-17\Address_Residential_Units.csv" lrecl=1000;
 
 data Address_unit;
 
   infile csvFile dsd stopover firstobs=2 /*OBS=101*/;
 
   input
-    Unit_id
-    Address_id
-    Fulladdress : $80.
-    Ssl : $17.
-    x_Status : $15.
-    Unitnum : $8.
-    x_Unittype : $10.
-    Condo_bk 
-    Condo_pg
-    Metadata_id
-  ;
-  
-  length Status Unittype $ 1;
+    Unit_Id
+    Full_Address : $80.
+    Primary_Address : $80.
+    Unit_Number : $12.
+    Condo_Ssl : $17.
+    Condo_Square : $8.
+    Condo_Suffix : $8.
+    Condo_Lot : $8.
+    Condo_Book : $8.
+    Condo_Page : $8.
+    Address_id 
+    x_Unit_type : $16.
+    x_Status : $16.
+    Metadata_Id
+    Otr_Premiseadd : $80.
+    Otr_Unitnumber : $12.
+    Before_Date : $40.
+    Before_Date_Source : $40.
+    Begin_Date : $40.
+    Begin_Date_Source : $40.
+    First_Known_Date : $40.
+    First_Known_Date_Source : $40.
+    Created_Date : $40.
+    Created_User : $40.
+    Last_Edited_Date : $40.
+    Last_Edited_User : $40.
+    Objectid
+    ;
+      
+  length Status Unit_type $ 1;
   
   select ( upcase( x_Status ) );
     when ( 'ACTIVE' ) Status = 'A';
@@ -49,25 +66,26 @@ data Address_unit;
     end;
   end;
   
-  select ( upcase( x_Unittype ) );
-    when ( 'CONDO' ) Unittype = 'C';
-    when ( 'RENTAL' ) Unittype = 'R';
+  select ( upcase( x_Unit_type ) );
+    when ( 'CONDO' ) Unit_type = 'C';
+    when ( 'RENTAL' ) Unit_type = 'R';
+    when ( 'NON CONDO' ) Unit_type = 'N';
     otherwise do;
-      %warn_put( msg="Uknown Unittype code: " _n_= address_id= x_Unittype= )
+      %warn_put( msg="Uknown Unit_type code: " _n_= address_id= x_Unit_type= )
     end;
   end;
   
-  format Status $status. Unittype $unittyp.;
+  format Status $status. Unit_type $marunittyp.;
   
   label
-    Address_id = "Address ID no."
-    Fulladdress = "Full street address (without unit)"
+    Address_id = "MAR address ID no. [MAR_ID]"
+    Full_address = "Full street address (without unit)"
     Metadata_id = "Metadata ID no."
-    Ssl = "Property Identification Number (Square/Suffix/Lot)"
+    Condo_Ssl = "Property Identification Number (Square/Suffix/Lot) for condo units"
     Status = "Address status"
     Unit_id = "Unit ID no."
-    Unitnum = "Unit"
-    Unittype = "Type of unit"
+    Unit_number = "Unit"
+    Unit_type = "Type of unit"
 /*
     Condo_bk = 
     Condo_pg = 
@@ -78,34 +96,21 @@ data Address_unit;
   
 run;
 
-proc sort data=Address_unit out=Mar.Address_unit (label="DC MAR address-unit list");
-  by address_id ssl unitnum;
-
-%Dup_check(
-  data=Mar.Address_unit,
-  by=address_id ssl unitnum,
-  id=fulladdress unit_id,
-  out=_dup_check,
-  listdups=Y
+%Finalize_data_set( 
+  /** Finalize data set parameters **/
+  data=Address_unit,
+  out=Address_unit,
+  outlib=MAR,
+  label="MAR residential unit list",
+  sortby=address_id condo_ssl,
+  /** Metadata parameters **/
+  revisions=%str(Update with latest data downloaded 2/17/2025.),
+  /** File info parameters **/
+  contents=Y,
+  printobs=10,
+  printchar=N,
+  printvars=,
+  freqvars=status unit_type,
+  stats=n sum mean stddev min max
 )
 
-%File_info( data=Mar.Address_unit, freqvars=status unittype )
-
-%Dup_check(
-  data=Mar.Address_unit,
-  by=unit_id,
-  id=address_id unittype fulladdress unitnum ssl,
-  out=_dup_check,
-  listdups=Y,
-  count=dup_check_count,
-  quiet=N,
-  debug=N
-)
-
-
-
-/*
-proc print data=Mar.Address_unit;
-  where address_id = 223259;
-  id address_id;
-run;

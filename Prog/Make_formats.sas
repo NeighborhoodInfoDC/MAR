@@ -12,7 +12,7 @@
  Modifications:
 **************************************************************************/
 
-%include "L:\SAS\Inc\StdLocal.sas";
+%include "\\sas1\DCdata\SAS\Inc\StdLocal.sas";
 
 ** Define libraries **;
 %DCData_lib( MAR )
@@ -55,6 +55,11 @@ proc format library=MAR;
     'RESERV' = 'Reservation'
     'TAXLOT' = 'Tax lot';
     
+  value $marunittyp
+    'N' = 'Non-condominium'
+    'C' = 'Condominium'
+    'R' = 'Rental';
+
 run;
 
 proc catalog catalog=MAR.Formats;
@@ -64,6 +69,7 @@ proc catalog catalog=MAR.Formats;
   modify marentrtyp (desc="MAR entrance type") / entrytype=formatc;
   modify marlottyp_to_code (desc="MAR convert lot type text to codes") / entrytype=formatc;
   modify marlottyp (desc="MAR lot type") / entrytype=formatc;
+  modify marunittyp (desc="MAR unit type") / entrytype=formatc;
   contents;
 quit;
 
