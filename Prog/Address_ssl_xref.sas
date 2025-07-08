@@ -17,6 +17,7 @@
 				LH 9-24-2019 Updated with 9/19/2019 download.
 				RP 7-7-2022 Updated with 7/5/2022 download.
 				RP 7-15-2022 Changed SSL to 17 characters. 
+				RP 7-7-2025 Updated with 7/7/2025 download.
 **************************************************************************/
 
 %include "\\sas1\DCdata\SAS\Inc\StdLocal.sas";
@@ -24,10 +25,10 @@
 ** Define libraries **;
 %DCData_lib( MAR )
 
-%let revisions = Updated with 11/2/2024 download.;
+%let revisions = Updated with 7/7/2025 download.;
 
 
-filename fimport "&_dcdata_r_path\MAR\Raw\2024-11-02\Address_and_Square_Suffix_Lot_Cross_Reference.csv" lrecl=256;
+filename fimport "&_dcdata_r_path\MAR\Raw\2025-07-07\Address_and_Square_Suffix_Lot_Cross_Reference.csv" lrecl=256;
 
 data Address_ssl_xref_raw;
 
