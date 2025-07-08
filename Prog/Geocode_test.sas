@@ -397,7 +397,16 @@ title2 '-- Geocoding without ZIP Code --';
   streetalt_file = &_dcdata_default_path\MAR\Prog\StreetAlt.txt,
   title_num = 3,
   debug = N,
-  mprint = N
+  mprint = N,
+  keep_geo=address_id 
+           Anc2023 
+           Cluster2017
+           Geo2020 GeoBg2020 GeoBlk2020 
+           Psa2012 
+           ssl 
+           VoterPre2012 
+           Ward2022
+           Latitude Longitude
 )
 
 proc contents data=A_geo_without_zip;
