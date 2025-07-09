@@ -33,7 +33,7 @@
            Anc2023 
            Cluster2017
            Geo2020 GeoBg2020 GeoBlk2020 
-           Psa2012 
+           Psa2019 
            ssl 
            VoterPre2012 
            Ward2022
@@ -110,7 +110,7 @@
                    /Geo2000/Geo2010/Geo2020/
                    /GeoBg2010/GeoBlk2010/
                    /GeoBg2020/GeoBlk2020/
-                   /Psa2004/Psa2012/
+                   /Psa2004/Psa2012/Psa2019/
                    /ssl/VoterPre2012/Ward2002/Ward2012/Ward2022/Latitude/Longitude/
                    /Bridgepk/Stantoncommons/Cluster2017/;
 
