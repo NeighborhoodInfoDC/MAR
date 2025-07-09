@@ -14,6 +14,7 @@
  Also updates $marvalidstnm format and ValidStreets.html file.
 
  Modifications: RP Updated to add post-2020 geographies and use %Finalize_data_set
+				7/8/25 RP Added ANC2023 to geo list
 **************************************************************************/
 
 %include "\\sas1\DCdata\SAS\Inc\StdLocal.sas";
@@ -30,7 +31,8 @@
   Psa2004 Psa2012 Psa2019
   Cluster2000 Cluster_tr2000 Cluster2017
   Latitude Longitude SSL
-  VoterPre2012 Anc2002 Anc2012 Bridgepk stantoncommons;
+  VoterPre2012 Anc2002 Anc2012 Anc2023
+  Bridgepk stantoncommons;
 
 proc format;
   value $streettype_to_uspsabv
