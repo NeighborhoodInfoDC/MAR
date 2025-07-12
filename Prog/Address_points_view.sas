@@ -23,7 +23,7 @@
 proc sql noprint;
   create view Mar.Address_points_view (label="Master address repository, Latest Address_points + Points_of_interest.PLACE_NAME") as
     select 
-      coalesce( Address_points.address_id, Points_of_interest.address_id ) as address_id,
+      coalesce( Address_points.address_id, Points_of_interest.address_id ) as address_id label="Address identifier [source file MAR_ID]",
       Address_points.*, 
       Points_of_interest.PLACE_NAME
     from 
@@ -37,7 +37,7 @@ proc sql noprint;
 run;
 
 %File_info( data=Mar.Address_points_view )
- 
+
 %Dc_update_meta_file(
   ds_lib=MAR,
   ds_name=Address_points_view,
