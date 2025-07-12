@@ -60,6 +60,10 @@ proc format library=MAR;
     'C' = 'Condominium'
     'R' = 'Rental';
 
+  value $poistatus
+    'ACTIVE' = 'Active'
+    'ASSIGNED' = 'Assigned';
+
 run;
 
 proc catalog catalog=MAR.Formats;
@@ -70,6 +74,7 @@ proc catalog catalog=MAR.Formats;
   modify marlottyp_to_code (desc="MAR convert lot type text to codes") / entrytype=formatc;
   modify marlottyp (desc="MAR lot type") / entrytype=formatc;
   modify marunittyp (desc="MAR unit type") / entrytype=formatc;
+  modify poistatus (desc="MAR point of interest status") / entrytype=formatc;
   contents;
 quit;
 
