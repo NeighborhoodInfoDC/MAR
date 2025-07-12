@@ -29,7 +29,7 @@ proc sql noprint;
     from 
       Mar.&Address_points as Address_points 
       left join
-      Points_of_interest (keep=Address_id PLACE_NAME)
+      Mar.Points_of_interest (keep=Address_id PLACE_NAME)
     on Address_points.Address_id = Points_of_interest.Address_id
     order by Address_points.Address_id;
   quit;
