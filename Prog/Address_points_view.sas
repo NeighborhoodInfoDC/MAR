@@ -20,11 +20,18 @@
 %let Address_points = Address_points_2025_07;
 
 
-  proc sql noprint;
-  create view Mar.Address_points_view (label="Master address repository, Latest Address_points") as
-    select * from 
+proc sql noprint;
+  create view Mar.Address_points_view (label="Master address repository, Latest Address_points + Points_of_interest.PLACE_NAME") as
+    select 
+      coalesce( Address_points.address_id, Points_of_interest.address_id ) as address_id,
+      Address_points.*, 
+      Points_of_interest.PLACE_NAME
+    from 
       Mar.&Address_points as Address_points 
-     order by Address_points.Address_id;
+      left join
+      Points_of_interest (keep=Address_id PLACE_NAME)
+    on Address_points.Address_id = Points_of_interest.Address_id
+    order by Address_points.Address_id;
   quit;
 
 run;
@@ -36,7 +43,7 @@ run;
   ds_name=Address_points_view,
   creator_process=Address_points_view.sas,
   restrictions=None,
-  revisions=%str(Update with &Address_points..)
+  revisions=%str(Update with &Address_points. and Points_of_interest.)
 )
 
 
