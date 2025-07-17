@@ -73,7 +73,7 @@ run;
   out=Points_of_interest,
   outlib=MAR,
   label="Master address repository, DC points of interest (address aliases)",
-  sortby=address_id created_date,
+  sortby=address_id place_name_id,
   revisions=%str(Update with latest Points_of_interest file.),
   printobs=20,
   freqvars=status
