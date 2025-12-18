@@ -225,7 +225,7 @@
     else do;
       _dcg_adr_streetname_clean = _dcg_adr_streetname;
     end;
-    
+
     ** Special handling of PENNSYLVANIA AVE and PENN ST **;
     
     if _dcg_adr_streettype = 'AVENUE' and _dcg_adr_streetname_clean = 'PENN' then 

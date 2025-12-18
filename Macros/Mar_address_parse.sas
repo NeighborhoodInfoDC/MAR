@@ -318,7 +318,12 @@
        do; **and neither dash- nor slash/ exist in the first word;
           if abc_wrd1=0 then
            do; ***there are also no letters in the first word;
-              if wrd2 in ( "1/2", "REAR", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "R" ) and 
+              if wrd2 = 'H' and wrd3 = 'R' and put( scan(_ap_temp_ad,4,""), $maraltsttyp. ) = 'DRIVE' then 
+               do; ** H R Drive is a valid street name **;
+                 num = wrd1;
+                 pad = substr(_ap_temp_ad,i_wrd2);
+               end;  
+              else if wrd2 in ( "1/2", "REAR", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "R" ) and 
                  ( put( put( compress( wrd3, '-' ), $maraltsttyp. ), $marvalidsttyp. ) = '' and
                    wrd3 not in ( 'NE', 'NW', 'SE', 'SW' ) ) then
                do; ***wrd2 is address number suffix;
