@@ -79,6 +79,25 @@ proc print data=Mar.Address_points_view (obs=10);
 run;
 */
 
+  ** Create format for temporary recoding of street names that match direction abbreviations;
+  ** Workaround for Proc Geocode problem matching these streets;
+  
+  %Format_dcg_strecode()
+  
+  /*
+  proc format;
+    value $_dcg_strecode (default=40)
+      'E', 'N', 'S', 'W',
+      'NORTH', 'SOUTH', 'EAST', 'WEST', 
+      'WEST LANE', 'EAST BEACH', 'WEST BEACH', 
+      'FOREST', 'FALLS'
+      = 'YES'
+      other = ' ';
+  run;
+  */
+
+
+
 **** CREATE NEW GEOCODING FILES ****;
 
 %** Geography variables to include in geocoding file **;
@@ -160,7 +179,8 @@ data
   set Mar_parse;
   by stname zipcode street_type quadrant addrnum;
   
-    if upcase( stname ) in ( 'S', 'N', 'E', 'W', 'NORTH', 'SOUTH', 'EAST', 'WEST', 'WEST LANE', 'EAST BEACH', 'WEST BEACH', 'FOREST', 'FALLS' ) then do;
+    /* if upcase( stname ) in ( 'S', 'N', 'E', 'W', 'NORTH', 'SOUTH', 'EAST', 'WEST', 'WEST LANE', 'EAST BEACH', 'WEST BEACH', 'FOREST', 'FALLS' ) then do; */
+    if not( missing( put( upcase( stname ), $_dcg_strecode. ) ) ) then do;
       ** These street names have to be masked to be handled properly by Proc Geocode **;
       Name = cats( '~', propcase( stname ), '~' );
     end;
@@ -284,6 +304,7 @@ datalines;
    8425 East Beach Drive NW
 ****/
 
+/*********************************
 datalines;
    5042 Queen's Stroll Place SE
    2915 Chancellor's Way Northeast
@@ -312,8 +333,47 @@ datalines;
    4355 ~Forest~ Lane NW   
    849 H R Drive SE
    4400 ~Falls~ Terrace SE
+   2911 ~N~ STREET SE
+   1252 ~E~ STREET NE
+   27 ~W~ STREET NW
+   900 ~S~ Street NW
+********************************/
+
+datalines;
+   5042 Queen's Stroll Place SE
+   2915 Chancellor's Way Northeast
+   403 GUETHLER'S WAY SE
+   3336 Cady's Alley NW
+   3033 West Lane Keys NW
+   3150 South Street NW
+   3850 NORTH ROAD NW
+   1580 WEST ROAD NW
+   2516 EAST PLACE NW
+   8425 East Beach Drive NW
+   7932 WEST BEACH DRIVE NW
+   701 EAST BASIN DRIVE SW
+   4923 EAST CAPITOL STREET SE
+   777 North Capitol St NE
+   1415 NORTH CAROLINA AVENUE NE
+   6000 North Dakota Avenue NW
+   2817 North Glade St NW
+   1605 NORTH PORTAL DRIVE NW
+   4001 SOUTH CAPITOL STREET SW
+   622 SOUTH CAROLINA AVENUE SE
+   4501 SOUTH DAKOTA AVENUE NE
+   400 WEST BASIN DRIVE SW
+   1713 WEST VIRGINIA AVENUE NE
+   1999 9 1/2 Street Northwest
+   4355 Forest Lane NW   
+   849 H R Drive SE
+   4400 Falls Terrace SE
+   2911 N STREET SE
+   1252 E STREET NE
+   27 W STREET NW
+   900 S Street NW
 run;
 
+/*******************
 proc geocode method=street nozip data=A out=B_proc_geocode addressvar=address 
 addresscityvar=city addressstatevar=st lookupstreet=Geocode_94_dc_m attributevar=(address_id Geo2020 Ward2022 Latitude Longitude);
 
@@ -323,7 +383,7 @@ proc print data=B_proc_geocode;
   var m_addr address_id _score_ _notes_;
 run;
 title2;
-
+***************************/
 
 
 %DC_mar_geocode(
@@ -333,6 +393,7 @@ title2;
   staddr=address,
   zip=,
   basefile=Geocode_94_dc_m,
+  streetalt_file=C:\DCData\Libraries\MAR\Prog\StreetAlt_38_Fix_geocoding.txt,
   listunmatched=Y,
   debug=Y
 )
