@@ -22,6 +22,10 @@
 ** Define libraries **;
 %DCData_lib( MAR )
 
+%let revisions = Updated with latest address points.;
+
+%let revisions = Implement address geocoding fixes.;  /** Delete this statement for next regular address update **/
+
 
 %** Geography variables to include in geocoding file **;
 %let geo_vars = 
@@ -247,7 +251,7 @@ run;
 	label="Primary street lookup data for Proc Geocode 9.4 (DC MAR)",
 	sortby=,
 	restrictions=None,
-	revisions=%str(Updated with latest address points.),
+      revisions=%str(&revisions),
 	printobs=40, 
     stats=n nmiss min max,
     freqvars=name2 zip zcta Mapidnameabrv City2
@@ -260,7 +264,7 @@ run;
 	label="Secondary street lookup data for Proc Geocode 9.4 (DC MAR)",
 	sortby=,
 	restrictions=None,
-	revisions=%str(Updated with latest address points.),
+      revisions=%str(&revisions),
 	stats=n nmiss min max,
 	printobs=5
 	)
@@ -272,7 +276,7 @@ run;
 	label="Tertiary street lookup data for Proc Geocode 9.4 (DC MAR)",
 	sortby=,
 	restrictions=None,
-	revisions=%str(Updated with latest address points.),
+      revisions=%str(&revisions),
 	printobs=40, 
     stats=n nmiss min max
 	)
