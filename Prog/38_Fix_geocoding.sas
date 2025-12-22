@@ -32,71 +32,11 @@
 ** Define libraries **;
 %DCData_lib( MAR )
 
-/*********
-data WestLaneKeys;
+** Create format for temporary recoding of street names that match direction abbreviations;
+** Workaround for Proc Geocode problem matching these streets;
 
-  set Mar.Address_points_view (obs=1);
-  *where lowcase( stname ) contains "west lane";
+%Format_dcg_strecode()
   
-    length
-    Name Name2 $ 100
-    Mapidnameabrv $ 2
-    First Last Zcta 8
-    Predirabrv Sufdirabrv Pretypabrv Suftypabrv $ 15 
-    City City2 $ 50 
-    Side $ 1
-    Fromadd Toadd N Start 8;
-    
-
-    if scan( upcase( stname ), 1, ' ' ) in ( 'NORTH', 'SOUTH', 'EAST', 'WEST' ) and
-       scan( upcase( stname ), 2, ' ' ) ~= '' then do;
-      Predirabrv = substr( scan( upcase( stname ), 1, ' ' ), 1, 1 );
-      Name = substr( stname, length( scan( stname, 1, ' ' ) ) + 2 );
-      Name2 = upcase( left( compress( Name, ' ' ) ) );
-      OUTPUT;
-    end;
-    else if stname in ( 'S', 'N', 'E', 'W' ) then do;
-      Name2 = '~' || trim( stname ) || '~';
-      Name = Name2;
-    end;
-    else do;
-      Name = propcase( left( stname ) );
-      Name2 = upcase( left( compress( stname, ' ' ) ) );
-    end;
-    
-run;
-
-
-proc freq data=WestLaneKeys;
-  tables stname * Name2 /list;
-run;
-***************/
-/*
-proc print data=Mar.Address_points_view (obs=10);
-  where upcase( stname ) = 'EAST';
-  id address_id;
-  var fulladdress;
-run;
-*/
-
-  ** Create format for temporary recoding of street names that match direction abbreviations;
-  ** Workaround for Proc Geocode problem matching these streets;
-  
-  %Format_dcg_strecode()
-  
-  /*
-  proc format;
-    value $_dcg_strecode (default=40)
-      'E', 'N', 'S', 'W',
-      'NORTH', 'SOUTH', 'EAST', 'WEST', 
-      'WEST LANE', 'EAST BEACH', 'WEST BEACH', 
-      'FOREST', 'FALLS'
-      = 'YES'
-      other = ' ';
-  run;
-  */
-
-
 
 **** CREATE NEW GEOCODING FILES ****;
 
@@ -141,14 +81,41 @@ proc format;
     "WAY" = "Way";
 run;
 
-proc sort 
-  data=Mar.Address_points_view 
+** Prep address list **;
+
+data Mar_parse;
+
+  set Mar.Address_points_view 
     (keep=address_id address_type fulladdress addrnum addrnumsuffix stname street_type quadrant zipcode x y
           &geo_vars
-     where=(address_type = 'A' and fulladdress ~= ''))
-  out=Mar_parse;
+     where=(address_type = 'A' and fulladdress ~= ''));
+     
+    ** Proc Geocode does not handle street names with single quotes (') **;
+    stname = compress( stname, "'" );
+    
+run;     
+
+proc sort data=Mar_parse;
   by stname zipcode street_type quadrant addrnum addrnumsuffix;
 run;
+
+** Create $marvalidstnm format for %Dc_geocode() macro **;
+
+proc sort data=Mar_parse out=Mar_streetnames nodupkey;
+  by stname;
+run;
+
+%Data_to_format(
+  FmtLib=WORK, /** TESTING CHANGE **/
+  FmtName=$marvalidstnm,
+  Desc="MAR geocoding/valid street names",
+  Data=Mar_streetnames,
+  Value=stname,
+  Label=stname,
+  OtherLabel=' ',
+  Print=N,
+  Contents=N
+  )
 
 ** Create geocoding data sets for Proc Geocode (v9.4) **;
 
@@ -179,7 +146,6 @@ data
   set Mar_parse;
   by stname zipcode street_type quadrant addrnum;
   
-    /* if upcase( stname ) in ( 'S', 'N', 'E', 'W', 'NORTH', 'SOUTH', 'EAST', 'WEST', 'WEST LANE', 'EAST BEACH', 'WEST BEACH', 'FOREST', 'FALLS' ) then do; */
     if not( missing( put( upcase( stname ), $_dcg_strecode. ) ) ) then do;
       ** These street names have to be masked to be handled properly by Proc Geocode **;
       Name = cats( '~', propcase( stname ), '~' );
@@ -196,9 +162,6 @@ data
       Name = propcase( left( stname ) );
     end;
 
-    ** Proc Geocode does not handle street names with single quotes (') **;
-    Name = compress( name, "'" );
-    
     Name2 = upcase( left( compress( Name, ' ' ) ) );
     
     Sufdirabrv = upcase( quadrant );
@@ -272,10 +235,6 @@ run;
 proc print data=Geocode_94_dc_s (firstobs=67337 obs=67376);
   var Predirabrv Sufdirabrv Pretypabrv Suftypabrv Side Fromadd Toadd;
 run;
-/*
-proc print data=Geocode_94_dc_s (firstobs=94722 obs=94918);
-  var Predirabrv Sufdirabrv Pretypabrv Suftypabrv Side Fromadd Toadd;
-run;
 */
 
 
@@ -288,58 +247,14 @@ data A;
   infile datalines dsd;
   
   input address;
-
-/****
-datalines;
-   5042 Queen's Stroll Place SE
-   2915 Chancellor's Way Northeast
-   403 GUETHLER'S WAY SE
-   3336 Cady's Alley NW
-   849 H R Drive SE
-   3033 West Lane Keys NW
-   3150 South Street NW
-   4400 Falls Terrace SE
-   1999 9 1/2 Street Northwest
-   4355 Forest Lane NW
-   8425 East Beach Drive NW
-****/
-
-/*********************************
-datalines;
-   5042 Queen's Stroll Place SE
-   2915 Chancellor's Way Northeast
-   403 GUETHLER'S WAY SE
-   3336 Cady's Alley NW
-   3033 ~West Lane~ Keys NW
-   3150 ~South~ Street NW
-   3850 ~NORTH~ ROAD NW
-   1580 ~WEST~ ROAD NW
-   2516 ~EAST~ PLACE NW
-   8425 ~East Beach~ Drive NW
-   7932 ~WEST BEACH~ DRIVE NW
-   701 EAST BASIN DRIVE SW
-   4923 EAST CAPITOL STREET SE
-   777 North Capitol St NE
-   1415 NORTH CAROLINA AVENUE NE
-   6000 North Dakota Avenue NW
-   2817 North Glade St NW
-   1605 NORTH PORTAL DRIVE NW
-   4001 SOUTH CAPITOL STREET SW
-   622 SOUTH CAROLINA AVENUE SE
-   4501 SOUTH DAKOTA AVENUE NE
-   400 WEST BASIN DRIVE SW
-   1713 WEST VIRGINIA AVENUE NE
-   1999 ~Nineandahalf~ Street Northwest
-   4355 ~Forest~ Lane NW   
-   849 H R Drive SE
-   4400 ~Falls~ Terrace SE
-   2911 ~N~ STREET SE
-   1252 ~E~ STREET NE
-   27 ~W~ STREET NW
-   900 ~S~ Street NW
-********************************/
+  
+  label
+    address = 'TESTING ADDRESS'
+    city = 'TESTING CITY'
+    st = 'TESTING STATE';
 
 datalines;
+   2730 Wisconsin Ave NW
    5042 Queen's Stroll Place SE
    2915 Chancellor's Way Northeast
    403 GUETHLER'S WAY SE
@@ -395,13 +310,14 @@ title2;
   basefile=Geocode_94_dc_m,
   streetalt_file=C:\DCData\Libraries\MAR\Prog\StreetAlt_38_Fix_geocoding.txt,
   listunmatched=Y,
-  debug=Y
+  debug=N
 )
 
 title2 'B_DC_mar_geocode';
-proc print data=B_DC_mar_geocode;
+proc print data=B_DC_mar_geocode n;
   id address;
-  var m_addr address_id _score_ _notes_;
+  var m_addr address_id M_EXACTMATCH _score_ _notes_;
 run;
 title2;
 
+%File_info( data=B_DC_mar_geocode, printobs=5 )

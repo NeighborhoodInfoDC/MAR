@@ -52,7 +52,7 @@
   stvalidfmt=$marvalidstnm,        /* Format for validating street names */
   streetalt_file=&_dcdata_r_path\MAR\Prog\StreetAlt.txt, /* File containing street name spelling corrections (if omitted, default file is used) */
   stnamenotfound_export=,       /* Name for export file of not found street names */
-  punct_list=%str(,.*''""<>;[]{}|_+=^$@!~`%:?),    /* List of punctuation to strip (do not include dash '-') */
+  punct_list=%str(,.*""<>;[]{}|_+=^$@!~`%:?),    /* List of punctuation to strip--do not include dash (-) or single quote (') */
 
   listunmatched=Y,              /* List nonmatching addresses (Y/N, def. Y) */
   title_num=2,                  /* Title number for nonmatching address list */
@@ -64,8 +64,8 @@
 
   %local mversion mdate mname geo_valid u_keep_geo i gkw dsid rc _geocode_zip _geocode_opt;
 
-  %let mversion = 1.7;
-  %let mdate = 11/14/2024;
+  %let mversion = 1.8;
+  %let mdate = 12/22/2025;
   %let mname = DC_mar_geocode;
 
   %push_option( mprint )
@@ -152,13 +152,7 @@
   ** Create format for temporary recoding of street names that match direction abbreviations;
   ** Workaround for Proc Geocode problem matching these streets;
   
-  proc format;
-    value $_dcg_strecode (default=40)
-      'E' = '~E~'
-      'N' = '~N~'
-      'S' = '~S~'
-      'W' = '~W~';
-  run;
+  %Format_dcg_strecode(  )
   
 
   %if &streetalt_file ~= %then %do;
@@ -178,7 +172,7 @@
   
     set &data;
     
-    length _dcg_staddr_std $ 80 _dcg_scrub_addr _dcg_adr_streetname_clean _dcg_adr_geocode $ 500 _dcg_zip 8;
+    length _dcg_staddr_std $ 80 _dcg_scrub_addr _dcg_adr_streetname_geocode _dcg_adr_streetname_clean _dcg_adr_geocode $ 500 _dcg_zip 8;
     
     retain _dcg_city 'WASHINGTON' _dcg_st 'DC' _dcg_blank ' ';
 
@@ -255,15 +249,20 @@
     
     end;
     else do;
+    
+      ** Enclose selected addresses in ~ to deal with Proc Geocode issues **;
+      
+      if put( upcase( _dcg_adr_streetname_clean ), $_dcg_strecode. ) ~= "" then
+        _dcg_adr_streetname_geocode = cats( '~', _dcg_adr_streetname_clean, '~' );
+      else if _dcg_adr_streetname_clean = "9 1/2" then
+        _dcg_adr_streetname_geocode = "~NINEANDAHALF~";      
+      else
+        _dcg_adr_streetname_geocode = _dcg_adr_streetname_clean;
+      
 
       ** NOTE: Currently not processing address number suffix bcs not supported by Proc Geocode **;
       _dcg_adr_geocode = 
-        left( compbl( 
-                 trim( _dcg_adr_begnum ) || " " || 
-                 trim( put( _dcg_adr_streetname_clean, $_dcg_strecode. ) ) || " " ||
-                 trim( _dcg_adr_streettype ) || " " ||
-                 trim( _dcg_adr_quad )
-               ) );
+        left( compbl( catx( " ", _dcg_adr_begnum, _dcg_adr_streetname_geocode, _dcg_adr_streettype, _dcg_adr_quad ) ) );
     
     end;
     
@@ -283,17 +282,10 @@
     end;
     else do;
 
-      _dcg_staddr_std = left( compbl( 
-                       trim( _dcg_adr_begnum ) || " " || 
-                       trim( _dcg_adr_numsuffix ) || " " ||
-                       trim( _dcg_adr_streetname_clean ) || " " ||
-                       trim( _dcg_adr_streettype ) || " " ||
-                       trim( _dcg_adr_quad ) || " " ||
-                       trim( _dcg_adr_apt )
-                     ) );
+      _dcg_staddr_std = 
+        left( compbl( catx( " ", _dcg_adr_begnum, _dcg_adr_numsuffix, _dcg_adr_streetname_clean, 
+                                 _dcg_adr_streettype, _dcg_adr_quad, _dcg_adr_apt ) ) );
 
-      _dcg_staddr_std = left( compbl( _dcg_staddr_std ) );
-                     
     end;
     
     %if &staddr_std ~= %then %do;
@@ -417,6 +409,9 @@
       merge _dcg_hold _dcg_outdat;
       by _dcg_rec_id;
       
+      ** Remove geocoding recodes **;
+
+      M_ADDR = prxchange( 's/~Nineandahalf~/9 1\/2/i', 1, M_ADDR );
       M_ADDR = compress( M_ADDR, '~' );
       
       ** Check for exact matches **;
