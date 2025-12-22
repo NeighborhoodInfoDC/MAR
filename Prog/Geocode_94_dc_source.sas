@@ -64,12 +64,26 @@ proc format;
     "WAY" = "Way";
 run;
 
-proc sort 
-  data=Mar.Address_points_view 
+** Create format for temporary recoding of street names that match direction abbreviations;
+** Workaround for Proc Geocode problem matching these streets;
+
+%Format_dcg_strecode()
+
+** Prep address list **;
+
+data Mar_parse;
+
+  set Mar.Address_points_view 
     (keep=address_id address_type fulladdress addrnum addrnumsuffix stname street_type quadrant zipcode x y
           &geo_vars
-     where=(address_type = 'A' and fulladdress ~= ''))
-  out=Mar_parse;
+     where=(address_type = 'A' and fulladdress ~= ''));
+     
+    ** Proc Geocode does not handle street names with single quotes (') **;
+    stname = compress( stname, "'" );
+    
+run;     
+
+proc sort data=Mar_parse;
   by stname zipcode street_type quadrant addrnum addrnumsuffix;
 run;
 
@@ -78,7 +92,7 @@ proc freq data=Mar_parse;
 run;
 
 
-** Create $marvalidstnm format for %Dc_geocode() macro **;
+** Create $marvalidstnm (valid street names) format for %Dc_geocode() macro **;
 
 proc sort data=Mar_parse out=Mar_streetnames nodupkey;
   by stname;
@@ -93,7 +107,7 @@ run;
   Label=stname,
   OtherLabel=' ',
   Print=N,
-  Contents=Y
+  Contents=N
   )
 
 
@@ -144,24 +158,36 @@ data
   set Mar_parse;
   by stname zipcode street_type quadrant addrnum;
   
-    if scan( upcase( stname ), 1, ' ' ) in ( 'NORTH', 'SOUTH', 'EAST', 'WEST' ) and
-       scan( upcase( stname ), 2, ' ' ) ~= '' then do;
-      Predirabrv = substr( scan( upcase( stname ), 1, ' ' ), 1, 1 );
-      Name = substr( stname, length( scan( stname, 1, ' ' ) ) + 2 );
-      Name2 = upcase( left( compress( Name, ' ' ) ) );
-    end;
-    else if stname in ( 'S', 'N', 'E', 'W' ) then do;
-      Name2 = '~' || trim( stname ) || '~';
-      Name = Name2;
-    end;
-    else do;
-      Name = propcase( left( stname ) );
-      Name2 = upcase( left( compress( stname, ' ' ) ) );
-    end;
-    
-    Sufdirabrv = upcase( quadrant );
-    Suftypabrv = put( upcase( street_type ), $streettype_to_uspsabv. );
-    
+  ** Deal with street names that require special handling or recoding **;
+
+  if not( missing( put( upcase( stname ), $_dcg_strecode. ) ) ) then do;
+    ** These street names have to be masked to be handled properly by Proc Geocode **;
+    Name = cats( '~', propcase( stname ), '~' );
+  end;
+  else if stname = '9 1/2' then do;
+    ** 9 1/2 Street requires special recode **;
+    Name = '~Nineandahalf~';
+  end;
+  else if scan( upcase( stname ), 1, ' ' ) in ( 'NORTH', 'SOUTH', 'EAST', 'WEST' ) and
+     scan( upcase( stname ), 2, ' ' ) ~= '' then do;
+    ** Street names like NORTH CAPITOL, which have a direction and another part to the name **;
+    ** The direction part is assigned to Predirabrv and the rest of the name to Name **;
+    ** Note that there are exceptions to these cases in the $_dcg_strecode. list in the first IF stmt **;
+    Predirabrv = substr( scan( upcase( stname ), 1, ' ' ), 1, 1 );
+    Name = substr( stname, length( propcase( scan( stname, 1, ' ' ) ) ) + 2 );
+  end;
+  else do;
+    ** Street names that needs no special handling **;
+    Name = propcase( left( stname ) );
+  end;
+
+  ** NAME2 var is all uppercase and no spaces **;
+  
+  Name2 = upcase( left( compress( Name, ' ' ) ) );
+  
+  Sufdirabrv = upcase( quadrant );
+  Suftypabrv = put( upcase( street_type ), $streettype_to_uspsabv. );
+  
   ** FOR NOW: Only keep first address for places with addrnumsuffix ~= '' **;
 
   if first.addrnum then do;
