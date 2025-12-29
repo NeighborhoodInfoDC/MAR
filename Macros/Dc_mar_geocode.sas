@@ -65,7 +65,7 @@
   %local mversion mdate mname geo_valid u_keep_geo i gkw dsid rc _geocode_zip _geocode_opt;
 
   %let mversion = 1.8;
-  %let mdate = 12/22/2025;
+  %let mdate = 12/29/2025;
   %let mname = DC_mar_geocode;
 
   %push_option( mprint )
