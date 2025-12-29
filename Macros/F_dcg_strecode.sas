@@ -1,5 +1,5 @@
 /**************************************************************************
- Program:  Format_dcg_strecode.sas
+ Program:  F_dcg_strecode.sas
  Library:  MAR
  Project:  Urban-Greater DC
  Author:   P. Tatian
@@ -8,28 +8,30 @@
  Environment:  Local Windows session (desktop)
  GitHub issue:  
  
- Description:  Create format for temporary recoding of street
+ Description:  Create format $dcg_strecode for temporary recoding of street
  names that Proc Geocode has trouble matching.
 
 
  Modifications:
 **************************************************************************/
 
-/** Macro Format_dcg_strecode - Start Definition **/
+/** Macro F_dcg_strecode - Start Definition **/
 
-%macro Format_dcg_strecode(  );
+%macro F_dcg_strecode(  );
+
+  %** Enter street names in ALL CAPS **;
 
   proc format;
-    value $_dcg_strecode (default=40)
+    value $dcg_strecode (default=40)
       'E', 'N', 'S', 'W',
       'NORTH', 'SOUTH', 'EAST', 'WEST', 
       'WEST LANE', 'EAST BEACH', 'WEST BEACH', 
-      'FOREST', 'FALLS'
+      'FOREST', 'FALLS', 'ORCHARD', 'VALLEY', 'CANAL ROAD'
       = 'YES'
       other = ' ';
   run;  
 
-%mend Format_dcg_strecode;
+%mend F_dcg_strecode;
 
 /** End Macro Definition **/
 
