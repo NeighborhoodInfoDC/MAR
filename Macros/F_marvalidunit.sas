@@ -1,5 +1,5 @@
 /**************************************************************************
- Program:  Format_marvalidunit.sas
+ Program:  F_marvalidunit.sas
  Library:  MAR
  Project:  NeighborhoodInfo DC
  Author:   P. Tatian
@@ -12,20 +12,17 @@
  Modifications:
 **************************************************************************/
 
-%include "L:\SAS\Inc\StdLocal.sas";
+/** Macro F_marvalidunit - Start Definition **/
 
-** Define libraries **;
-%DCData_lib( MAR )
+%macro F_marvalidunit(  );
 
-proc format library=MAR;
-  value $marvalidunit (default=40)
-    "UNIT" = "UNIT"
-    other = " ";
-run;
+  proc format;
+    value $marvalidunit (default=40)
+      "UNIT" = "UNIT"
+      other = " ";
+  run;
 
-proc catalog catalog=MAR.Formats;
-  modify marvalidunit (desc="MAR geocoding/valid unit") / entrytype=formatc;
-  contents;
-quit;
+%mend F_marvalidunit;
 
-run;
+/** End Macro Definition **/
+

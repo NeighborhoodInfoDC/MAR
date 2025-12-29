@@ -1,20 +1,30 @@
 /**************************************************************************
- Program:  Geocode_94_dc_source.sas
+ Program:  38_Fix_geocoding.sas
  Library:  MAR
- Project:  NeighborhoodInfo DC
+ Project:  Urban-Greater DC
  Author:   P. Tatian
- Created:  01/23/16
- Editted:  08/24/17
- Version:  SAS 9.2
+ Created:  12/17/25
+ Version:  SAS 9.4
  Environment:  Local Windows session (desktop)
+ GitHub issue:  38
  
- Description:  Create Proc Geocode source data sets from MAR address
- points. File format compatible with SAS ver 9.4 and later. 
+ Description:  https://github.com/NeighborhoodInfoDC/MAR/issues/38
  
- Also updates $marvalidstnm format and ValidStreets.html file.
+ Problem addresses
+   849 H R Drive SE
+   5042 Queen's Stroll Place SE
+   3033 West Lane Keys NW
+   3150 South Street NW
+   4400 Falls Terrace SE
+   2915 Chancellor's Way Northeast
+   1999 9 1/2 Street Northwest
+   4355 Forest Lane NW
+   403 GUETHLER'S WAY SE
+   3336 Cady's Alley NW
+   8425 East Beach Drive NW
+   907 Barry Place NW [RETIRED ADDRESS]
 
- Modifications: RP Updated to add post-2020 geographies and use %Finalize_data_set
-				7/8/25 RP Added ANC2023 to geo list
+ Modifications:
 **************************************************************************/
 
 %include "\\sas1\DCdata\SAS\Inc\StdLocal.sas";
@@ -22,10 +32,14 @@
 ** Define libraries **;
 %DCData_lib( MAR )
 
-%let revisions = Updated with latest address points.;
+** Create format for temporary recoding of street names that match direction abbreviations;
+** Workaround for Proc Geocode problem matching these streets;
 
-%let revisions = Implement address geocoding fixes.;  /** Delete this statement for next regular address update **/
+%F_dcg_strecode()
+%f_streettype_to_uspsabv()
 
+
+**** CREATE NEW GEOCODING FILES ****;
 
 %** Geography variables to include in geocoding file **;
 %let geo_vars = 
@@ -37,15 +51,6 @@
   Latitude Longitude SSL
   VoterPre2012 Anc2002 Anc2012 Anc2023
   Bridgepk stantoncommons;
-
-** Create format for converting street types to standard USPS abbreviations **;
-
-%f_streettype_to_uspsabv()
-
-** Create format for temporary recoding of street names that match direction abbreviations;
-** Workaround for Proc Geocode problem matching these streets;
-
-%F_dcg_strecode()
 
 ** Prep address list **;
 
@@ -65,19 +70,14 @@ proc sort data=Mar_parse;
   by stname zipcode street_type quadrant addrnum addrnumsuffix;
 run;
 
-proc freq data=Mar_parse;
-  tables street_type quadrant;
-run;
-
-
-** Create $marvalidstnm (valid street names) format for %Dc_geocode() macro **;
+** Create $marvalidstnm format for %Dc_geocode() macro **;
 
 proc sort data=Mar_parse out=Mar_streetnames nodupkey;
   by stname;
 run;
 
 %Data_to_format(
-  FmtLib=Mar,
+  FmtLib=WORK, /** TESTING CHANGE **/
   FmtName=$marvalidstnm,
   Desc="MAR geocoding/valid street names",
   Data=Mar_streetnames,
@@ -87,25 +87,6 @@ run;
   Print=N,
   Contents=N
   )
-
-
-** Export list of valid street names **;
-
-%fdate()
-
-ods listing close;
-ods html body="&_dcdata_default_path\Mar\Doc\ValidStreets.html" style=Minimal;
-ods csvall body="&_dcdata_default_path\Mar\Doc\ValidStreets.csv";
-
-proc print data=Mar_streetnames noobs label;
-  var stname;
-  label stname = "Valid street names (&fdate)";
-run;
-
-ods html close;
-ods csvall close;
-ods listing;
-
 
 ** Create geocoding data sets for Proc Geocode (v9.4) **;
 
@@ -136,36 +117,27 @@ data
   set Mar_parse;
   by stname zipcode street_type quadrant addrnum;
   
-  ** Deal with street names that require special handling or recoding **;
+    if not( missing( put( upcase( stname ), $dcg_strecode. ) ) ) then do;
+      ** These street names have to be masked to be handled properly by Proc Geocode **;
+      Name = cats( '~', propcase( stname ), '~' );
+    end;
+    else if stname = '9 1/2' then do;
+      Name = '~Nineandahalf~';
+    end;
+    else if scan( upcase( stname ), 1, ' ' ) in ( 'NORTH', 'SOUTH', 'EAST', 'WEST' ) and
+       scan( upcase( stname ), 2, ' ' ) ~= '' then do;
+      Predirabrv = substr( scan( upcase( stname ), 1, ' ' ), 1, 1 );
+      Name = substr( stname, length( propcase( scan( stname, 1, ' ' ) ) ) + 2 );
+    end;
+    else do;
+      Name = propcase( left( stname ) );
+    end;
 
-  if not( missing( put( upcase( stname ), $dcg_strecode. ) ) ) then do;
-    ** These street names have to be masked to be handled properly by Proc Geocode **;
-    Name = cats( '~', propcase( stname ), '~' );
-  end;
-  else if stname = '9 1/2' then do;
-    ** 9 1/2 Street requires special recode **;
-    Name = '~Nineandahalf~';
-  end;
-  else if scan( upcase( stname ), 1, ' ' ) in ( 'NORTH', 'SOUTH', 'EAST', 'WEST' ) and
-     scan( upcase( stname ), 2, ' ' ) ~= '' then do;
-    ** Street names like NORTH CAPITOL, which have a direction and another part to the name **;
-    ** The direction part is assigned to Predirabrv and the rest of the name to Name **;
-    ** Note that there are exceptions to these cases in the $dcg_strecode. list in the first IF stmt **;
-    Predirabrv = substr( scan( upcase( stname ), 1, ' ' ), 1, 1 );
-    Name = substr( stname, length( propcase( scan( stname, 1, ' ' ) ) ) + 2 );
-  end;
-  else do;
-    ** Street names that needs no special handling **;
-    Name = propcase( left( stname ) );
-  end;
-
-  ** NAME2 var is all uppercase and no spaces **;
-  
-  Name2 = upcase( left( compress( Name, ' ' ) ) );
-  
-  Sufdirabrv = upcase( quadrant );
-  Suftypabrv = put( upcase( street_type ), $streettype_to_uspsabv. );
-  
+    Name2 = upcase( left( compress( Name, ' ' ) ) );
+    
+    Sufdirabrv = upcase( quadrant );
+    Suftypabrv = put( upcase( street_type ), $streettype_to_uspsabv. );
+    
   ** FOR NOW: Only keep first address for places with addrnumsuffix ~= '' **;
 
   if first.addrnum then do;
@@ -216,47 +188,7 @@ data
 
 run;
 
-**** NOTE: DO NOT SORT THE OUTPUT DATA SETS ****;
-
-%Finalize_data_set( 
-	data=Geocode_94_dc_m,
-	out=Geocode_94_dc_m,
-	outlib=MAR,
-	label="Primary street lookup data for Proc Geocode 9.4 (DC MAR)",
-	sortby=,
-	restrictions=None,
-      revisions=%str(&revisions),
-	printobs=40, 
-    stats=n nmiss min max,
-    freqvars=name2 zip zcta Mapidnameabrv City2
-	)
-
-%Finalize_data_set( 
-	data=Geocode_94_dc_s,
-	out=Geocode_94_dc_s,
-	outlib=MAR,
-	label="Secondary street lookup data for Proc Geocode 9.4 (DC MAR)",
-	sortby=,
-	restrictions=None,
-      revisions=%str(&revisions),
-	stats=n nmiss min max,
-	printobs=5
-	)
-
-%Finalize_data_set( 
-	data=Geocode_94_dc_p,
-	out=Geocode_94_dc_p,
-	outlib=MAR,
-	label="Tertiary street lookup data for Proc Geocode 9.4 (DC MAR)",
-	sortby=,
-	restrictions=None,
-      revisions=%str(&revisions),
-	printobs=40, 
-    stats=n nmiss min max
-	)
-
-
-proc datasets lib=Mar noprint;
+proc datasets lib=Work noprint;
     modify Geocode_94_dc_m;
       index create Name2_Zip        = (name2 zip);             /* street+zip search */
       index create Name2_Zcta        = (name zcta);             /* street+zcta search */
@@ -264,4 +196,106 @@ proc datasets lib=Mar noprint;
     run;
 quit;
 
-/* End of program */
+/*
+proc print data=Geocode_94_dc_m;
+  where lowcase( name ) contains ( "canal road" );
+  ***where name contains '~';
+run;
+
+
+proc print data=Geocode_94_dc_s (firstobs=51423 obs=51423);
+  var Predirabrv Sufdirabrv Pretypabrv Suftypabrv Side Fromadd Toadd;
+run;
+/**/
+
+
+data A;
+
+  retain city 'WASHINGTON' st 'DC';
+  
+  length address $ 80;
+  
+  infile datalines dsd;
+  
+  input address;
+  
+  label
+    address = 'TESTING ADDRESS'
+    city = 'TESTING CITY'
+    st = 'TESTING STATE';
+
+datalines;
+   2730 Wisconsin Ave NW
+   5042 Queen's Stroll Place SE
+   2915 Chancellor's Way Northeast
+   403 GUETHLER'S WAY SE
+   3336 Cady's Alley NW
+   3033 West Lane Keys NW
+   3150 South Street NW
+   3850 NORTH ROAD NW
+   1580 WEST ROAD NW
+   2520 WEST STREET SE
+   2516 EAST PLACE NW
+   8425 East Beach Drive NW
+   7932 WEST BEACH DRIVE NW
+   8227 WEST BEACH TERRACE NW
+   701 EAST BASIN DRIVE SW
+   4923 EAST CAPITOL STREET SE
+   777 North Capitol St NE
+   1415 NORTH CAROLINA AVENUE NE
+   6000 North Dakota Avenue NW
+   2817 North Glade St NW
+   1605 NORTH PORTAL DRIVE NW
+   4001 SOUTH CAPITOL STREET SW
+   622 SOUTH CAROLINA AVENUE SE
+   4501 SOUTH DAKOTA AVENUE NE
+   400 WEST BASIN DRIVE SW
+   1713 WEST VIRGINIA AVENUE NE
+   1999 9 1/2 Street Northwest
+   4355 Forest Lane NW   
+   849 H R Drive SE
+   4400 Falls Terrace SE
+   2911 N STREET SE
+   1252 E STREET NE
+   27 W STREET NW
+   900 S Street NW
+   3015 ORCHARD LANE NW
+   1943 VALLEY TERRACE SE
+   3869 CANAL ROAD ENTRANCE NW
+   61 R STREET NE
+   101 V STREET SW
+run;
+
+/*******************
+proc geocode method=street nozip data=A out=B_proc_geocode addressvar=address 
+addresscityvar=city addressstatevar=st lookupstreet=Geocode_94_dc_m attributevar=(address_id Geo2020 Ward2022 Latitude Longitude);
+
+title2 'B_proc_geocode';
+proc print data=B_proc_geocode;
+  id address;
+  var m_addr address_id _score_ _notes_;
+run;
+title2;
+***************************/
+
+
+%DC_mar_geocode(
+  geo_match=Y,
+  data=A,
+  out=B_DC_mar_geocode,
+  staddr=address,
+  zip=,
+  basefile=Geocode_94_dc_m,
+  streetalt_file=C:\DCData\Libraries\MAR\Prog\StreetAlt_38_Fix_geocoding.txt,
+  listunmatched=Y,
+  debug=N
+)
+
+title2 'B_DC_mar_geocode';
+proc print data=B_DC_mar_geocode n;
+  id address;
+  var m_addr address_id M_EXACTMATCH _score_ _notes_;
+run;
+title2;
+
+%File_info( data=B_DC_mar_geocode, printobs=5 )
