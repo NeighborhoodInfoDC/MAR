@@ -19,7 +19,7 @@
 ** Define libraries **;
 %DCData_lib( MAR )
 
-proc catalog catalog=MAR;
+proc catalog catalog=MAR.Formats;
   delete marvalidsttyp / entrytype=formatc;
   delete marvalidunit / entrytype=formatc;
   delete marvalidquadrant / entrytype=formatc;

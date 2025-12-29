@@ -23,7 +23,7 @@
 
   proc format;
     value $dcg_strecode (default=40)
-      'E', 'N', 'S', 'W',
+      'E', 'N', 'S', 'W', 'R', 'V',
       'NORTH', 'SOUTH', 'EAST', 'WEST', 
       'WEST LANE', 'EAST BEACH', 'WEST BEACH', 
       'FOREST', 'FALLS', 'ORCHARD', 'VALLEY', 'CANAL ROAD'

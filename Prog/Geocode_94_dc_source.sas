@@ -38,40 +38,14 @@
   VoterPre2012 Anc2002 Anc2012 Anc2023
   Bridgepk stantoncommons;
 
-proc format;
-  value $streettype_to_uspsabv
-    "ALLEY" = "Aly"
-    "AVENUE" = "Ave"
-    "BOULEVARD" = "Blvd"
-    "BRIDGE" = "Brg"
-    "CIRCLE" = "Cir"
-    "COURT" = "Ct"
-    "CRESCENT" = "Cres"
-    "DRIVE" = "Dr"
-    "EXPRESSWAY" = "Expy"
-    "GREEN" = "Grn"
-    "INTERSTATE" = "Interstate"
-    "KEYS" = "Kys"
-    "LANE" = "Ln"
-    "LOOP" = "Loop"
-    "MEWS" = "Mews"
-    "PARKWAY" = "Pkwy"
-    "PIER" = "Pier"
-    "PLACE" = "Pl"
-    "PLAZA" = "Plz"
-    "PROMENADE" = "Promenade"
-    "ROAD" = "Rd"
-    "SQUARE" = "Sq"
-    "STREET" = "St"
-    "TERRACE" = "Ter"
-    "WALK" = "Walk"
-    "WAY" = "Way";
-run;
+** Create format for converting street types to standard USPS abbreviations **;
+
+%f_streettype_to_uspsabv()
 
 ** Create format for temporary recoding of street names that match direction abbreviations;
 ** Workaround for Proc Geocode problem matching these streets;
 
-%Format_dcg_strecode()
+%F_dcg_strecode()
 
 ** Prep address list **;
 
@@ -164,7 +138,7 @@ data
   
   ** Deal with street names that require special handling or recoding **;
 
-  if not( missing( put( upcase( stname ), $_dcg_strecode. ) ) ) then do;
+  if not( missing( put( upcase( stname ), $dcg_strecode. ) ) ) then do;
     ** These street names have to be masked to be handled properly by Proc Geocode **;
     Name = cats( '~', propcase( stname ), '~' );
   end;
@@ -176,7 +150,7 @@ data
      scan( upcase( stname ), 2, ' ' ) ~= '' then do;
     ** Street names like NORTH CAPITOL, which have a direction and another part to the name **;
     ** The direction part is assigned to Predirabrv and the rest of the name to Name **;
-    ** Note that there are exceptions to these cases in the $_dcg_strecode. list in the first IF stmt **;
+    ** Note that there are exceptions to these cases in the $dcg_strecode. list in the first IF stmt **;
     Predirabrv = substr( scan( upcase( stname ), 1, ' ' ), 1, 1 );
     Name = substr( stname, length( propcase( scan( stname, 1, ' ' ) ) ) + 2 );
   end;

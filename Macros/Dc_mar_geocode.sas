@@ -152,8 +152,17 @@
   ** Create format for temporary recoding of street names that match direction abbreviations;
   ** Workaround for Proc Geocode problem matching these streets;
   
-  %Format_dcg_strecode(  )
+  %F_dcg_strecode()
   
+  ** Create formats for address component parsing and validation **;
+  
+  %f_streettype_to_uspsabv()
+  %F_maraltsttyp()
+  %F_marvalidsttyp()
+  %F_maraltunit()
+  %F_marvalidunit()
+  %F_maraltquadrant()
+  %F_marvalidquadrant() 
 
   %if &streetalt_file ~= %then %do;
   
@@ -252,17 +261,17 @@
     
       ** Enclose selected addresses in ~ to deal with Proc Geocode issues **;
       
-      if put( upcase( _dcg_adr_streetname_clean ), $_dcg_strecode. ) ~= "" then
+      if put( upcase( _dcg_adr_streetname_clean ), $dcg_strecode. ) ~= "" then
         _dcg_adr_streetname_geocode = cats( '~', _dcg_adr_streetname_clean, '~' );
       else if _dcg_adr_streetname_clean = "9 1/2" then
-        _dcg_adr_streetname_geocode = "~NINEANDAHALF~";      
+        _dcg_adr_streetname_geocode = "~NINEANDAHALF~";
       else
         _dcg_adr_streetname_geocode = _dcg_adr_streetname_clean;
       
 
       ** NOTE: Currently not processing address number suffix bcs not supported by Proc Geocode **;
       _dcg_adr_geocode = 
-        left( compbl( catx( " ", _dcg_adr_begnum, _dcg_adr_streetname_geocode, _dcg_adr_streettype, _dcg_adr_quad ) ) );
+        left( compbl( catx( " ", _dcg_adr_begnum, _dcg_adr_streetname_geocode, put( _dcg_adr_streettype, $streettype_to_uspsabv. ), _dcg_adr_quad ) ) );
     
     end;
     

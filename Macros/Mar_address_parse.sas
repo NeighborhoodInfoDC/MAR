@@ -8,6 +8,10 @@
  
  Description:  Autocall macro for parsing DC addresses.
  
+ Must submit %F_maraltsttyp(), %F_marvalidsttyp(), %F_maraltunit(),
+ %F_maraltquadrant(), %F_marvalidquadrant(), and %F_marvalidunit() macros
+ before using this macro. 
+ 
  Adapted from %Parse() macro created by Beata Bajaj (ver. 7/25/03).
 
  Modifications:

@@ -35,8 +35,9 @@
 ** Create format for temporary recoding of street names that match direction abbreviations;
 ** Workaround for Proc Geocode problem matching these streets;
 
-%Format_dcg_strecode()
-  
+%F_dcg_strecode()
+%f_streettype_to_uspsabv()
+
 
 **** CREATE NEW GEOCODING FILES ****;
 
@@ -50,36 +51,6 @@
   Latitude Longitude SSL
   VoterPre2012 Anc2002 Anc2012 Anc2023
   Bridgepk stantoncommons;
-
-proc format;
-  value $streettype_to_uspsabv
-    "ALLEY" = "Aly"
-    "AVENUE" = "Ave"
-    "BOULEVARD" = "Blvd"
-    "BRIDGE" = "Brg"
-    "CIRCLE" = "Cir"
-    "COURT" = "Ct"
-    "CRESCENT" = "Cres"
-    "DRIVE" = "Dr"
-    "EXPRESSWAY" = "Expy"
-    "GREEN" = "Grn"
-    "INTERSTATE" = "Interstate"
-    "KEYS" = "Kys"
-    "LANE" = "Ln"
-    "LOOP" = "Loop"
-    "MEWS" = "Mews"
-    "PARKWAY" = "Pkwy"
-    "PIER" = "Pier"
-    "PLACE" = "Pl"
-    "PLAZA" = "Plz"
-    "PROMENADE" = "Promenade"
-    "ROAD" = "Rd"
-    "SQUARE" = "Sq"
-    "STREET" = "St"
-    "TERRACE" = "Ter"
-    "WALK" = "Walk"
-    "WAY" = "Way";
-run;
 
 ** Prep address list **;
 
@@ -146,7 +117,7 @@ data
   set Mar_parse;
   by stname zipcode street_type quadrant addrnum;
   
-    if not( missing( put( upcase( stname ), $_dcg_strecode. ) ) ) then do;
+    if not( missing( put( upcase( stname ), $dcg_strecode. ) ) ) then do;
       ** These street names have to be masked to be handled properly by Proc Geocode **;
       Name = cats( '~', propcase( stname ), '~' );
     end;
@@ -227,15 +198,15 @@ quit;
 
 /*
 proc print data=Geocode_94_dc_m;
-  where lowcase( name ) contains ( "falls" );
+  where lowcase( name ) contains ( "canal road" );
   ***where name contains '~';
 run;
 
 
-proc print data=Geocode_94_dc_s (firstobs=67337 obs=67376);
+proc print data=Geocode_94_dc_s (firstobs=51423 obs=51423);
   var Predirabrv Sufdirabrv Pretypabrv Suftypabrv Side Fromadd Toadd;
 run;
-*/
+/**/
 
 
 data A;
@@ -263,9 +234,11 @@ datalines;
    3150 South Street NW
    3850 NORTH ROAD NW
    1580 WEST ROAD NW
+   2520 WEST STREET SE
    2516 EAST PLACE NW
    8425 East Beach Drive NW
    7932 WEST BEACH DRIVE NW
+   8227 WEST BEACH TERRACE NW
    701 EAST BASIN DRIVE SW
    4923 EAST CAPITOL STREET SE
    777 North Capitol St NE
@@ -286,6 +259,11 @@ datalines;
    1252 E STREET NE
    27 W STREET NW
    900 S Street NW
+   3015 ORCHARD LANE NW
+   1943 VALLEY TERRACE SE
+   3869 CANAL ROAD ENTRANCE NW
+   61 R STREET NE
+   101 V STREET SW
 run;
 
 /*******************
