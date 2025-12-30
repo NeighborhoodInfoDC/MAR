@@ -26,7 +26,7 @@ proc format library=MAR;
   value $marstatus
     'A' = 'Active'
     'S' = 'Assigned'
-    'R' = 'Retire'
+    'R' = 'Retired'
     'T' = 'Temporary';
     
   value $marrestyp

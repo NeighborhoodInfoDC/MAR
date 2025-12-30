@@ -7,7 +7,8 @@
  Version:  SAS 9.4
  Environment:  Local Windows session (desktop)
  
- Description:  Create SAS View with latest Address_points.
+ Description:  Create SAS View with latest Address_points and
+ Address_points_retired data sets.
 
  Modifications:
 **************************************************************************/
@@ -18,13 +19,15 @@
 %DCData_lib( MAR )
 
 %let Address_points = Address_points_2025_07;
+%let Address_points_retired = Address_points_retired_2025_12;
 
 
 proc sql noprint;
-  create view Mar.Address_points_view (label="Master address repository, Latest Address_points") as
-    select * from 
-      Mar.&Address_points as Address_points 
-     order by Address_points.Address_id;
+  create view Mar.Address_points_view (label="Master address repository, Latest Address_points and Address_points_retired") as
+    select * from Mar.&Address_points
+    outer union corresponding
+    select * from Mar.&Address_points_retired
+    order by Address_id;
   quit;
 
 run;
@@ -36,7 +39,7 @@ run;
   ds_name=Address_points_view,
   creator_process=Address_points_view.sas,
   restrictions=None,
-  revisions=%str(Update with &Address_points..)
+  revisions=%str(Update with &Address_points. + &Address_points_retired..)
 )
 
 
