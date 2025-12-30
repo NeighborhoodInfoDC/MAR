@@ -24,15 +24,15 @@
 
 proc sql noprint;
   create view Mar.Address_points_view (label="Master address repository, Latest Address_points and Address_points_retired") as
-    select * from Mar.&Address_points
+    select * from Mar.&Address_points (drop=metadata_id)
     outer union corresponding
-    select * from Mar.&Address_points_retired
+    select * from Mar.&Address_points_retired (drop=metadata_id)
     order by Address_id;
   quit;
 
 run;
 
-%File_info( data=Mar.Address_points_view )
+%File_info( data=Mar.Address_points_view, freqvars=status )
 
 %Dc_update_meta_file(
   ds_lib=MAR,
