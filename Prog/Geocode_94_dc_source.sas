@@ -53,11 +53,28 @@ data Mar_parse;
 
   set Mar.Address_points_view 
     (keep=address_id address_type fulladdress addrnum addrnumsuffix stname street_type quadrant zipcode x y
-          &geo_vars
-     where=(address_type = 'A' and fulladdress ~= ''));
+          status &geo_vars
+     rename=(status=Mar_status)
+     where=(not( missing( fulladdress ) or missing( stname ) or missing( addrnum ) ) ) 
+    );
      
     ** Proc Geocode does not handle street names with single quotes (') **;
-    stname = compress( stname, "'" );
+    ** Remove other stray punctuation **;
+    stname = compress( stname, "';" );
+    
+    ** Manual corrections **;
+    
+    stname = left( compbl( prxchange( 's/\bTERMPERANCE\b/ TEMPERANCE /i', 1, stname ) ) );
+    
+    ** Fill in missing ZIP codes **;
+    
+    %Block20_to_zip( )
+    
+    if missing( zipcode ) then zipcode = input( zip, 5. );
+    
+    label Mar_status = "MAR address status";
+    
+    drop zip;
     
 run;     
 
@@ -115,7 +132,7 @@ data
      rename=(Zipcode=Zip)
      label="Primary street lookup data for Proc Geocode 9.4 (DC MAR)")
   Geocode_94_dc_s 
-    (keep=Address_id Predirabrv Pretypabrv Sufdirabrv Suftypabrv Side Fromadd Toadd N Start &geo_vars
+    (keep=Address_id Predirabrv Pretypabrv Sufdirabrv Suftypabrv Side Fromadd Toadd N Start Mar_status &geo_vars
      label="Secondary street lookup data for Proc Geocode 9.4 (DC MAR)")
   Geocode_94_dc_p
     (keep=X Y
@@ -228,7 +245,7 @@ run;
       revisions=%str(&revisions),
 	printobs=40, 
     stats=n nmiss min max,
-    freqvars=name2 zip zcta Mapidnameabrv City2
+    freqvars=name zip zcta Mapidnameabrv City2
 	)
 
 %Finalize_data_set( 
@@ -240,6 +257,7 @@ run;
 	restrictions=None,
       revisions=%str(&revisions),
 	stats=n nmiss min max,
+	freqvars=Mar_status,
 	printobs=5
 	)
 
