@@ -29,7 +29,8 @@
 
   geo_match=y,                /* Perform geo. matching with parcels (Y/N) */
 
-  keep_geo=address_id 
+  keep_geo=address_id
+           Mar_status
            Anc2023 
            Cluster2017
            Geo2020 GeoBg2020 GeoBlk2020 

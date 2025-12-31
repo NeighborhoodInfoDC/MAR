@@ -25,9 +25,9 @@
 
 proc sort 
   data=Mar.Address_points_view 
-         (keep=address_id address_type fulladdress addrnumsuffix stname street_type quadrant zipcode
+         (keep=address_id fulladdress addrnumsuffix addrnum stname street_type quadrant zipcode
           rename=(address_id=address_id_ref)
-          where=(address_type='A' and addrnumsuffix = ''))
+          where=(not( missing( fulladdress ) or missing( stname ) or missing( addrnum ) ) and addrnumsuffix = '') )
   out=Address_test
   nodupkey;
   by stname street_type quadrant;
