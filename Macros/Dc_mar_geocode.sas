@@ -107,7 +107,7 @@
 
   %**** Check for valid keywords in keep_geo= ****;
 
-  %let geo_valid = /address_id/Anc2002/Anc2012/Anc2023/Cluster_tr2000/
+  %let geo_valid = /address_id/Mar_status/Anc2002/Anc2012/Anc2023/Cluster_tr2000/
                    /Geo2000/Geo2010/Geo2020/
                    /GeoBg2010/GeoBlk2010/
                    /GeoBg2020/GeoBlk2020/
