@@ -44,6 +44,7 @@
       "PLAZA" = "Plz"
       "PROMENADE" = "Promenade"
       "ROAD" = "Rd"
+      "ROW" = "Row"
       "SQUARE" = "Sq"
       "STREET" = "St"
       "TERRACE" = "Ter"
