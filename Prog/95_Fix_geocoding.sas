@@ -59,20 +59,21 @@ data Mar_parse;
 
     stname = prxchange( 's/\bTERMPERANCE\b/ TEMPERANCE /i', 1, stname );
     stname = prxchange( 's/\bALBERMARLE\b/ ALBEMARLE /i', 1, stname );
-    
-    /** Incorrect names? 
-    BALDENSBURG  to BLADENSBURG
-    MCCULLOUGH  to MCCOLLOUGH
-    MERIDAN  to MERIDIAN
-    MT PLEASANT  to MOUNT PLEASANT
-    PORTLAND  to CORTLAND
-    QUEENS  to QUEEN
-    ST MARYS  to SAINT MARYS
-
-
-    ********/
-
+    stname = prxchange( 's/\bBALDENSBURG\b/ BLADENSBURG /i', 1, stname );
+    stname = prxchange( 's/\bMCCULLOUGH\b/ MCCOLLOUGH /i', 1, stname );
+    stname = prxchange( 's/\bMERIDAN\b/ MERIDIAN /i', 1, stname );
+    stname = prxchange( 's/\bMT PLEASANT\b/ MOUNT PLEASANT /i', 1, stname );
+    stname = prxchange( 's/\bST MARYS\b/ SAINT MARYS /i', 1, stname );
+        
     stname = left( compbl( stname ) );
+
+    ** Remove directions from street types for retired addresses (does not match) **;
+    
+    street_type = prxchange( 's/\bNORTH|SOUTH|EAST|WEST\b//i', 1, street_type );
+    
+    ** Replace ST with STREET for street types **;
+    
+    if street_type = 'ST' then street_type = 'STREET';
 
     ** Fill in missing ZIP codes **;
     
@@ -94,6 +95,16 @@ proc freq data=Mar_parse;
   tables street_type quadrant;
 run;
 
+/*
+PROC PRINT DATA=Mar_parse;
+  where stname in ( "B 1/2", "C STREET", "CANAL ROAD", "CAPITOL SQUARE" );
+  by stname;
+  id stname;
+  VAR STREET_TYPE fulladdress;
+RUN;
+
+ENDSAS;
+*/
 
 ** Create $marvalidstnm (valid street names) format for %Dc_geocode() macro **;
 
@@ -148,9 +159,9 @@ data
     ** These street names have to be masked to be handled properly by Proc Geocode **;
     Name = cats( '~', propcase( stname ), '~' );
   end;
-  else if stname = '9 1/2' then do;
-    ** 9 1/2 Street requires special recode **;
-    Name = '~Nineandahalf~';
+  else if prxmatch( '/^([0-9]+|[A-Z]) 1\/2/', stname ) > 0 then do;
+    ** Street names with "1/2" in them require special recodes **;
+    Name = prxchange( 's/([0-9]+|[A-Z]) 1\/2/~$1~ANDAHALF~/i', 1, stname );
   end;
   else if scan( upcase( stname ), 1, ' ' ) in ( 'NORTH', 'SOUTH', 'EAST', 'WEST' ) and
      scan( upcase( stname ), 2, ' ' ) ~= '' then do;
@@ -231,7 +242,6 @@ proc datasets lib=WORK noprint;
 quit;
 
 
-
 *************************************************************************;
 
 data A;
@@ -250,10 +260,27 @@ data A;
     st = 'TESTING STATE';
 
 datalines;
+209 B 1/2 STREET SW
+721 9TH ST ALLEY SE
+1999 9 1/2 Street Northwest
+1236 11 1/2 STREET SE
+409 13 1/2 STREET NW
+248 14 1/2 STREET NE
+237 2 1/2 STREET SW 
+633 3 1/2 STREET NE 
+323 4 1/2 STREET NW 
+1014 6 1/2 STREET SE
+1718  Corcoran Street NW
 955 L'ENFANT PLAZA SW
 357 L'ENFANT PROMENADE SW
 20 PARKER ROW SW
+1525 QUEEN STREET NE
+8 QUEENS COURT NW
+335 BROAD ALLEY SW
+314 BLAGDEN ALLEY EAST NW
+314 BLAGDEN ALLEY NW
 run;
+
 
 /*******************
 proc geocode method=street nozip data=A out=B_proc_geocode addressvar=address 
@@ -275,9 +302,9 @@ title2;
   staddr=address,
   zip=,
   basefile=Geocode_94_dc_m,
-  /***streetalt_file=C:\DCData\Libraries\MAR\Prog\StreetAlt_38_Fix_geocoding.txt,***/
+  streetalt_file=C:\DCData\Libraries\MAR\Prog\StreetAlt.txt,
   listunmatched=Y,
-  debug=N
+  debug=Y
 )
 
 title2 'B_DC_mar_geocode';

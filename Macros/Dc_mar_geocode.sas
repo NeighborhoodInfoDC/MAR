@@ -264,8 +264,8 @@
       
       if put( upcase( _dcg_adr_streetname_clean ), $dcg_strecode. ) ~= "" then
         _dcg_adr_streetname_geocode = cats( '~', _dcg_adr_streetname_clean, '~' );
-      else if _dcg_adr_streetname_clean = "9 1/2" then
-        _dcg_adr_streetname_geocode = "~NINEANDAHALF~";
+      else if prxmatch( '/^([0-9]+|[A-Z]) 1\/2/', _dcg_adr_streetname_clean ) > 0 then
+        _dcg_adr_streetname_geocode = prxchange( 's/([0-9]+|[A-Z]) 1\/2/~$1~ANDAHALF~/i', 1, _dcg_adr_streetname_clean );
       else
         _dcg_adr_streetname_geocode = _dcg_adr_streetname_clean;
       
@@ -421,7 +421,7 @@
       
       ** Remove geocoding recodes **;
 
-      M_ADDR = prxchange( 's/~Nineandahalf~/9 1\/2/i', 1, M_ADDR );
+      M_ADDR = prxchange( 's/~ANDAHALF~/ 1\/2/i', 1, M_ADDR );
       M_ADDR = compress( M_ADDR, '~' );
       
       ** Check for exact matches **;

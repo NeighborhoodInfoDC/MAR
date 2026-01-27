@@ -314,6 +314,10 @@
 
   ***************START PARSING PROCESS***************;
 
+  %if %mparam_is_yes( &debug ) %then %do;
+   PUT "A2: " wrd1= wrd2= wrd3=;
+  %end;
+
   %***[PAT] Separate street number (NUM) from street name (PAD) ***;
   
   if l1_wrd1 in ("0","1","2","3","4","5","6","7","8","9") then
@@ -327,6 +331,11 @@
                  num = wrd1;
                  pad = substr(_ap_temp_ad,i_wrd2);
                end;  
+              else if wrd2 = "B" and wrd3 = "1/2" then
+               do; ** Special case: B 1/2 Street **;
+                 num = wrd1;
+                 pad = substr(_ap_temp_ad,i_wrd2);
+               end;
               else if wrd2 in ( "1/2", "REAR", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "R" ) and 
                  ( put( put( compress( wrd3, '-' ), $maraltsttyp. ), $marvalidsttyp. ) = '' and
                    wrd3 not in ( 'NE', 'NW', 'SE', 'SW' ) ) then
