@@ -231,12 +231,12 @@
       _dcg_adr_streetname_clean = _dcg_adr_streetname;
     end;
 
-    ** Special handling of PENNSYLVANIA AVE and PENN ST **;
-    
+    ** Because there is a PENN ST, cannot automatically correct PENN to PENNSYLVANIA 
+    ** unless the street type is AVENUE.
+    ** In addition, there is a PENNSYLVANIA ST (retired) so cannot correct PENNSYLVANIA to PENN;
+
     if _dcg_adr_streettype = 'AVENUE' and _dcg_adr_streetname_clean = 'PENN' then 
       _dcg_adr_streetname_clean = 'PENNSYLVANIA';
-    else if _dcg_adr_streettype = 'STREET' and _dcg_adr_streetname_clean = 'PENNSYLVANIA' then 
-      _dcg_adr_streetname_clean = 'PENN';
 
     file log;
 
