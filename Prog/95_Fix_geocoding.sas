@@ -64,6 +64,7 @@ data Mar_parse;
     stname = prxchange( 's/\bMERIDAN\b/ MERIDIAN /i', 1, stname );
     stname = prxchange( 's/\bMT PLEASANT\b/ MOUNT PLEASANT /i', 1, stname );
     stname = prxchange( 's/\bST MARYS\b/ SAINT MARYS /i', 1, stname );
+    stname = prxchange( 's/\bPEHELPS\b/ PHELPS /i', 1, stname );
         
     stname = left( compbl( stname ) );
 
@@ -242,6 +243,22 @@ proc datasets lib=WORK noprint;
 quit;
 
 
+** Create new GCTYPE data set to add missing street type **;
+
+data Geocode_94_dc_gctype;
+    set sashelp.gctype;
+run;
+
+proc sql;
+    insert into Geocode_94_dc_gctype (name, type, group)
+    values ('PIER', 'PIER', 900 );
+quit;
+
+proc sort data=Geocode_94_dc_gctype;
+  by name type;
+run;
+
+
 *************************************************************************;
 
 data A;
@@ -260,6 +277,14 @@ data A;
     st = 'TESTING STATE';
 
 datalines;
+9 BALDWIN'S ROW NW
+101 DISTRICT PIER SW
+321 PARK ROW SW
+1801 PEHELPS PLACE NW
+9 SUMNER ROW NW
+160 SUMNER SOUTH ROW NW
+917 TEMPERANCE HALL ALLEY NW
+1945 TEMPERANCE AVENUE NW
 209 B 1/2 STREET SW
 721 9TH ST ALLEY SE
 1999 9 1/2 Street Northwest
@@ -270,15 +295,21 @@ datalines;
 633 3 1/2 STREET NE 
 323 4 1/2 STREET NW 
 1014 6 1/2 STREET SE
-1718  Corcoran Street NW
+1718 Corcoran Street NW
 955 L'ENFANT PLAZA SW
 357 L'ENFANT PROMENADE SW
 20 PARKER ROW SW
 1525 QUEEN STREET NE
 8 QUEENS COURT NW
 335 BROAD ALLEY SW
-314 BLAGDEN ALLEY EAST NW
+314 BLAGDEN ALY EAST Northwest Apt 207
 314 BLAGDEN ALLEY NW
+2456 SNOWS COURT NORTH NW
+2456 SNOWS COURT NW
+1114 SHEPHERD ALLEY EAST NW
+1114 SHEPHERD ALLEY NW
+1936 WAVERLY TERRACE WEST    NW
+1936 WAVERLY TERRACE NW
 run;
 
 
@@ -302,6 +333,7 @@ title2;
   staddr=address,
   zip=,
   basefile=Geocode_94_dc_m,
+  typefile=Geocode_94_dc_gctype,
   streetalt_file=C:\DCData\Libraries\MAR\Prog\StreetAlt.txt,
   listunmatched=Y,
   debug=Y

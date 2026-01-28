@@ -50,6 +50,7 @@
   max_near_block_dist=500,    /* Maximum difference between street nos. for near block matches */
 
   basefile=,                  /* Base file for address matching (if not specified, default files are used) */
+  typefile=MAR.Geocode_94_dc_gctype,  /* Street type abbreviation file */
   stvalidfmt=$marvalidstnm,        /* Format for validating street names */
   streetalt_file=&_dcdata_r_path\MAR\Prog\StreetAlt.txt, /* File containing street name spelling corrections (if omitted, default file is used) */
   stnamenotfound_export=,       /* Name for export file of not found street names */
@@ -65,8 +66,8 @@
 
   %local mversion mdate mname geo_valid u_keep_geo i gkw dsid rc _geocode_zip _geocode_opt;
 
-  %let mversion = 1.8;
-  %let mdate = 12/29/2025;
+  %let mversion = 1.9;
+  %let mdate = 1/28/2026;
   %let mname = DC_mar_geocode;
 
   %push_option( mprint )
@@ -397,6 +398,7 @@
         addressvar=_dcg_adr_geocode
         &_geocode_zip
         lookupstreet=&basefile
+        type=&typefile
         attributevar=(&keep_geo);
         run;
       quit;

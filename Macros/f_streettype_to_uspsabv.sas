@@ -10,7 +10,7 @@
  
  Description:  Create $streettype_to_uspsabv format.
  Converts street types to std USPS abbreviations.
- Abbreviations can be found in SASHELP.GCTYPE data set. 
+ Abbreviations can be found in Mar.Geocode_94_dc_gctype data set. 
 
  Modifications:
 **************************************************************************/

@@ -678,6 +678,20 @@
        pad = substr(pad,indexc(pad,"ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789."));
    end;
 
+  ** Check for street names that include direction label after type and
+  ** strip out direction label as these do not geocode. 
+  ** Example: SNOWS COURT NORTH NW -> SNOWS COURT NW;
+  
+  i = prxmatch( '/\bNORTH|SOUTH|EAST|WEST NW|NE|SW|SE\b/i', pad );
+  
+  if i > 0 and
+     put( put( upcase( scan( substr( pad, 1, i - 1 ), -1, ' ' ) ), $maraltsttyp. ), $marvalidsttyp. ) ~= ''
+     then do;
+
+    pad = catx( ' ', substr( pad, 1, i - 1 ), prxchange( 's/\bNORTH|SOUTH|EAST|WEST\b//i', 1, substr( pad, i ) ) );
+  
+  end;
+  
   pad = trim(left(compbl(pad)));
 
   %if %mparam_is_yes( &debug ) %then %do;

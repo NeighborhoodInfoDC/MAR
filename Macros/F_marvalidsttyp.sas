@@ -33,6 +33,7 @@
       "LOOP" = "LOOP"
       "MEWS" = "MEWS"
       "PARKWAY" = "PARKWAY"
+      "PIER" = "PIER"
       "PLACE" = "PLACE"
       "PLAZA" = "PLAZA"
       "PROMENADE" = "PROMENADE"
