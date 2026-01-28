@@ -62,10 +62,27 @@ data Mar_parse;
     ** Remove other stray punctuation **;
     stname = compress( stname, "';" );
     
-    ** Manual corrections **;
+    ** Manual street name corrections **;    
+
+    stname = prxchange( 's/\bTERMPERANCE\b/ TEMPERANCE /i', 1, stname );
+    stname = prxchange( 's/\bALBERMARLE\b/ ALBEMARLE /i', 1, stname );
+    stname = prxchange( 's/\bBALDENSBURG\b/ BLADENSBURG /i', 1, stname );
+    stname = prxchange( 's/\bMCCULLOUGH\b/ MCCOLLOUGH /i', 1, stname );
+    stname = prxchange( 's/\bMERIDAN\b/ MERIDIAN /i', 1, stname );
+    stname = prxchange( 's/\bMT PLEASANT\b/ MOUNT PLEASANT /i', 1, stname );
+    stname = prxchange( 's/\bST MARYS\b/ SAINT MARYS /i', 1, stname );
+    stname = prxchange( 's/\bPEHELPS\b/ PHELPS /i', 1, stname );
+        
+    stname = left( compbl( stname ) );
+
+    ** Remove directions from street types for retired addresses (does not match) **;
     
-    stname = left( compbl( prxchange( 's/\bTERMPERANCE\b/ TEMPERANCE /i', 1, stname ) ) );
+    street_type = prxchange( 's/\bNORTH|SOUTH|EAST|WEST\b//i', 1, street_type );
     
+    ** Replace ST with STREET for street types **;
+    
+    if street_type = 'ST' then street_type = 'STREET';
+
     ** Fill in missing ZIP codes **;
     
     %Block20_to_zip( )
@@ -159,9 +176,9 @@ data
     ** These street names have to be masked to be handled properly by Proc Geocode **;
     Name = cats( '~', propcase( stname ), '~' );
   end;
-  else if stname = '9 1/2' then do;
-    ** 9 1/2 Street requires special recode **;
-    Name = '~Nineandahalf~';
+  else if prxmatch( '/^([0-9]+|[A-Z]) 1\/2/', stname ) > 0 then do;
+    ** Street names with "1/2" in them require special recodes **;
+    Name = prxchange( 's/([0-9]+|[A-Z]) 1\/2/~$1~ANDAHALF~/i', 1, stname );
   end;
   else if scan( upcase( stname ), 1, ' ' ) in ( 'NORTH', 'SOUTH', 'EAST', 'WEST' ) and
      scan( upcase( stname ), 2, ' ' ) ~= '' then do;
