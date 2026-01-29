@@ -238,6 +238,14 @@
     if _dcg_adr_streettype = 'AVENUE' and _dcg_adr_streetname_clean = 'PENN' then 
       _dcg_adr_streetname_clean = 'PENNSYLVANIA';
 
+    ** Correct QUEENS to QUEEN for QUEEN STREET;
+    ** Correct QUEEN to QUEENS for QUEENS COURT;
+    
+    if _dcg_adr_streettype = 'STREET' and _dcg_adr_streetname_clean = 'QUEENS' then 
+      _dcg_adr_streetname_clean = 'QUEEN';
+    else if _dcg_adr_streettype = 'COURT' and _dcg_adr_streetname_clean = 'QUEEN' then 
+      _dcg_adr_streetname_clean = 'QUEENS';
+    
     file log;
 
     ** Check for valid street names **;
