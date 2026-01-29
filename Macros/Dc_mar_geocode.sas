@@ -50,6 +50,7 @@
   max_near_block_dist=500,    /* Maximum difference between street nos. for near block matches */
 
   basefile=,                  /* Base file for address matching (if not specified, default files are used) */
+  typefile=MAR.Geocode_94_dc_gctype,  /* Street type abbreviation file */
   stvalidfmt=$marvalidstnm,        /* Format for validating street names */
   streetalt_file=&_dcdata_r_path\MAR\Prog\StreetAlt.txt, /* File containing street name spelling corrections (if omitted, default file is used) */
   stnamenotfound_export=,       /* Name for export file of not found street names */
@@ -65,8 +66,8 @@
 
   %local mversion mdate mname geo_valid u_keep_geo i gkw dsid rc _geocode_zip _geocode_opt;
 
-  %let mversion = 1.8;
-  %let mdate = 12/29/2025;
+  %let mversion = 1.9;
+  %let mdate = 1/28/2026;
   %let mname = DC_mar_geocode;
 
   %push_option( mprint )
@@ -230,13 +231,21 @@
       _dcg_adr_streetname_clean = _dcg_adr_streetname;
     end;
 
-    ** Special handling of PENNSYLVANIA AVE and PENN ST **;
-    
+    ** Because there is a PENN ST, cannot automatically correct PENN to PENNSYLVANIA 
+    ** unless the street type is AVENUE.
+    ** In addition, there is a PENNSYLVANIA ST (retired) so cannot correct PENNSYLVANIA to PENN;
+
     if _dcg_adr_streettype = 'AVENUE' and _dcg_adr_streetname_clean = 'PENN' then 
       _dcg_adr_streetname_clean = 'PENNSYLVANIA';
-    else if _dcg_adr_streettype = 'STREET' and _dcg_adr_streetname_clean = 'PENNSYLVANIA' then 
-      _dcg_adr_streetname_clean = 'PENN';
 
+    ** Correct QUEENS to QUEEN for QUEEN STREET;
+    ** Correct QUEEN to QUEENS for QUEENS COURT;
+    
+    if _dcg_adr_streettype = 'STREET' and _dcg_adr_streetname_clean = 'QUEENS' then 
+      _dcg_adr_streetname_clean = 'QUEEN';
+    else if _dcg_adr_streettype = 'COURT' and _dcg_adr_streetname_clean = 'QUEEN' then 
+      _dcg_adr_streetname_clean = 'QUEENS';
+    
     file log;
 
     ** Check for valid street names **;
@@ -264,8 +273,8 @@
       
       if put( upcase( _dcg_adr_streetname_clean ), $dcg_strecode. ) ~= "" then
         _dcg_adr_streetname_geocode = cats( '~', _dcg_adr_streetname_clean, '~' );
-      else if _dcg_adr_streetname_clean = "9 1/2" then
-        _dcg_adr_streetname_geocode = "~NINEANDAHALF~";
+      else if prxmatch( '/^([0-9]+|[A-Z]) 1\/2/', _dcg_adr_streetname_clean ) > 0 then
+        _dcg_adr_streetname_geocode = prxchange( 's/([0-9]+|[A-Z]) 1\/2/~$1~ANDAHALF~/i', 1, _dcg_adr_streetname_clean );
       else
         _dcg_adr_streetname_geocode = _dcg_adr_streetname_clean;
       
@@ -397,6 +406,7 @@
         addressvar=_dcg_adr_geocode
         &_geocode_zip
         lookupstreet=&basefile
+        type=&typefile
         attributevar=(&keep_geo);
         run;
       quit;
@@ -421,7 +431,7 @@
       
       ** Remove geocoding recodes **;
 
-      M_ADDR = prxchange( 's/~Nineandahalf~/9 1\/2/i', 1, M_ADDR );
+      M_ADDR = prxchange( 's/~ANDAHALF~/ 1\/2/i', 1, M_ADDR );
       M_ADDR = compress( M_ADDR, '~' );
       
       ** Check for exact matches **;

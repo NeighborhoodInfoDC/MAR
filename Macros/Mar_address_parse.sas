@@ -314,6 +314,10 @@
 
   ***************START PARSING PROCESS***************;
 
+  %if %mparam_is_yes( &debug ) %then %do;
+   PUT "A2: " wrd1= wrd2= wrd3=;
+  %end;
+
   %***[PAT] Separate street number (NUM) from street name (PAD) ***;
   
   if l1_wrd1 in ("0","1","2","3","4","5","6","7","8","9") then
@@ -327,6 +331,11 @@
                  num = wrd1;
                  pad = substr(_ap_temp_ad,i_wrd2);
                end;  
+              else if wrd2 = "B" and wrd3 = "1/2" then
+               do; ** Special case: B 1/2 Street **;
+                 num = wrd1;
+                 pad = substr(_ap_temp_ad,i_wrd2);
+               end;
               else if wrd2 in ( "1/2", "REAR", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "R" ) and 
                  ( put( put( compress( wrd3, '-' ), $maraltsttyp. ), $marvalidsttyp. ) = '' and
                    wrd3 not in ( 'NE', 'NW', 'SE', 'SW' ) ) then
@@ -669,6 +678,20 @@
        pad = substr(pad,indexc(pad,"ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789."));
    end;
 
+  ** Check for street names that include direction label after type and
+  ** strip out direction label as these do not geocode. 
+  ** Example: SNOWS COURT NORTH NW -> SNOWS COURT NW;
+  
+  i = prxmatch( '/\bNORTH|SOUTH|EAST|WEST NW|NE|SW|SE\b/i', pad );
+  
+  if i > 0 and
+     put( put( upcase( scan( substr( pad, 1, i - 1 ), -1, ' ' ) ), $maraltsttyp. ), $marvalidsttyp. ) ~= ''
+     then do;
+
+    pad = catx( ' ', substr( pad, 1, i - 1 ), prxchange( 's/\bNORTH|SOUTH|EAST|WEST\b//i', 1, substr( pad, i ) ) );
+  
+  end;
+  
   pad = trim(left(compbl(pad)));
 
   %if %mparam_is_yes( &debug ) %then %do;
