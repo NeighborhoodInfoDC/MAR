@@ -1,0 +1,21 @@
+{
+  "_captured_at": "2026-06-17T04:40:37Z",
+  "_captured_run_id": "r_019ed3e190d07ad08c765b94462ef26a",
+  "status": "ok",
+  "exit_code": 0,
+  "log_contains": [
+    "NOTE: FORMAT $maraddrtyp defined (2 ranges).",
+    "NOTE: Wrote addresses (4 rows, 10 columns).",
+    "NOTE: Read 4 rows from DATALINES.",
+    "NOTE: PROC PRINT completed: 4 observations printed, 10 variables",
+    "NOTE: FORMAT $marstatus defined (4 ranges)."
+  ],
+  "log_does_not_contain": [
+    "ERROR:",
+    "[JENNER-ERROR"
+  ],
+  "diagnostics": {
+    "parse_warnings": [],
+    "runtime_warnings": []
+  }
+}

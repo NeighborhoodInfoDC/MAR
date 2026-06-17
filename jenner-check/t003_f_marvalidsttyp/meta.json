@@ -1,0 +1,8 @@
+{
+  "bundle": "t003_f_marvalidsttyp",
+  "source_file": "Macros/F_marvalidsttyp.sas",
+  "source_blob_sha": "a5e0c2a27676198b0e40900d9a44717b24802df7",
+  "source_commit": "b67267837bd3c8458d1b50f90cf905238cdcbf84",
+  "tier": "real_data",
+  "notes": "Defines+calls %F_marvalidsttyp macro creating $marvalidsttyp. format of valid MAR street types; validates sample street types (incl invalid) via PUT + PROC FREQ."
+}

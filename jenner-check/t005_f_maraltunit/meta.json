@@ -1,0 +1,8 @@
+{
+  "bundle": "t005_f_maraltunit",
+  "source_file": "Macros/F_maraltunit.sas",
+  "source_blob_sha": "dfabd53218a8fca76ea1b58d425d7b29253fcf7f",
+  "source_commit": "b67267837bd3c8458d1b50f90cf905238cdcbf84",
+  "tier": "real_data",
+  "notes": "Defines+calls %F_maraltunit macro creating $maraltunit. format; normalizes unit designators (APT/SUITE/NO/#->UNIT) over sample data."
+}

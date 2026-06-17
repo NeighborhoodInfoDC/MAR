@@ -1,0 +1,15 @@
+
+  Obs    tok  valid
+-----  -----  -----
+    1  UNIT   UNIT
+    2  APT
+    3  SUITE
+    4  FLOOR
+
+                                                   The FREQ Procedure
+
+                                   Cumulative    Cumulative
+valid    Frequency    Percent     Frequency      Percent
+--------------------------------------------------------------
+                 3     75.00            3        75.00
+UNIT             1     25.00            4       100.00

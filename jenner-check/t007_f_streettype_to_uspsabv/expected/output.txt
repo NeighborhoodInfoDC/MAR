@@ -1,0 +1,12 @@
+
+  Obs      sttyp  usps
+-----  ---------  ----
+    1  AVENUE     Ave
+    2  BOULEVARD  Blvd
+    3  STREET     St
+    4  PARKWAY    Pkwy
+    5  PLACE      Pl
+    6  ROAD       Rd
+    7  TERRACE    Ter
+    8  COURT      Ct
+

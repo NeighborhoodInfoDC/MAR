@@ -1,0 +1,8 @@
+{
+  "bundle": "t006_f_marvalidunit",
+  "source_file": "Macros/F_marvalidunit.sas",
+  "source_blob_sha": "4fa58b9ffb9b1180ceaf3c5e585b3c8da7f9c00d",
+  "source_commit": "b67267837bd3c8458d1b50f90cf905238cdcbf84",
+  "tier": "real_data",
+  "notes": "Defines+calls %F_marvalidunit macro creating $marvalidunit. format keeping UNIT, blanking else; validates sample tokens."
+}

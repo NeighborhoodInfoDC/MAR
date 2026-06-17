@@ -1,0 +1,19 @@
+
+  Obs        stname  flag
+-----  ------------  ----
+    1  NORTH         YES
+    2  EAST          YES
+    3  FOREST        YES
+    4  CANAL ROAD    YES
+    5  VALLEY        YES
+    6  MASSACHUSETT
+    7  WISCONSIN
+    8  N             YES
+
+                                                   The FREQ Procedure
+
+                                  Cumulative    Cumulative
+flag    Frequency    Percent     Frequency      Percent
+-------------------------------------------------------------
+                2     25.00            2        25.00
+YES             6     75.00            8       100.00

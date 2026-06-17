@@ -1,0 +1,21 @@
+{
+  "_captured_at": "2026-06-17T04:39:01Z",
+  "_captured_run_id": "r_019ed3e007347c6286db15387226613c",
+  "status": "ok",
+  "exit_code": 0,
+  "log_contains": [
+    "NOTE: FORMAT $maraltunit defined (31 ranges).",
+    "NOTE: Wrote units (8 rows, 2 columns).",
+    "NOTE: Read 8 rows from DATALINES.",
+    "NOTE: PROC PRINT completed: 8 observations printed, 2 variables",
+    "NOTE: PROC FREQ"
+  ],
+  "log_does_not_contain": [
+    "ERROR:",
+    "[JENNER-ERROR"
+  ],
+  "diagnostics": {
+    "parse_warnings": [],
+    "runtime_warnings": []
+  }
+}

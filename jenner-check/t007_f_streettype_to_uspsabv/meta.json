@@ -1,0 +1,8 @@
+{
+  "bundle": "t007_f_streettype_to_uspsabv",
+  "source_file": "Macros/f_streettype_to_uspsabv.sas",
+  "source_blob_sha": "5ae62c8dd61de4ff1c7c9516b4caa81150792c6f",
+  "source_commit": "b67267837bd3c8458d1b50f90cf905238cdcbf84",
+  "tier": "real_data",
+  "notes": "Defines+calls %f_streettype_to_uspsabv macro creating $streettype_to_uspsabv. format; converts full street types to USPS abbreviations (AVENUE->Ave etc)."
+}

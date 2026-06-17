@@ -1,0 +1,16 @@
+
+  Obs  addrtyp  addrtyp_lbl  status  status_lbl  restyp      restyp_lbl  lottyp   lottyp_lbl  unittyp      unittyp_lbl
+-----  -------  -----------  ------  ----------  ------  --------------  ------  -----------  -------  ---------------
+    1  A        Address      A       Active      R       Residential     RECORD  Record lot   N        Non-condominium
+    2  P        Place        S       Assigned    N       Nonresidential  TAXLOT  Tax lot      C        Condominium
+    3  A        Address      R       Retired     M       Mixed use       CONDO   Condominium  R        Rental
+    4  A        Address      T       Temporary   R       Residential     PARCEL  Parcel       N        Non-condominium
+
+  Obs  lottyp_text    code        label
+-----  -----------  ------  -----------
+    1  RECORD LOT   RECORD  Record lot
+    2  TAX LOT      TAXLOT  Tax lot
+    3  CONDO        CONDO   Condominium
+    4  PARCEL       PARCEL  Parcel
+    5  RESERVATION  RESERV  Reservation
+

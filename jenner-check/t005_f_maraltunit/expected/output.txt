@@ -1,0 +1,19 @@
+
+  Obs        raw  normalized
+-----  ---------  ----------
+    1  APT        UNIT
+    2  APARTMENT  UNIT
+    3  STE        UNIT
+    4  SUITE      UNIT
+    5  NO         UNIT
+    6  NUMBER     UNIT
+    7  UNIT       UNIT
+    8  FLOOR      FLOOR
+
+                                                   The FREQ Procedure
+
+                                        Cumulative    Cumulative
+normalized    Frequency    Percent     Frequency      Percent
+-------------------------------------------------------------------
+FLOOR                 1     12.50            1        12.50
+UNIT                  7     87.50            8       100.00

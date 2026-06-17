@@ -1,0 +1,21 @@
+{
+  "_captured_at": "2026-06-17T04:40:33Z",
+  "_captured_run_id": "r_019ed3e16dfe7a30933b00cb21ef0d15",
+  "status": "ok",
+  "exit_code": 0,
+  "log_contains": [
+    "NOTE: FORMAT $dcg_strecode defined (19 ranges).",
+    "NOTE: Wrote streets (8 rows, 2 columns).",
+    "NOTE: Read 8 rows from DATALINES.",
+    "NOTE: PROC PRINT completed: 8 observations printed, 2 variables",
+    "NOTE: PROC FREQ"
+  ],
+  "log_does_not_contain": [
+    "ERROR:",
+    "[JENNER-ERROR"
+  ],
+  "diagnostics": {
+    "parse_warnings": [],
+    "runtime_warnings": []
+  }
+}

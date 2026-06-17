@@ -1,0 +1,8 @@
+{
+  "bundle": "t009_make_formats",
+  "source_file": "Prog/Make_formats.sas",
+  "source_blob_sha": "77cb3d6d473e469fdc8fe1ad884de0b0d71fbcd7",
+  "source_commit": "b67267837bd3c8458d1b50f90cf905238cdcbf84",
+  "tier": "real_data",
+  "notes": "PROC FORMAT block from Make_formats.sas (MAR address/status/restype/lottype/unittype/poistatus formats) written to WORK; applied to sample coded address records + lot-type text-to-code crosswalk."
+}

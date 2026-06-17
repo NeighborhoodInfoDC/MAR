@@ -1,0 +1,8 @@
+{
+  "bundle": "t008_f_dcg_strecode",
+  "source_file": "Macros/F_dcg_strecode.sas",
+  "source_blob_sha": "5be59f8f5e4781f729854c32ab8698d2f9071eb5",
+  "source_commit": "b67267837bd3c8458d1b50f90cf905238cdcbf84",
+  "tier": "real_data",
+  "notes": "Defines+calls %F_dcg_strecode macro creating $dcg_strecode. flag format marking street names Proc Geocode struggles with as YES; flags sample names incl embedded-space CANAL ROAD."
+}

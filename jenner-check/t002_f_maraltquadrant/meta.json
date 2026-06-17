@@ -1,0 +1,8 @@
+{
+  "bundle": "t002_f_maraltquadrant",
+  "source_file": "Macros/F_maraltquadrant.sas",
+  "source_blob_sha": "54b954bd207d71d94284163e382119ee00d9c98a",
+  "source_commit": "b67267837bd3c8458d1b50f90cf905238cdcbf84",
+  "tier": "real_data",
+  "notes": "Defines+calls %F_maraltquadrant macro creating $maraltquadrant. format; normalizes alternate quadrant spellings (NORTHEAST->NE etc) over sample data."
+}
