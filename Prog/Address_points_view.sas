@@ -5,7 +5,7 @@
  Author:   P. Tatian
  Created:  04/28/2018
  Version:  SAS 9.4
- Environment:  Local Windows session (desktop)
+ Environment:  Remote session (SAS1)
  
  Description:  Create SAS View with latest Address_points and
  Address_points_retired data sets.
@@ -13,13 +13,13 @@
  Modifications:
 **************************************************************************/
 
-%include "\\sas1\DCdata\SAS\Inc\StdLocal.sas";
+%include "F:\DCDATA\SAS\Inc\StdRemote.sas";
 
 ** Define libraries **;
 %DCData_lib( MAR )
 
-%let Address_points = Address_points_2025_07;
-%let Address_points_retired = Address_points_retired_2025_12;
+%let Address_points = Address_points_2026_07;
+%let Address_points_retired = Address_points_retired_2026_07;
 
 
 proc sql noprint;

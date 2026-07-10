@@ -5,7 +5,7 @@
  Author:   P. Tatian
  Created:  09/27/14
  Version:  SAS 9.4
- Environment:  Local Windows session (desktop)
+ Environment:  Remote session (SAS1)
  
  Description:  Read in latest MAR address-SSL crosswalk file.
  

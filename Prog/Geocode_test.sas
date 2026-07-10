@@ -5,14 +5,14 @@
  Author:   P. Tatian
  Created:  01/23/16
  Version:  SAS 9.4
- Environment:  Local Windows session (desktop)
+ Environment:  Remote session (SAS1)
  
  Description:  Test geocoding against MAR database.
 
  Modifications:
 **************************************************************************/
 
-%include "\\sas1\DCdata\SAS\Inc\StdLocal.sas";
+%include "F:\DCDATA\SAS\Inc\StdRemote.sas";
 
 ** Define libraries **;
 %DCData_lib( MAR )
@@ -370,7 +370,7 @@ title2 '-- Geocoding with ZIP Code --';
 proc contents data=A_geo_with_zip;
 run;
 
-ods html body="&outhtml._with_zip.html" style=Analysis;
+ods html body="&_dcdata_default_path\MAR\Prog\&outhtml._with_zip.html" style=Analysis;
 
 ods listing close;
 
@@ -412,7 +412,7 @@ title2 '-- Geocoding without ZIP Code --';
 proc contents data=A_geo_without_zip;
 run;
 
-ods html body="&outhtml._without_zip.html" style=Analysis;
+ods html body="&_dcdata_default_path\MAR\Prog\&outhtml._without_zip.html" style=Analysis;
 
 ods listing close;
 
