@@ -5,7 +5,7 @@
  Author:   P. Tatian
  Created:  07/10/2026
  Version:  SAS 9.4
- Environment:  Local Windows session (desktop)
+ Environment:  Remote session (SAS1)
  GitHub issue: 106
  
  Description:  Read Address_points_retired data set.

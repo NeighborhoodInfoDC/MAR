@@ -6,7 +6,7 @@
  Created:  01/23/16
  Editted:  08/24/17
  Version:  SAS 9.2
- Environment:  Local Windows session (desktop)
+ Environment:  Remote session (SAS1)
  
  Description:  Create Proc Geocode source data sets from MAR address
  points. File format compatible with SAS ver 9.4 and later. 
@@ -17,14 +17,12 @@
 				7/8/25 RP Added ANC2023 to geo list
 **************************************************************************/
 
-%include "\\sas1\DCdata\SAS\Inc\StdLocal.sas";
+%include "F:\DCDATA\SAS\Inc\StdRemote.sas";
 
 ** Define libraries **;
 %DCData_lib( MAR )
 
 %let revisions = Updated with latest address points.;
-
-%let revisions = Implement address geocoding fixes.;  /** Delete this statement for next regular address update **/
 
 
 %** Geography variables to include in geocoding file **;
