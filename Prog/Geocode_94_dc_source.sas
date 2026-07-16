@@ -17,8 +17,7 @@
    07/16/26 PT Remove duplicate addresses from geocoding files.
 **************************************************************************/
 
-/**%include "F:\DCDATA\SAS\Inc\StdRemote.sas";**/
-%include "\\sas1\DCdata\SAS\Inc\StdLocal.sas";
+%include "F:\DCDATA\SAS\Inc\StdRemote.sas";
 
 ** Define libraries **;
 %DCData_lib( MAR )
