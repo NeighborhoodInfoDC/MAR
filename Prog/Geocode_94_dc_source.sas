@@ -1,11 +1,10 @@
 /**************************************************************************
  Program:  Geocode_94_dc_source.sas
  Library:  MAR
- Project:  NeighborhoodInfo DC
+ Project:  Urban-Greater DC
  Author:   P. Tatian
  Created:  01/23/16
- Editted:  08/24/17
- Version:  SAS 9.2
+ Version:  SAS 9.4
  Environment:  Remote session (SAS1)
  
  Description:  Create Proc Geocode source data sets from MAR address
@@ -14,15 +13,20 @@
  Also updates $marvalidstnm format and ValidStreets.html file.
 
  Modifications: RP Updated to add post-2020 geographies and use %Finalize_data_set
-				7/8/25 RP Added ANC2023 to geo list
+   7/8/25   RP Added ANC2023 to geo list
+   07/16/26 PT Remove duplicate addresses from geocoding files.
 **************************************************************************/
 
-%include "F:\DCDATA\SAS\Inc\StdRemote.sas";
+/**%include "F:\DCDATA\SAS\Inc\StdRemote.sas";**/
+%include "\\sas1\DCdata\SAS\Inc\StdLocal.sas";
 
 ** Define libraries **;
 %DCData_lib( MAR )
 
 %let revisions = Updated with latest address points.;
+
+/*** Delete this line before next regular update ***/
+%let revisions = Remove duplicate addresses from geocoding files.;
 
 
 %** Geography variables to include in geocoding file **;
@@ -46,15 +50,25 @@
 %F_dcg_strecode()
 
 ** Prep address list **;
+** Remove duplicate addresses. Keep address with most recent creation date **;
+
+proc sort 
+    data=Mar.Address_points_view 
+      (keep=address_id address_type fulladdress addrnum addrnumsuffix stname street_type quadrant zipcode x y
+            status created_date &geo_vars
+       rename=(status=Mar_status)
+       where=(not( missing( fulladdress ) or missing( stname ) or missing( addrnum ) ) ) 
+      )
+    out=Address_points;
+  by fulladdress descending created_date mar_status;
+run;
 
 data Mar_parse;
 
-  set Mar.Address_points_view 
-    (keep=address_id address_type fulladdress addrnum addrnumsuffix stname street_type quadrant zipcode x y
-          status &geo_vars
-     rename=(status=Mar_status)
-     where=(not( missing( fulladdress ) or missing( stname ) or missing( addrnum ) ) ) 
-    );
+  set Address_points;
+  by fulladdress;
+    
+    if first.fulladdress;
      
     ** Proc Geocode does not handle street names with single quotes (') **;
     ** Remove other stray punctuation **;
