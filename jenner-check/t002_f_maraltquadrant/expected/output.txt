@@ -1,0 +1,21 @@
+
+  Obs        raw  normalized
+-----  ---------  ----------
+    1  NORTHEAST  NE
+    2  NEAST      NE
+    3  NORTHWEST  NW
+    4  SOUTHEAST  SE
+    5  SOUTHWEST  SW
+    6  SWEST      SW
+    7  NE         NE
+    8  SW         SW
+
+                                                   The FREQ Procedure
+
+                                        Cumulative    Cumulative
+normalized    Frequency    Percent     Frequency      Percent
+-------------------------------------------------------------------
+NE                    3     37.50            3        37.50
+NW                    1     12.50            4        50.00
+SE                    1     12.50            5        62.50
+SW                    3     37.50            8       100.00

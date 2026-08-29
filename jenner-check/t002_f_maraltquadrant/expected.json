@@ -1,0 +1,21 @@
+{
+  "_captured_at": "2026-06-17T04:38:22Z",
+  "_captured_run_id": "r_019ed3df6e587710931066c1e01a7eab",
+  "status": "ok",
+  "exit_code": 0,
+  "log_contains": [
+    "NOTE: FORMAT $maraltquadrant defined (24 ranges).",
+    "NOTE: Wrote quadrants (8 rows, 2 columns).",
+    "NOTE: Read 8 rows from DATALINES.",
+    "NOTE: PROC PRINT completed: 8 observations printed, 2 variables",
+    "NOTE: PROC FREQ"
+  ],
+  "log_does_not_contain": [
+    "ERROR:",
+    "[JENNER-ERROR"
+  ],
+  "diagnostics": {
+    "parse_warnings": [],
+    "runtime_warnings": []
+  }
+}

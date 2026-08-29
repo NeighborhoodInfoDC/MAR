@@ -1,0 +1,8 @@
+{
+  "bundle": "t001_f_marvalidquadrant",
+  "source_file": "Macros/F_marvalidquadrant.sas",
+  "source_blob_sha": "663f0e4e928cfa708227b021dc3290bcc854e277",
+  "source_commit": "b67267837bd3c8458d1b50f90cf905238cdcbf84",
+  "tier": "real_data",
+  "notes": "Defines+calls %F_marvalidquadrant macro creating $marvalidquadrant. format; applies it to sample quadrant codes (NE/NW/SE/SW + invalid) via PUT + PROC FREQ."
+}

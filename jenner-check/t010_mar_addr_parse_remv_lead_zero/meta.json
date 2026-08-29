@@ -1,0 +1,8 @@
+{
+  "bundle": "t010_mar_addr_parse_remv_lead_zero",
+  "source_file": "Macros/Mar_addr_parse_remv_lead_zero.sas",
+  "source_blob_sha": "9ea84b37fe4759293ce7760545305a87bff8e9cc",
+  "source_commit": "b67267837bd3c8458d1b50f90cf905238cdcbf84",
+  "tier": "real_data",
+  "notes": "Defines %Mar_addr_parse_remv_lead_zero DATA-step macro; drives it over sample apt numbers (007->7, 0042->42, all-zero strings unchanged)."
+}

@@ -1,0 +1,8 @@
+{
+  "bundle": "t004_f_maraltsttyp",
+  "source_file": "Macros/F_maraltsttyp.sas",
+  "source_blob_sha": "86acfd9c1fb871358834da0b9ea6c00860088317",
+  "source_commit": "b67267837bd3c8458d1b50f90cf905238cdcbf84",
+  "tier": "real_data",
+  "notes": "Defines+calls %F_maraltsttyp macro (large alternate-spelling lookup) creating $maraltsttyp. format; normalizes abbreviated/misspelled street types (AVE/AVEN->AVENUE etc)."
+}

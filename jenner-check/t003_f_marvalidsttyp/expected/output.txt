@@ -1,0 +1,26 @@
+
+  Obs      sttyp      valid
+-----  ---------  ---------
+    1  STREET     STREET
+    2  AVENUE     AVENUE
+    3  BOULEVARD  BOULEVARD
+    4  PLACE      PLACE
+    5  ROAD       ROAD
+    6  WAY        WAY
+    7  PIER       PIER
+    8  HIGHWAY
+    9  BANANA
+
+                                                   The FREQ Procedure
+
+                                       Cumulative    Cumulative
+valid        Frequency    Percent     Frequency      Percent
+------------------------------------------------------------------
+                     2     22.22            2        22.22
+AVENUE               1     11.11            3        33.33
+BOULEVARD            1     11.11            4        44.44
+PIER                 1     11.11            5        55.56
+PLACE                1     11.11            6        66.67
+ROAD                 1     11.11            7        77.78
+STREET               1     11.11            8        88.89
+WAY                  1     11.11            9       100.00

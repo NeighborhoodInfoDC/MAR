@@ -1,0 +1,34 @@
+
+  Obs    raw  normalized
+-----  -----  ----------
+    1  AVE    AVENUE
+    2  AVEN   AVENUE
+    3  AVENU  AVENUE
+    4  BLVD   BOULEVARD
+    5  BOUL   BOULEVARD
+    6  DR     DRIVE
+    7  DRV    DRIVE
+    8  CT     COURT
+    9  CRT    COURT
+   10  PL     PLACE
+   11  RD     ROAD
+   12  ST     STREET
+   13  STR    STREET
+   14  TER    TERRACE
+   15  TERR   TERRACE
+   16  WY     WAY
+
+                                                   The FREQ Procedure
+
+                                        Cumulative    Cumulative
+normalized    Frequency    Percent     Frequency      Percent
+-------------------------------------------------------------------
+AVENUE                3     18.75            3        18.75
+BOULEVARD             2     12.50            5        31.25
+COURT                 2     12.50            7        43.75
+DRIVE                 2     12.50            9        56.25
+PLACE                 1      6.25           10        62.50
+ROAD                  1      6.25           11        68.75
+STREET                2     12.50           13        81.25
+TERRACE               2     12.50           15        93.75
+WAY                   1      6.25           16       100.00
